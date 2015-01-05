@@ -17,7 +17,7 @@ var typenames = [
 	"dictionary", //  4 : value (map string->kval)
 	"function"  , //  5 : body, args, curry, env
 	"view"      , //  6 : value, r, cache, depends->val
-	"nameref"   , //  7 : name, l(index?), r(assignment)
+	"nameref"   , //  7 : name, l(index?), r(assignment), global?
 	"verb"      , //  8 : name, l(?), r
 	"adverb"    , //  9 : name, l(?), verb, r
 	"return"    , // 10 : value (expression)
@@ -428,9 +428,8 @@ function applyadverb(node, verb, left, right, env) {
 
 function Environment(pred) {
 	this.p = pred; this.d = {};
-	this.put = function(n, v) { this.d[n] = v; };
-	this.setv = function(n, v) {
-		if (!this.p || n in this.d) { this.put(n, v); return; } return this.p.setv(n, v);
+	this.put = function(n, g, v) {
+		if (g && this.p) { this.p.put(n, g, v); } else { this.d[n] = v; }
 	};
 	this.lookup = function(n) {
 		if (!(n in this.d)) {
@@ -492,7 +491,7 @@ function call(x, y, env) {
 		}
 		if (!all) { return { t:5, v:x.v, args:x.args, env:x.env, curry:curry }; }
 		if (i < y.v.length) { throw new Error("valence error."); }
-		for(var z=0;z<x.args.length;z++) { environment.put(x.args[z], curry[z]); }
+		for(var z=0;z<x.args.length;z++) { environment.put(x.args[z], false, curry[z]); }
 	}
 	var r = run(x.v, environment);
 	return (r.t == 10) ? r.v : r;
@@ -507,9 +506,9 @@ function run(node, environment) {
 	}
 	if (node.sticky) { return node; }
 	if (node.t == 3) { return kmap(node, function(x){ return run(x, environment); }); }
-	if (node.t == 6) { environment.put(node.v, node); return node; }
+	if (node.t == 6) { environment.put(node.v, false, node); return node; }
 	if (node.t == 7) {
-		if (node.r) { environment.put(node.v, run(node.r, environment)); }
+		if (node.r) { environment.put(node.v, node.global, run(node.r, environment)); }
 		return environment.lookup(node.v);
 	}
 	if (node.t == 8 && node.r) {
@@ -545,7 +544,7 @@ function mend(node, env, monadic, dyadic) {
 	var y = node.v[3] ? run(node.v[3], env) : null;
 	var f = run(node.v[2], env);
 	(y?dyadic:monadic)(d, i, y, f, env);
-	if (ds.t!=2) { return d; } env.setv(ds.v.slice[1], d); return ds;
+	if (ds.t!=2) { return d; } env.put(ds.v.slice[1], true, d); return ds;
 }
 
 function amendm(d, i, y, monad, env) {
@@ -604,16 +603,19 @@ desc[OPEN_B ]="'['"   ;desc[OPEN_P ]="'('"    ;desc[OPEN_C ]="{"     ;desc[ASSIG
 desc[CLOSE_B]="']'"   ;desc[CLOSE_P]="')'"    ;desc[CLOSE_C]="}";
 
 var text = "";
+var funcdepth = 0;
 function begin(str) {
 	str = str.replace(/\s\/[^\n]*/, "");                          // strip comments
 	str = str.replace(/([A-Za-z0-9\]\)])-(\d|(\.\d))/, "$1- $2"); // minus ambiguity
-	text = str.trim();
+	text = str.trim(); funcdepth = 0;
 }
 function done()         { return text.length < 1; }
+function toplevel()     { return funcdepth == 0; }
 function at(regex)      { return regex.test(text); }
 function matches(regex) { return at(regex) ? expect(regex) : false; }
 function expect(regex) {
 	var found = regex.exec(text);
+	if (regex == OPEN_C) { funcdepth++; } if (regex == CLOSE_C) { funcdepth--; }
 	if (found == null) { throw new Error("parse error. "+desc[regex]+" expected."); }
 	text = text.substring(found[0].length).trim(); return found[0];
 }
@@ -640,6 +642,7 @@ function atNoun() {
 
 function indexedassign(node, indexer) {
 	var op = { t:5, args:["x","y"], v:[{ t:7, v:"y" }] }; // {y}
+	var gl = matches(COLON); // todo: treat local reassignments specially?
 	var ex = parseEx(parseNoun());
 	//t[x]:z  ->  ..[`t;x;{y};z]
 	return { t:8, v:".", r:{ t:14, v:[asSymbol(node.v), kl(indexer), op, ex] }};
@@ -648,8 +651,9 @@ function indexedassign(node, indexer) {
 function compoundassign(node, indexer) {
 	if (!at(ASSIGN)) { return node; }
 	var op = expect(ASSIGN).slice(0,1);
+	var gl = matches(COLON); // todo: treat local indexed reassignments specially?
 	var ex = parseEx(parseNoun());
-	if (!indexer) { return { t:node.t, v:node.v, r: asVerb(op, node, ex) }; }
+	if (!indexer) { return { t:node.t, v:node.v, global:gl, r: asVerb(op, node, ex) }; }
 	//t[x]+:z -> ..[`t;x;+:;z]
 	return { t:8, v:".", r: { t:14, v:[asSymbol(node.v), indexer, { t:8, v:op }, ex] }};
 }
@@ -736,12 +740,17 @@ function parseNoun() {
 	}
 	if (at(NAME)) {
 		var n = k(7, expect(NAME));
-		if (matches(VIEW)) {
+		if (toplevel() && matches(VIEW)) {
 			var r = k(6, n.v);
 			r.r = parseEx(parseNoun());
 			r.depends = findNames(r.r, {});
 			r.cache = 0;
 			return r;
+		}
+		if (matches(COLON)) {
+			n.global = matches(COLON);
+			n.r = parseEx(parseNoun());
+			return n;
 		}
 		if (matches(OPEN_B)) {
 			var index = parseList(CLOSE_B);
@@ -764,8 +773,7 @@ function parseAdverb(left, verb) {
 function parseEx(node) {
 	if (node == null) { return null; }
 	if (at(ADVERB)) { return parseAdverb(null, node); }
-	if (node.t == 8 && !node.r)        { node.r = parseEx(parseNoun()); }
-	if (node.t == 7 && matches(COLON)) { node.r = parseEx(parseNoun()); }
+	if (node.t == 8 && !node.r) { node.r = parseEx(parseNoun()); }
 	if (atNoun()) { var x = parseEx(parseNoun()); x.l = node; node = x; }
 	if (at(VERB)) {
 		var x = parseNoun();
@@ -814,7 +822,7 @@ function format(k, indent) {
 		} return "{"+(k.args.length?"["+k.args.join(";")+"]":"")+format(k.v)+"}" + r;
 	}
 	if (k.t ==  6) { return k.v+"::"+format(k.r); }
-	if (k.t ==  7) { return k.v+(k.r?":"+format(k.r):""); }
+	if (k.t ==  7) { return k.v+(k.r?(k.global?"::":":")+format(k.r):""); }
 	if (k.t ==  8) {
 		var left = (k.l?format(k.l):""); if (k.l && k.l.l) { left = "("+left+")"; }
 		return left+k.v+(k.r?format(k.r):"");

@@ -311,27 +311,30 @@ test(".[(1 2 3;4 5 6);(0 1;1);(0,)]"  , "((1\n  0 2\n  3)\n (4\n  0 5\n  6))" );
 test(".[(1 2 3;4 5 6);(;0);(0,)]"     , "((0 1\n  2\n  3)\n (0 4\n  5\n  6))" );
 test("1 2 3 4 1 3^1"                  , "2 3 4 3"                             );
 test("1 2 3 4 1 3^2 3"                , "1 4 1"                               );
-
 fail("1 2 3 @ 1.7"                    , "index error: 1.7"                    );
 fail("1 2 3[0.9]"                     , "index error: 0.9"                    );
 fail("a:1 2 3;a[1.4]:5;a"             , "positive int expected."              );
-
 test("$!5"                            , '(,"0"\n ,"1"\n ,"2"\n ,"3"\n ,"4")'  );
 test('","/$!5'                        , '"0,1,2,3,4"'                         );
 test("5/1 2 3"                        , "1 5 2 5 3"                           );
-
 test('"&"\\"foo=42&bar=69"'           , '("foo=42"\n "bar=69")'               );
 test("1\\3 1 2 2 4 1 5 1"             , "(,3\n 2 2 4\n ,5\n ())"              );
-
 test("0 2 4 6 8 10'5"                 , "2"                                   );
 test("0 2 4 6 8 10'-10 0 4 5 6 20"    , "-1 0 2 2 3 5"                        );
 test("1 2 3 3 4'2 3"                  , "1 3"                                 );
 test("4 5 6'1"                        , "-1"                                  );
-
 test('+"="\\\'"&"\\"foo=42&bar=69"'   , '(("foo"\n  "bar")\n ("42"\n  "69"))' );
 test('!+"="\\\'"&"\\"foo=42&bar=69"'  , '[foo:"42";bar:"69"]'                 );
 fail("!(1 2 3;4 5)"                   , "matrix expected."                    );
 fail("!(1 2 3;4 5 6)"                 , "map keys must be strings or symbols.");
+
+test("{a::99}"                        , "{a::99}"                             );
+test("a:5; {a::3}[]; a"               , "3"                                   );
+test("b:1 2 3;{b[1]::4}[]; b"         , "1 4 3"                               );
+test("c:99;{c+::5}[]; c"              , "104"                                 );
+
+//test("b:1 2 3;{b:4 3 2;b[1]:4}[]; b", "1 2 3");
+//test("b:1 2 3;{b:4 3 2;b[1]::4}[]; b", "1 4 3");
 
 // NOTES/TODO:
 
@@ -346,8 +349,6 @@ fail("!(1 2 3;4 5 6)"                 , "map keys must be strings or symbols.");
 //   ?["hello world";0 5;"goodbye"]  ->  "goodbye world"
 
 // My implementation of :: is incorrect; it needs to be context sensitive:
-// - :: inside a function is global set,
-// - :: outside a function defines a view,
 // - :: inside a map literal makes a reference to another key's value.
 
 // I need to unify the two definitions of nil floating around currently
