@@ -8,11 +8,11 @@
 
 var ok = require("./oK");
 
-var fails = false; var tests = 0;
+var fails = 0; var tests = 0;
 function test(input, output) {
 	var got = ok.format(ok.run(ok.parse(input), new ok.Environment(null)));
 	console.log(got + (!output || got == output ? "" : "<------- FAILED, EXPECTED:\n"+output));
-	fails |= output && got != output;
+	if (output && got != output) { fails++; }
 	tests++;
 }
 
@@ -22,7 +22,7 @@ function fail(input, errmsg) {
 	catch(err) {
 		caught = true;
 		if (err.message != errmsg) {
-			fails = true;
+			fails++;
 			console.log(input, "<------- BAD ERROR, EXPECTED:\n"+errmsg);
 			console.log(err.stack);
 		}
@@ -255,9 +255,9 @@ test("@[1 2 3;1 0;{x,y};8 9]"         , "(1 9\n 2 8\n 3)"                     );
 test("@[1 2 3;0;{x+2*y};8 9]"         , "(17 19\n 2\n 3)"                     );
 test("a:5;.`a"                        , "5"                                   );
 test("f:{x+y};.`f"                    , "{[x;y]x+y}"                          );
-test("{t:3 5;t[0]:9;t}"               , "{t:3 5;..[`t;0;{[x;y]y};9];t}"       );
+test("{t:3 5;t[0]:9;t}"               , "{t:3 5;t:.[t;0;{[x;y]y};9];t}"       );
 test("t:3 5;t[0]:9;t"                 , "9 5"                                 );
-test("{t:0 1 2;t[1],:9;t}"            , "{t:0 1 2;..[`t;1;,;9];t}"            );
+test("{t:0 1 2;t[1],:9;t}"            , "{t:0 1 2;t:.[t;1;,;9];t}"            );
 test("t:0 1 2;t[1],:9;t"              , "(0\n 1 9\n 2)"                       );
 fail("1 2 3+4 5"                      , "length error."                       );
 fail("`a+2"                           , "number expected, found symbol."      );
@@ -292,7 +292,7 @@ test("a:,\\;a 1 2 3"                  , "(1\n 1 2\n 1 2 3)"                   );
 test("a:+/;a 1 2 3"                   , "6"                                   );
 test("a:!:;a 5"                       , "0 1 2 3 4"                           );
 test("|t=/:t:!3"                      , "(0 0 1\n 0 1 0\n 1 0 0)"             );
-test("{t[0;2]:99}"                    , "{..[`t;0 2;{[x;y]y};99]}"            );
+test("{t[0;2]:99}"                    , "{t:.[t;0 2;{[x;y]y};99]}"            );
 test("t:(1 2 3;4 5 6);t[0;2]:99;t"    , "(1 2 99\n 4 5 6)"                    );
 test("t:(1 2 3;4 5 6);t[;1]:88;t"     , "(1 88 3\n 4 88 6)"                   );
 test(".[(1 2;3 4 5);1;,;999]"         , "(1 2\n 3 4 5 999)"                   );
@@ -327,14 +327,20 @@ test('+"="\\\'"&"\\"foo=42&bar=69"'   , '(("foo"\n  "bar")\n ("42"\n  "69"))' );
 test('!+"="\\\'"&"\\"foo=42&bar=69"'  , '[foo:"42";bar:"69"]'                 );
 fail("!(1 2 3;4 5)"                   , "matrix expected."                    );
 fail("!(1 2 3;4 5 6)"                 , "map keys must be strings or symbols.");
-
 test("{a::99}"                        , "{a::99}"                             );
 test("a:5; {a::3}[]; a"               , "3"                                   );
 test("b:1 2 3;{b[1]::4}[]; b"         , "1 4 3"                               );
 test("c:99;{c+::5}[]; c"              , "104"                                 );
-
-//test("b:1 2 3;{b:4 3 2;b[1]:4}[]; b", "1 2 3");
-//test("b:1 2 3;{b:4 3 2;b[1]::4}[]; b", "1 4 3");
+test("{b[1]:4}"                       , "{b:.[b;1;{[x;y]y};4]}"               );
+test("{b[1]::4}"                      , "{..[`b;1;{[x;y]y};4]}"               );
+test("b:1 2 3;{b:4 3 2;b[1]:4}[]; b"  , "1 2 3"                               );
+test("b:1 2 3;{b:4 3 2;b[1]::4}[]; b" , "1 4 3"                               );
+test("c:1 2 3;{c:4 3 2;c[1]+:5}[];c"  , "1 2 3"                               );
+test("c:1 2 3;{c:4 3 2;c[1]+::5}[];c" , "1 7 3"                               );
+test("c:8; {c:1; .`c}[]"              , "8"                                   );
+test("c:8;{c:2;c+:1}[]; c"            , "8"                                   );
+test("c:8;{c:2;c::1+(.`c)}[]; c"      , "9"                                   );
+test("c:8;{c:2;c+::1}[]; c"           , "9"                                   );
 
 // NOTES/TODO:
 
@@ -357,5 +363,5 @@ test("c:99;{c+::5}[]; c"              , "104"                                 );
 //   This would simplify a great deal of dispatch logic and remove the need for
 //   amend/dmend/query to be special syntactic cases.
 
-if (fails) { console.log("TESTS DID NOT COMPLETE SUCCESSFULLY."); }
+if (fails) { console.log(fails + " TEST(S) DID NOT COMPLETE SUCCESSFULLY."); }
 else       { console.log("passed "+tests+" tests!"); }

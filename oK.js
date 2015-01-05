@@ -102,7 +102,7 @@ function atom     (x) {             return k(0, x.t != 3 ?1:0); }
 function kfmt     (x) { var r=stok(format(x)); if (r.t!=3) { r=k(3,[r]); } return r; }
 
 function keval(x, env) {
-	if (x.t == 2) { return env.lookup(x.v.slice(1)); }
+	if (x.t == 2) { return env.lookup(x.v.slice(1), true); }
 	return run(parse(ktos(x)), env);
 }
 
@@ -431,7 +431,8 @@ function Environment(pred) {
 	this.put = function(n, g, v) {
 		if (g && this.p) { this.p.put(n, g, v); } else { this.d[n] = v; }
 	};
-	this.lookup = function(n) {
+	this.lookup = function(n, g) {
+		if (g && this.p) { return this.p.lookup(n, g); }
 		if (!(n in this.d)) {
 			if (!this.p) { throw new Error("the name '"+n+"' has not been defined."); }
 			return this.p.lookup(n);
@@ -451,7 +452,7 @@ function Environment(pred) {
 }
 
 function atd(x, y, env) {
-	if (x.t == 2) { x = env.lookup(x.v.slice(1)); }
+	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
 	if (x.t == 3) { return atl(x, y, env); }
 	if (x.t == 5) { return call(x, k(3,[y]), env); }
 	if (x.t == 8 || x.t == 9) { return applym(x, y, env); }
@@ -461,7 +462,7 @@ function atd(x, y, env) {
 }
 
 function atl(x, y) {
-	if (x.t == 2) { x = env.lookup(x.v.slice(1)); }
+	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
 	l(x); if (y.t != 0 || y.v < 0 || y.v >= x.v.length || y.v%1 != 0) {
 		throw new Error("index error: "+format(y));
 	} return x.v[y.v];
@@ -475,7 +476,7 @@ function atdepth(x, y, i, env) {
 }
 
 function call(x, y, env) {
-	if (x.t == 2) { x = env.lookup(x.v.slice(1)); }
+	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
 	if (y.t == 0) { return atd(x, y); }
 	if (y.t == 3 && y.v.length == 0) { return x; }
 	if (x.t == 3 && y.t == 3) { return atdepth(x, y, 0, env); }
@@ -539,7 +540,7 @@ function run(node, environment) {
 function mend(node, env, monadic, dyadic) {
 	if (node.v.length != 3 && node.v.length != 4) { throw new Error("valence error."); }
 	var ds = run(node.v[0], env);
-	var d = (ds.t==2?env.lookup(ds.v.slice(1)):ds); l(d);
+	var d = (ds.t == 2 ? env.lookup(ds.v.slice(1),true) : ds); l(d);
 	var i = run(node.v[1], env);
 	var y = node.v[3] ? run(node.v[3], env) : null;
 	var f = run(node.v[2], env);
@@ -642,19 +643,25 @@ function atNoun() {
 
 function indexedassign(node, indexer) {
 	var op = { t:5, args:["x","y"], v:[{ t:7, v:"y" }] }; // {y}
-	var gl = matches(COLON); // todo: treat local reassignments specially?
+	var gl = matches(COLON);
 	var ex = parseEx(parseNoun());
-	//t[x]:z  ->  ..[`t;x;{y};z]
+	//t[x]::z  ->  ..[`t;x;{y};z]   t[x]:z  ->  t:.[t;x;{y};z]
+	if (!gl) { node.r = { t:14, v:[ k(7,node.v), kl(indexer), op, ex] }; return node; }
 	return { t:8, v:".", r:{ t:14, v:[asSymbol(node.v), kl(indexer), op, ex] }};
 }
 
 function compoundassign(node, indexer) {
 	if (!at(ASSIGN)) { return node; }
 	var op = expect(ASSIGN).slice(0,1);
-	var gl = matches(COLON); // todo: treat local indexed reassignments specially?
+	var gl = matches(COLON);
 	var ex = parseEx(parseNoun());
-	if (!indexer) { return { t:node.t, v:node.v, global:gl, r: asVerb(op, node, ex) }; }
-	//t[x]+:z -> ..[`t;x;+:;z]
+	if (!indexer) {
+		// t+::z  -> t::(.`t)+z
+		var v = gl ? asVerb(".", null, asSymbol(node.v)) : node;
+		return { t:node.t, v:node.v, global:gl, r:asVerb(op, v, ex) };
+	}
+	// t[x]+::z -> ..[`t;x;+:;z]   t[x]+:z -> t:.[t;x;{y};z]
+	if (!gl) { node.r = { t:14, v:[ k(7,node.v), kl(indexer), { t:8, v:op }, ex] }; return node; }
 	return { t:8, v:".", r: { t:14, v:[asSymbol(node.v), indexer, { t:8, v:op }, ex] }};
 }
 
