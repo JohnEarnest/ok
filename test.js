@@ -342,6 +342,12 @@ test("c:8;{c:2;c+:1}[]; c"            , "8"                                   );
 test("c:8;{c:2;c::1+(.`c)}[]; c"      , "9"                                   );
 test("c:8;{c:2;c+::1}[]; c"           , "9"                                   );
 
+test("?[1 2 3;1;4]", "1 4 2 3");
+test("?[1 2 3;1;4 5]", "1 4 5 2 3");
+test('?["test";1 3;"u"]', '"tut"');
+test('?["hello world";0 5;"goodbye"]', '"goodbye world"');
+
+
 // NOTES/TODO:
 
 // ?[t;c;b;a] query is the K4/Q "select"
@@ -349,15 +355,15 @@ test("c:8;{c:2;c+::1}[]; c"           , "9"                                   );
 // - c is 'constraints'
 // - b is a dict of grouping specifications ('by')
 // - a is a dict of select specifications ('aggregate')
-// simpler forms:
-//   if y is scalar, ?[x;y;z] inserts z at offset y of x
-//   if y is vector, ?[x;y;z] replaces the y cut x with z:
-//   ?["hello world";0 5;"goodbye"]  ->  "goodbye world"
 
 // My implementation of :: is incorrect; it needs to be context sensitive:
 // - :: inside a map literal makes a reference to another key's value.
 
 // I need to unify the two definitions of nil floating around currently
+
+// I think that I need to support the boolean type. Boolean lists may
+// be how K5 provides bitwise operations. Are all operators overloaded
+// to deal with boolean lists? How do I marshal numbers <-> boolean lists?
 
 // subscripting verbs/ verb-func unification?
 //   This would simplify a great deal of dispatch logic and remove the need for

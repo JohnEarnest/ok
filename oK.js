@@ -25,6 +25,7 @@ var typenames = [
 	"cond"      , // 12 : body (list of expressions)
 	"amend"     , // 13 : body (list of expressions)
 	"dmend"     , // 14 : body (list of expressions)
+	"query"     , // 15 : body (list of expressions)
 ];
 
 var NIL = asSymbol("");
@@ -533,6 +534,7 @@ function run(node, environment) {
 	}
 	if (node.t == 13) { return mend(node, environment, amendm, amendd); }
 	if (node.t == 14) { return mend(node, environment, dmend, dmend); }
+	if (node.t == 15) { return mend(node, environment, query, query); }
 	if (node.t == 5 && !node.env) { node.env = environment; }
 	return node;
 }
@@ -568,6 +570,13 @@ function dmend(d, i, y, f, env) {
 	else { dmend(atl(d, first(i)), rest, y, f, env); }
 }
 
+function query(t, c, a, b, env) {
+	l(t); if (a) { throw new Error("not implemented!"); }
+	if (c.t == 3) { var x=c.v[0]; var y=c.v[1]; p(x); p(y); t.v.splice(x.v, y.v-x.v); c = x; }
+	if (b.t != 3) { b = k(3,[b]); }
+	p(c); var x=c.v; for(var z=0;z<b.v.length;z++) { t.v.splice(x++, 0, b.v[z]); }
+}
+
 ////////////////////////////////////
 //
 //   Tokenizer
@@ -588,6 +597,7 @@ var VIEW    = /^::/;
 var COND    = /^\$\[/;
 var AMEND   = /^@\[/;
 var DMEND   = /^\.\[/;
+var QUERY   = /^\?\[/;
 var APPLY   = /^\./;
 var OPEN_B  = /^\[/;
 var OPEN_P  = /^\(/;
@@ -740,6 +750,7 @@ function parseNoun() {
 	if (matches(COND))   { return k(12, parseList(CLOSE_B, true)); }
 	if (matches(AMEND))  { return k(13, parseList(CLOSE_B)); }
 	if (matches(DMEND))  { return k(14, parseList(CLOSE_B)); }
+	if (matches(QUERY))  { return k(15, parseList(CLOSE_B)); }
 	if (at(VERB)) {
 		var r = k(8, expect(VERB));
 		if (matches(COLON)) { r.v += ":"; r.forcemonad = true; }
@@ -840,6 +851,7 @@ function format(k, indent) {
 	if (k.t == 12) { return "$["+format(k.v)+"]"; }
 	if (k.t == 13) { return "@["+format(k.v)+"]"; }
 	if (k.t == 14) { return ".["+format(k.v)+"]"; }
+	if (k.t == 15) { return "?["+format(k.v)+"]"; }
 }
 
 // export the public interface:
