@@ -584,6 +584,7 @@ function query(t, c, a, b, env) {
 ////////////////////////////////////
 
 var NUMBER  = /^(-?\d*\.?\d+)/;
+var BOOL    = /^[01]+b/;
 var NAME    = /^([A-Za-z]+)/;
 var SYMBOL  = /^(`[A-Za-z]*)/;
 var STRING  = /^"((\\n)|(\\t)|(\\")|(\\\\)|[^"])*"/;
@@ -711,6 +712,11 @@ function parseList(terminal, cull) {
 function parseNoun() {
 	if (matches(COLON)) { return k(10, parseEx(parseNoun())); }
 	if (at(IOVERB)) { return k(8, expect(IOVERB)); }
+	if (at(BOOL)) {
+		var n = expect(BOOL); var r = [];
+		for(var z=0;z<n.length-1;z++) { r.push(k(0, parseInt(n[z]))); }
+		return applyindexright(k(3, r));
+	}
 	if (at(NUMBER)) {
 		var r = []; while(at(NUMBER)) { r.push(k(0, parseFloat(expect(NUMBER)))); }
 		return applyindexright(kl(r));

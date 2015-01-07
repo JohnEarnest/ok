@@ -347,6 +347,8 @@ test('?["test";1 3;"u"]'              , '"tut"'                               );
 test('?["hello world";0 5;"goodbye"]' , '"goodbye world"'                     );
 test("[a:2;b::a]"                     , "[a:2;b:2]"                           );
 test("[a:1 9 5;b::a]"                 , "[a:1 9 5;b:1 9 5]"                   );
+test("011b"                           , "0 1 1"                               );
+test("11010b"                         , "1 1 0 1 0"                           );
 
 // NOTES/TODO:
 
