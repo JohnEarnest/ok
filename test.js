@@ -341,12 +341,12 @@ test("c:8; {c:1; .`c}[]"              , "8"                                   );
 test("c:8;{c:2;c+:1}[]; c"            , "8"                                   );
 test("c:8;{c:2;c::1+(.`c)}[]; c"      , "9"                                   );
 test("c:8;{c:2;c+::1}[]; c"           , "9"                                   );
-
-test("?[1 2 3;1;4]", "1 4 2 3");
-test("?[1 2 3;1;4 5]", "1 4 5 2 3");
-test('?["test";1 3;"u"]', '"tut"');
-test('?["hello world";0 5;"goodbye"]', '"goodbye world"');
-
+test("?[1 2 3;1;4]"                   , "1 4 2 3"                             );
+test("?[1 2 3;1;4 5]"                 , "1 4 5 2 3"                           );
+test('?["test";1 3;"u"]'              , '"tut"'                               );
+test('?["hello world";0 5;"goodbye"]' , '"goodbye world"'                     );
+test("[a:2;b::a]"                     , "[a:2;b:2]"                           );
+test("[a:1 9 5;b::a]"                 , "[a:1 9 5;b:1 9 5]"                   );
 
 // NOTES/TODO:
 
@@ -355,9 +355,6 @@ test('?["hello world";0 5;"goodbye"]', '"goodbye world"');
 // - c is 'constraints'
 // - b is a dict of grouping specifications ('by')
 // - a is a dict of select specifications ('aggregate')
-
-// My implementation of :: is incorrect; it needs to be context sensitive:
-// - :: inside a map literal makes a reference to another key's value.
 
 // I need to unify the two definitions of nil floating around currently
 

@@ -727,7 +727,8 @@ function parseNoun() {
 	if (matches(OPEN_B)) {
 		var map = {}; do {
 			var key = expect(NAME); expect(COLON);
-			map[key] = parseEx(parseNoun());
+			if (matches(COLON)) { var alias = expect(NAME); map[key] = map[alias]; }
+			else { map[key] = parseEx(parseNoun()); }
 		} while(matches(SEMI)); expect(CLOSE_B);
 		return k(4, map);
 	}
