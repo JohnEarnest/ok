@@ -94,7 +94,7 @@ function keys     (x) { d(x);       return k(3, Object.keys(x.v).map(asSymbol));
 function zero     (x) { p(x);       return kmap(iota(x), function(x) { return k(0,0); }); }
 function reverse  (x) { l(x);       return k(3,x.v.slice(0).reverse()); }
 function desc     (x) { l(x);       return reverse(asc(x)); }
-function not      (x) { n(x);       return k(0, x == 0 ?1:0); }
+function not      (x) { n(x);       return k(0, x.v == 0 ?1:0); }
 function enlist   (x) {             return k(3, [x]); }
 function isnull   (x) {             return max(match(x, NIL),match(x,k(11))); }
 function count    (x) {             return k(0, x.t == 3 ? x.v.length : 1); }
@@ -114,7 +114,7 @@ function iota(x) {
 
 function write(x, y) {
 	// todo: use x to select a file descriptor
-	console.log(s(y)?ktos(y):format(y)); return y;
+	process.stdout.write(s(y)?ktos(y):format(y)); return y;
 }
 function read(x) {
 	// todo: use x to select a file descriptor
@@ -381,7 +381,7 @@ var verbs = {
 	"<" : [less,       ad(less),   ad(less),   ad(less),   null,       asc       ],
 	">" : [more,       ad(more),   ad(more),   ad(more),   null,       desc      ],
 	"=" : [equal,      ad(equal),  ad(equal),  ad(equal),  null,       group     ],
-	"~" : [match,      match,      match,      match,      null,       am(not)   ],
+	"~" : [match,      match,      match,      match,      not,        am(not)   ],
 	"," : [cat,        cat,        cat,        cat,        enlist,     enlist    ],
 	"^" : [null,       except,     null,       exceptl,    isnull,     am(isnull)],
 	"#" : [take,       rsh,        takel,      rshl,       count,      count     ],
@@ -617,8 +617,8 @@ desc[CLOSE_B]="']'"   ;desc[CLOSE_P]="')'"    ;desc[CLOSE_C]="}";
 var text = "";
 var funcdepth = 0;
 function begin(str) {
-	str = str.replace(/\s\/[^\n]*/, "");                          // strip comments
-	str = str.replace(/([A-Za-z0-9\]\)])-(\d|(\.\d))/, "$1- $2"); // minus ambiguity
+	str = str.replace(/\s\/[^\n]*/g, "");                          // strip comments
+	str = str.replace(/([A-Za-z0-9\]\)])-(\d|(\.\d))/g, "$1- $2"); // minus ambiguity
 	text = str.trim(); funcdepth = 0;
 }
 function done()         { return text.length < 1; }
@@ -641,7 +641,7 @@ function expect(regex) {
 function findNames(node, names) {
 	if (node instanceof Array) { for(var z=0;z<node.length;z++) { findNames(node[z], names); } }
 	if (node.t == 7)           { names[node.v] = 0; }
-	if (node.t == 12)          { findNames(node.v, names); }
+	if (node.t != 5)           { if (node.v instanceof Array) { findNames(node.v, names); } }
 	if (node.l)                { findNames(node.l, names); }
 	if (node.r)                { findNames(node.r, names); }
 	if (node.verb)             { findNames(node.verb, names); }
@@ -812,7 +812,7 @@ function parseEx(node) {
 	return { t:9, v:node.r.v, l:node.l, verb:node.r.verb, r:node.r.r };
 }
 
-function parse(str) { begin(str); return parseList(null, true); }
+function parse(str) { begin(str); return parseList(null, false); }
 
 ////////////////////////////////////
 //
