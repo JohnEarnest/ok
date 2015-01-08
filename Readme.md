@@ -30,7 +30,14 @@ You can also try out oK from the included REPL. Note that at the time of writing
 	  "t"=a
 	0 0 0 0 0 1 0 0 1
 
-This REPL is very simplistic compared to the CLI provided in a complete K interpreter and lacks interactive debugging facilities. When you're done, type `\\` to exit.
+This REPL is very simplistic compared to the CLI provided in a complete K interpreter and lacks interactive debugging facilities. When you're done, type `\\` to exit. If you supply a filename as an argument to the REPL, it will instead execute that file:
+
+	je@indigo$ node repl.js examples/hangman.k
+	_____ > p
+	_pp__ > e
+	_pp_e > a
+	app_e > l
+	apple
 
 How Does It Work?
 -----------------
