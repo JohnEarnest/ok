@@ -2,7 +2,7 @@
 / Simple run-length encoder and decoder
 
 rle: {r:(&~=':0,x)_x;+(*:'r;#:'r)};
-rld: {,/{x[1]#x[0]}'x};
+rld: {,/{y#x}.'x};
 
 / Examples:
 rle "AAABBCCDAABB"
