@@ -285,9 +285,6 @@ test("(1_)'1_(0 0 0;0 1 2;0 3 4)"     , "(1 2\n 3 4)"                         );
 test("5,/:1 2 3"                      , "(5 1\n 5 2\n 5 3)"                   );
 test("(!3)+/:!3"                      , "(0 1 2\n 1 2 3\n 2 3 4)"             );
 test("(!3),/:!3"                      , "(0 1 2 0\n 0 1 2 1\n 0 1 2 2)"       );
-test("{1 2,\\:/:3 4}"                 , "{1 2 ,\\:/:3 4}"                     );
-test("1 2,\\:/:3 4"                   , "((1 3\n  2 3)\n (1 4\n  2 4))"       );
-test("1 2,/:\\:3 4"                   , "((1 3\n  1 4)\n (2 3\n  2 4))"       );
 test("a:,\\;a 1 2 3"                  , "(1\n 1 2\n 1 2 3)"                   );
 test("a:+/;a 1 2 3"                   , "6"                                   );
 test("a:!:;a 5"                       , "0 1 2 3 4"                           );
@@ -352,8 +349,25 @@ test("11010b"                         , "1 1 0 1 0"                           );
 test("~1"                             , "0"                                   );
 test("~1 0 5"                         , "0 1 0"                               );
 test("{~'(c.,x;y)}"                   , "{[x;y]~'(c.,x;y)}"                   );
+test("-1,'1 2 3"                      , "(-1 1\n -1 2\n -1 3)"                );
+test("-1 0 1,'1 2 3"                  , "(-1 1\n 0 2\n 1 3)"                  );
+test("{1 2,\\:/:3 4}"                 , "{1 2 ,\\:/:3 4}"                     );
+test("1 2,\\:/:3 4"                   , "((1 3\n  2 3)\n (1 4\n  2 4))"       );
+test("1 2,/:\\:3 4"                   , "((1 3\n  1 4)\n (2 3\n  2 4))"       );
+test("-1 1!'\\:(1 2 3;4 5 6)"         , "((3 1 2\n  6 4 5)\n (2 3 1\n  5 6 4))");
+test("l:(9 8 9 7);g:=l;l[g]:!#g;l"    , "0 1 0 2"                             );
 
 // NOTES/TODO:
+
+// my heuristic for parsing the 'fixedwhile' form is flawed, because it
+// doesn't take parentheses into account.
+// instance of the pattern:   a b/c
+// false positive:            a(b/c)
+
+// over and scan can optionally take a left arg to begin the fold with:
+//test("5+/1 2 3", "11");
+
+// adverbs should return a sensible result for empty lists(?) and single elements(!)
 
 // ?[t;c;b;a] query is the K4/Q "select"
 // - t is a 'table'

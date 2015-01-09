@@ -268,6 +268,11 @@ function each(monad, x, env) {
 	return kmap(x, function(x) { return applym(monad, x, env); });
 }
 
+function eachd(dyad, left, right, env) {
+	if (left.t!=3) { return eachright(dyad, left, right); }
+	return kzip(left, right, function(x, y) { return applyd(dyad, x, y, env); });
+}
+
 function eachright(dyad, left, list, env) {
 	return kmap(list, function(x) { return applyd(dyad, left, x, env); });
 }
@@ -328,29 +333,29 @@ function scanwhile(monad, x, y, env) {
 ////////////////////////////////////
 
 function am(monad) { // create an atomic monad
-	return function recur(value) {
-		if (value.t != 3) { return monad(value); }
-		return kmap(value, function(x) { return recur(x); });
+	return function recur(value, env) {
+		if (value.t != 3) { return monad(value, env); }
+		return kmap(value, function(x) { return recur(x, env); });
 	};
 }
 function ad(dyad) { // create an atomic dyad
-	return function recur(left, right) {
-		if (left.t != 3 && right.t != 3) { return dyad(left, right); }
-		if (left.t  != 3) { return kmap(right, function(x) { return recur(left, x ); }); }
-		if (right.t != 3) { return kmap(left,  function(x) { return recur(x, right); }); }
-		return kzip(left, right, function(x,y) { return recur(x, y); });
+	return function recur(left, right, env) {
+		if (left.t != 3 && right.t != 3) { return dyad(left, right, env); }
+		if (left.t  != 3) { return kmap(right, function(x) { return recur(left, x, env); }); }
+		if (right.t != 3) { return kmap(left,  function(x) { return recur(x, right, env); }); }
+		return kzip(left, right, function(x,y) { return recur(x, y, env); });
 	};
 }
 function al(dyad) { // create a left atomic dyad
-	return function recur(left, right) {
-		if (left.t != 3) { return dyad(left, right); }
-		return kmap(left, function(x) { return recur(x, right); });
+	return function recur(left, right, env) {
+		if (left.t != 3) { return dyad(left, right, env); }
+		return kmap(left, function(x) { return recur(x, right, env); });
 	};
 }
 function ar(dyad) { // create a right atomic dyad
-	return function recur(left, right) {
-		if (right.t != 3) { return dyad(left, right); }
-		return kmap(right, function(x) { return recur(left, x); });
+	return function recur(left, right, env) {
+		if (right.t != 3) { return dyad(left, right, env); }
+		return kmap(right, function(x) { return recur(left, x, env); });
 	};
 }
 
@@ -411,7 +416,7 @@ function applyverb(node, left, right, env) {
 var adverbs = {
 	//      monad-m     monad-d     dyad
 	"':"  : [eachprior,  null ,      null      ],
-	"'"   : [each,       each ,      null      ],
+	"'"   : [each,       each ,      eachd     ],
 	"/:"  : [eachright,  null ,      eachright ],
 	"\\:" : [eachleft,   null ,      eachleft  ],
 	"/"   : [over,       fixed,      fixedwhile],
@@ -420,7 +425,7 @@ var adverbs = {
 
 function applyadverb(node, verb, left, right, env) {
 	var r = adverbs[node.v][0];
-	if (node.l) { r = adverbs[node.v][2]; }
+	if (left) { r = adverbs[node.v][2]; }
 	else if (verb.t == 9) { r = adverbs[node.v][1]; }
 	else if (verb.t == 5 && verb.args.length == 1) { r = adverbs[node.v][1]; }
 	if (r == null) { throw new Error("invalid arguments to "+node.v); }
@@ -462,7 +467,7 @@ function atd(x, y, env) {
 	} return x.v[y.v.slice(1)];
 }
 
-function atl(x, y) {
+function atl(x, y, env) {
 	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
 	l(x); if (y.t != 0 || y.v < 0 || y.v >= x.v.length || y.v%1 != 0) {
 		throw new Error("index error: "+format(y));
@@ -478,7 +483,7 @@ function atdepth(x, y, i, env) {
 
 function call(x, y, env) {
 	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
-	if (y.t == 0) { return atd(x, y); }
+	if (y.t == 0) { return atd(x, y, env); }
 	if (y.t == 3 && y.v.length == 0) { return x; }
 	if (x.t == 3 && y.t == 3) { return atdepth(x, y, 0, env); }
 	if (x.t != 5) { throw new Error("function or list expected."); }
@@ -551,23 +556,26 @@ function mend(node, env, monadic, dyadic) {
 }
 
 function amendm(d, i, y, monad, env) {
-	if (i.t != 3) { d.v[i.v] = applym(monad, atl(d, i), env); return; }
+	if (i.t != 3) { d.v[i.v] = applym(monad, atl(d, i, env), env); return; }
 	for(var z=0;z<i.v.length;z++) { amendm(d, i.v[z], y, monad, env); }
 }
 
 function amendd(d, i, y, dyad, env) {
 	if      (i.t==3&y.t==3) { for(var z=0;z<i.v.length;z++) { amendd(d,i.v[z],y.v[z],dyad,env); } }
 	else if (i.t==3&y.t!=3) { for(var z=0;z<i.v.length;z++) { amendd(d,i.v[z],y     ,dyad,env); } }
-	else { p(i); d.v[i.v] = applyd(dyad, atl(d, i), y, env) }
+	else { p(i); d.v[i.v] = applyd(dyad, atl(d, i, env), y, env) }
 }
 
 function dmend(d, i, y, f, env) {
 	if (i.t != 3) { (y?amendd:amendm)(d, i, y, f, env); return; }
 	if (i.v.length == 1) { dmend(d, i.v[0], y, f, env); return; }
 	var rest = drop(k(0,1),i);
-	if (i.v[0].t == 3) { kmap(i.v[0],function(x) { dmend(atl(d,x), rest, y, f, env); }); }
-	else if (isnull(i.v[0]).v) { kmap(d,function(x,i) { dmend(atl(d,k(0,i)), rest, y, f, env); }); }
-	else { dmend(atl(d, first(i)), rest, y, f, env); }
+	if (i.v[0].t == 3) {
+		if (y && y.t == 3) { kzip(i, y, function(a, b) { amendd(d, a, b, f, env); }); return; }
+		kmap(i.v[0],function(x) { dmend(atl(d,x,env), rest, y, f, env); });
+	}
+	else if (isnull(i.v[0]).v) { kmap(d,function(x,i) { dmend(atl(d,k(0,i),env),rest,y,f,env); }); }
+	else { dmend(atl(d, first(i), env), rest, y, f, env); }
 }
 
 function query(t, c, a, b, env) {
