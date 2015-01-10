@@ -45,12 +45,13 @@ function ktos(x, esc) {
 	var r = x.v.map(function(k) { return String.fromCharCode(k.v); }).join("");
 	if (esc) { for(var z=0;z<EC.length;z++) { r=r.replace(EC[z][0],EC[z][1]); }} return r;
 }
+function len(x) { l(x); return x.v.length; }
 function kmap(x, f) {
-	l(x); var r=[]; for(var z=0;z<x.v.length;z++) { r.push(f(x.v[z],z)); } return k(3,r);
+	var r=[]; for(var z=0;z<len(x);z++) { r.push(f(x.v[z],z)); } return k(3,r);
 }
 function kzip(x, y, f) {
-	l(x); l(y); if (x.v.length != y.v.length) { throw new Error("length error."); }
-	var r=[]; for(var z=0;z<x.v.length;z++) { r.push(f(x.v[z],y.v[z])); } return k(3,r);
+	if (len(x) != len(y)) { throw new Error("length error."); }
+	var r=[]; for(var z=0;z<len(x);z++) { r.push(f(x.v[z],y.v[z])); } return k(3,r);
 }
 function checktype(n, t) {
 	if (n.t == t) { return; }
@@ -62,7 +63,7 @@ function d(x) { return checktype(x, 4); }
 function a(x) { if (x.t > 2) { throw new Error("domain error."); }}
 function p(x) { n(x); if (x.v < 0 || x.v%1 != 0)  { throw new Error("positive int expected."); }}
 function m(x) {
-	l(x); if (!x.v.every(function(y) { return y.t == 3 && y.v.length == x.v[0].v.length; })) { 
+	l(x); if (!x.v.every(function(y) { return y.t == 3 && len(y) == len(x.v[0]); })) { 
 		throw new Error("matrix expected.");
 	}
 }
@@ -97,7 +98,7 @@ function desc     (x) { l(x);       return reverse(asc(x)); }
 function not      (x) { n(x);       return k(0, x.v == 0 ?1:0); }
 function enlist   (x) {             return k(3, [x]); }
 function isnull   (x) {             return max(match(x, NIL),match(x,k(11))); }
-function count    (x) {             return k(0, x.t == 3 ? x.v.length : 1); }
+function count    (x) {             return k(0, x.t == 3 ? len(x) : 1); }
 function floor    (x) { n(x);       return k(0, Math.floor(x.v)); }
 function atom     (x) {             return k(0, x.t != 3 ?1:0); }
 function kfmt     (x) { var r=stok(format(x)); if (r.t!=3) { r=k(3,[r]); } return r; }
@@ -132,12 +133,12 @@ function read(x) {
 function dfmt(x, y) {
 	var r = kfmt(y); var c = Math.abs(x.v);
 	if (x.v < 0) { // pad right
-		while(r.v.length > c) { r.v.pop(); }
-		while(r.v.length < c) { r.v.push(k(1, " ".charCodeAt(0))); }
+		while(len(r) > c) { r.v.pop(); }
+		while(len(r) < c) { r.v.push(k(1, " ".charCodeAt(0))); }
 	}
 	else { // pad left
-		while(r.v.length > c) { r.v.shift(); }
-		while(r.v.length < c) { r.v.unshift(k(1, " ".charCodeAt(0))); }
+		while(len(r) > c) { r.v.shift(); }
+		while(len(r) < c) { r.v.unshift(k(1, " ".charCodeAt(0))); }
 	} return r;
 }
 
@@ -148,45 +149,45 @@ function exceptl(x, y) {
 }
 
 function drop(x, y) {
-	n(x); if (y.t != 3 || y.v.length < 1) { return y; }
+	n(x); if (y.t != 3 || len(y) < 1) { return y; }
 	return k(3, x.v<0?y.v.slice(0,x.v):y.v.slice(x.v));
 }
 
 function takel(x, y) {
-	n(x); l(y); var r=[]; var s=x.v<0?kmod(x.v, y.v.length):0;
-	for(var z=0;z<Math.abs(x.v);z++) { r.push(y.v[kmod(z+s, y.v.length)]); } return k(3,r);
+	n(x); var r=[]; var s=x.v<0?kmod(x.v, len(y)):0;
+	for(var z=0;z<Math.abs(x.v);z++) { r.push(y.v[kmod(z+s, len(y))]); } return k(3,r);
 }
 
 function rshl(x, y) {
 	l(x); l(y); count = 0;
 	function rshr(x, y, index) {
 		var r=[]; for(var z=0;z<x.v[index].v;z++) {
-			if (index == x.v.length-1) { r.push(y.v[kmod(count++, y.v.length)]); }
+			if (index == len(x)-1) { r.push(y.v[kmod(count++, len(y))]); }
 			else { r.push(rshr(x, y, index+1)); }
 		} return k(3,r);
 	} return rshr(x, y, 0);
 }
 
 function rotate(x, y) {
-	n(x); return kmap(y, function(a,i){ return y.v[kmod(x.v+i,y.v.length)]; });
+	n(x); return kmap(y, function(a,i){ return y.v[kmod(x.v+i,len(y))]; });
 }
 
 function match(x, y) {
 	if (x.t != y.t) { return k(0,0); }
 	if (x.t != 3) { return equal(x, y); }
-	if (x.v.length != y.v.length) { return k(0,0); }
+	if (len(x) != len(y)) { return k(0,0); }
 	return k(0, x.v.every(function(x,i) { return match(x, y.v[i]).v; })?1:0);
 }
 
 function find(x, y) {
-	l(x); for(var z=0;z<x.v.length;z++) { if(match(x.v[z],y).v) { return k(0,z); } }
-	return k(0,x.v.length);
+	for(var z=0;z<len(x);z++) { if(match(x.v[z],y).v) { return k(0,z); } }
+	return k(0,len(x));
 }
 
 function cut(x, y) {
-	l(x); l(y); var r=[]; for(var z=0;z<x.v.length;z++) {
+	l(y); var r=[]; for(var z=0;z<len(x);z++) {
 		r.push(k(3, [])); p(x.v[z]);
-		var max = x.v.length-1 == z ? y.v.length : x.v[z+1].v;
+		var max = len(x)-1 == z ? len(y) : x.v[z+1].v;
 		for(var i=x.v[z].v;i<max;i++) { r[z].v.push(y.v[i]); }
 	} return k(3,r);
 }
@@ -196,8 +197,8 @@ function rnd(x, y) {
 }
 
 function flip(x) {
-	m(x); var r=[]; var d=x.v[0].v.length; for(var z=0;z<d;z++) {
-		r.push(k(3,[])); for(var t=0;t<x.v.length;t++) { r[z].v.push(x.v[t].v[z]); }
+	m(x); var r=[]; var d=len(x.v[0]); for(var z=0;z<d;z++) {
+		r.push(k(3,[])); for(var t=0;t<len(x);t++) { r[z].v.push(x.v[t].v[z]); }
 	} return k(3,r);
 }
 
@@ -210,26 +211,26 @@ function asc(x) {
 }
 
 function where(x) {
-	l(x); var r=[]; for(var z=0;z<x.v.length;z++) {
+	var r=[]; for(var z=0;z<len(x);z++) {
 		p(x.v[z]); for(var t=0;t<x.v[z].v;t++) { r.push(k(0, z)); }
 	} return k(3,r);
 }
 
 function group(x) {
-	l(x); var r=[]; var y={}; for(var z=0;z<x.v.length;z++) {
+	var r=[]; var y={}; for(var z=0;z<len(x);z++) {
 		var i = x.v[z].v; if (!(i in y)) { y[i] = r.length; r.push(k(3, [])); }
 		r[y[i]].v.push(k(0, z));
 	} return k(3,r);
 }
 
 function unique(x) {
-	l(x); var r=[]; for(var z=0;z<x.v.length;z++) {
+	var r=[]; for(var z=0;z<len(x);z++) {
 		if (!r.some(function(e) { return match(x.v[z], e).v })) { r.push(x.v[z]); }
 	} return k(3,r);
 }
 
 function bin(x, y) {
-	l(x); var a=0; var b=x.v.length; if (b<1 || less(y, x.v[0]).v) { return k(0,-1); }
+	var a=0; var b=len(x); if (b<1 || less(y, x.v[0]).v) { return k(0,-1); }
 	while(b - a > 1) { var i=Math.floor((b+a)/2); if (more(x.v[i], y).v) { b=i; } else { a=i; }}
 	return k(0, a);
 }
@@ -239,15 +240,15 @@ function join(x, y) {
 }
 
 function split(x, y) {
-	l(y); var r=[k(3,[])]; for(var z=0;z<y.v.length;z++) {
+	var r=[k(3,[])]; for(var z=0;z<len(y);z++) {
 		if (match(x, y.v[z]).v) { r.push(k(3,[])); }
 		else { r[r.length-1].v.push(y.v[z]); }
 	} return k(3,r);
 }
 
 function makedict(x) {
-	m(x); if (x.v.length != 2) { throw new Error("valence error."); }
-	var r={}; for(var z=0;z<x.v[0].v.length;z++) {
+	m(x); if (len(x) != 2) { throw new Error("valence error."); }
+	var r={}; for(var z=0;z<len(x.v[0]);z++) {
 		var key = x.v[0].v[z];
 		if      (key.t == 1) { key = String.fromCharCode(key.v); }
 		else if (key.t == 2) { key = key.v.slice(1); }
@@ -282,13 +283,12 @@ function eachleft(dyad, list, right, env) {
 }
 
 function eachprior(dyad, x, env) {
-	l(x); var r=[];
-	for(var z=1;z<x.v.length;z++) { r.push(applyd(dyad, x.v[z], x.v[z-1], env)); }
+	var r=[]; for(var z=1;z<len(x);z++) { r.push(applyd(dyad, x.v[z], x.v[z-1], env)); }
 	return k(3,r);
 }
 
 function over(dyad, x, env) {
-	l(x); if (x.v.length < 1) { return x; }
+	if (len(x) < 1) { return x; }
 	if (dyad.t != 5 && dyad.t != 8 && dyad.t != 9) { return join(dyad, x); }
 	return x.v.reduce(function(x, y) { return applyd(dyad, x, y, env); });
 }
@@ -306,10 +306,10 @@ function fixedwhile(monad, x, y, env) {
 }
 
 function scan(dyad, x, env) {
-	l(x); if (x.v.length < 1) { return x; }
+	if (len(x) < 1) { return x; }
 	if (dyad.t != 5 && dyad.t != 8 && dyad.t != 9) { return split(dyad, x); }
 	var c=x.v[0]; var r=[c];
-	for(var z=1;z<x.v.length;z++) { c = applyd(dyad, c, x.v[z], env); r.push(c); }
+	for(var z=1;z<len(x);z++) { c = applyd(dyad, c, x.v[z], env); r.push(c); }
 	return k(3, r);
 }
 
@@ -469,13 +469,13 @@ function atd(x, y, env) {
 
 function atl(x, y, env) {
 	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
-	l(x); if (y.t != 0 || y.v < 0 || y.v >= x.v.length || y.v%1 != 0) {
+	if (y.t != 0 || y.v < 0 || y.v >= len(x) || y.v%1 != 0) {
 		throw new Error("index error: "+format(y));
 	} return x.v[y.v];
 }
 
 function atdepth(x, y, i, env) {
-	if (i >= y.v.length) { return x; }
+	if (i >= len(y)) { return x; }
 	if (isnull(y.v[i]).v) { return kmap(x, function(x) { return atdepth(x, y, i+1, env); }); }
 	if (y.v[i].t != 3) { return atdepth(ar(atl)(x, y.v[i], env), y, i+1, env); }
 	return kmap(y.v[i], function(t) { return atdepth(ar(atl)(x, t, env), y, i+1, env); });
@@ -484,20 +484,20 @@ function atdepth(x, y, i, env) {
 function call(x, y, env) {
 	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
 	if (y.t == 0) { return atd(x, y, env); }
-	if (y.t == 3 && y.v.length == 0) { return x; }
+	if (y.t == 3 && len(y) == 0) { return x; }
 	if (x.t == 3 && y.t == 3) { return atdepth(x, y, 0, env); }
 	if (x.t != 5) { throw new Error("function or list expected."); }
 	if (y.t != 3) { y = k(3, [y]); }
 	var environment = new Environment(x.env); var curry = x.curry?x.curry.concat([]):[];
-	if (x.args.length != 0 || y.v.length != 1 || !isnull(y.v[0]).v) {
+	if (x.args.length != 0 || len(y) != 1 || !isnull(y.v[0]).v) {
 		var all=true; var i=0; for(var z=0;z<x.args.length;z++) {
 			if (curry[z] && !isnull(curry[z]).v) { continue; }
-			if (i >= y.v.length) { all=false; break; }
+			if (i >= len(y)) { all=false; break; }
 			if (isnull(y.v[i]).v) { all=false; }
 			curry[z]=y.v[i++];
 		}
 		if (!all) { return { t:5, v:x.v, args:x.args, env:x.env, curry:curry }; }
-		if (i < y.v.length) { throw new Error("valence error."); }
+		if (i < len(y)) { throw new Error("valence error."); }
 		for(var z=0;z<x.args.length;z++) { environment.put(x.args[z], false, curry[z]); }
 	}
 	var r = run(x.v, environment);
@@ -557,18 +557,18 @@ function mend(node, env, monadic, dyadic) {
 
 function amendm(d, i, y, monad, env) {
 	if (i.t != 3) { d.v[i.v] = applym(monad, atl(d, i, env), env); return; }
-	for(var z=0;z<i.v.length;z++) { amendm(d, i.v[z], y, monad, env); }
+	for(var z=0;z<len(i);z++) { amendm(d, i.v[z], y, monad, env); }
 }
 
 function amendd(d, i, y, dyad, env) {
-	if      (i.t==3&y.t==3) { for(var z=0;z<i.v.length;z++) { amendd(d,i.v[z],y.v[z],dyad,env); } }
-	else if (i.t==3&y.t!=3) { for(var z=0;z<i.v.length;z++) { amendd(d,i.v[z],y     ,dyad,env); } }
+	if      (i.t==3&y.t==3) { for(var z=0;z<len(i);z++) { amendd(d,i.v[z],y.v[z],dyad,env); } }
+	else if (i.t==3&y.t!=3) { for(var z=0;z<len(i);z++) { amendd(d,i.v[z],y     ,dyad,env); } }
 	else { p(i); d.v[i.v] = applyd(dyad, atl(d, i, env), y, env) }
 }
 
 function dmend(d, i, y, f, env) {
 	if (i.t != 3) { (y?amendd:amendm)(d, i, y, f, env); return; }
-	if (i.v.length == 1) { dmend(d, i.v[0], y, f, env); return; }
+	if (len(i) == 1) { dmend(d, i.v[0], y, f, env); return; }
 	var rest = drop(k(0,1),i);
 	if (i.v[0].t == 3) {
 		if (y && y.t == 3) { kzip(i, y, function(a, b) { amendd(d, a, b, f, env); }); return; }
@@ -582,7 +582,7 @@ function query(t, c, a, b, env) {
 	l(t); if (a) { throw new Error("not implemented!"); }
 	if (c.t == 3) { var x=c.v[0]; var y=c.v[1]; p(x); p(y); t.v.splice(x.v, y.v-x.v); c = x; }
 	if (b.t != 3) { b = k(3,[b]); }
-	p(c); var x=c.v; for(var z=0;z<b.v.length;z++) { t.v.splice(x++, 0, b.v[z]); }
+	p(c); var x=c.v; for(var z=0;z<len(b);z++) { t.v.splice(x++, 0, b.v[z]); }
 }
 
 ////////////////////////////////////
@@ -836,10 +836,10 @@ function format(k, indent) {
 	if (k.t == 1) { return '"'+String.fromCharCode(k.v)+'"'; }
 	if (k.t == 2) { return k.v; }
 	if (k.t == 3) {
-		if (k.v.length <  1) { return "()"; }
-		if (k.v.length == 1) { return ","+format(k.v[0]); }
+		if (len(k) <  1) { return "()"; }
+		if (len(k) == 1) { return ","+format(k.v[0]); }
 		var same = true; var sublist = false; indent = indent || "";
-		for(var z=0;z<k.v.length;z++) { same &= k.v[z].t == k.v[0].t; sublist |= k.v[z].t == 3; }
+		for(var z=0;z<len(k);z++) { same &= k.v[z].t == k.v[0].t; sublist |= k.v[z].t == 3; }
 		if (sublist) { return "("+k.v.map(indented).join("\n "+indent)+")"; }
 		if (same & k.v[0].t == 1) { return '"'+ktos(k, true)+'"'; }
 		if (same & k.v[0].t <  3) { return k.v.map(format).join(" "); }
