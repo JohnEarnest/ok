@@ -265,7 +265,6 @@ function makedict(x) {
 ////////////////////////////////////
 
 function each(monad, x, env) {
-	if (monad.t != 5 && monad.t != 8 && monad.t != 9) { return ar(bin)(monad, x); }
 	return kmap(x, function(x) { return applym(monad, x, env); });
 }
 
@@ -289,7 +288,6 @@ function eachprior(dyad, x, env) {
 
 function over(dyad, x, env) {
 	if (len(x) < 1) { return x; }
-	if (dyad.t != 5 && dyad.t != 8 && dyad.t != 9) { return join(dyad, x); }
 	return x.v.reduce(function(x, y) { return applyd(dyad, x, y, env); });
 }
 
@@ -307,7 +305,6 @@ function fixedwhile(monad, x, y, env) {
 
 function scan(dyad, x, env) {
 	if (len(x) < 1) { return x; }
-	if (dyad.t != 5 && dyad.t != 8 && dyad.t != 9) { return split(dyad, x); }
 	var c=x.v[0]; var r=[c];
 	for(var z=1;z<len(x);z++) { c = applyd(dyad, c, x.v[z], env); r.push(c); }
 	return k(3, r);
@@ -413,22 +410,35 @@ function applyverb(node, left, right, env) {
 	return left ? r(left, right, env) : r(right, env);
 }
 
-var adverbs = {
-	//      monad-m     monad-d     dyad
-	"':"  : [eachprior,  null ,      null      ],
-	"'"   : [each,       each ,      eachd     ],
-	"/:"  : [eachright,  null ,      eachright ],
-	"\\:" : [eachleft,   null ,      eachleft  ],
-	"/"   : [over,       fixed,      fixedwhile],
-	"\\"  : [scan,       scanfixed,  scanwhile ],
+function valence(node) {
+	if (node.t == 5)     { return node.args.length; }
+	if (node.t == 9)     { return 1; }
+	if (node.t != 8)     { return 0; }
+	if (node.forcemonad) { return 1; }
+	if (node.sticky)     { return 1; }
+	return 2;
 }
 
+var adverbs = {
+	//       mv          dv          l-mv         l-dv        a-a
+	"':"  : [null,       eachprior,  null,        null,       null   ],
+	"'"   : [each,       null,       null,        eachd,      ar(bin)],
+	"/:"  : [null,       null,       eachright,   eachright,  null   ],
+	"\\:" : [null,       null,       eachleft,    eachleft,   null   ],
+	"/"   : [fixed,      over,       fixedwhile,  null,       join   ],
+	"\\"  : [scanfixed,  scan,       scanwhile,   null,       split  ],
+};
+
 function applyadverb(node, verb, left, right, env) {
-	var r = adverbs[node.v][0];
-	if (left) { r = adverbs[node.v][2]; }
-	else if (verb.t == 9) { r = adverbs[node.v][1]; }
-	else if (verb.t == 5 && verb.args.length == 1) { r = adverbs[node.v][1]; }
-	if (r == null) { throw new Error("invalid arguments to "+node.v); }
+	var r = null; var v = valence(verb);
+	if (v == 1 && !left) { r = adverbs[node.v][0]; }
+	if (v == 2 && !left) { r = adverbs[node.v][1]; }
+	if (v == 1 &&  left) { r = adverbs[node.v][2]; }
+	if (v == 2 &&  left) { r = adverbs[node.v][3]; }
+	if (v == 0         ) { r = adverbs[node.v][4]; }
+	if (!r) { throw new Error("invalid arguments to "+node.v+" ["+
+			(left?format(left)+" ":"")+" "+format(verb)+" (valence "+v+"), "+format(right)+"]");
+	}
 	return left? r(verb, left, right, env) : r(verb, right, env);
 }
 

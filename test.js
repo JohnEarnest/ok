@@ -377,9 +377,10 @@ test("l:(9 8 9 7);g:=l;l[g]:!#g;l"    , "0 1 0 2"                             );
 
 // I need to unify the two definitions of nil floating around currently
 
-// I think that I need to support the boolean type. Boolean lists may
-// be how K5 provides bitwise operations. Are all operators overloaded
-// to deal with boolean lists? How do I marshal numbers <-> boolean lists?
+// / and \ have an additional overload for pack/unpack respectively.
+// (8#2)\69 gives 01000101b
+// (64 64 64\32767) gives 7 63 63
+// (64 64 64\32768) gives 8 0 0
 
 // subscripting verbs/ verb-func unification?
 //   This would simplify a great deal of dispatch logic and remove the need for
