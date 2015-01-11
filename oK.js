@@ -291,6 +291,11 @@ function over(dyad, x, env) {
 	return x.v.reduce(function(x, y) { return applyd(dyad, x, y, env); });
 }
 
+function overd(dyad, x, y, env) {
+	if (len(y) < 1) { return x; }
+	return y.v.reduce(function(x, y) { return applyd(dyad, x, y, env); }, x);
+}
+
 function fixed(monad, x, env) {
 	var r=x; var p=x;
 	do { p=r; r=applym(monad, r, env); } while(!match(p, r).v && !match(r, x).v);
@@ -308,6 +313,12 @@ function scan(dyad, x, env) {
 	var c=x.v[0]; var r=[c];
 	for(var z=1;z<len(x);z++) { c = applyd(dyad, c, x.v[z], env); r.push(c); }
 	return k(3, r);
+}
+
+function scand(dyad, x, y, env) {
+	if (len(y) < 1) { return x; }
+	var r=[x]; for(var z=0;z<len(y);z++) { x = applyd(dyad, x, y.v[z], env); r.push(x); }
+	return k(3,r);
 }
 
 function scanfixed(monad, x, env) {
@@ -425,8 +436,8 @@ var adverbs = {
 	"'"   : [each,       null,       null,        eachd,      ar(bin)],
 	"/:"  : [null,       null,       eachright,   eachright,  null   ],
 	"\\:" : [null,       null,       eachleft,    eachleft,   null   ],
-	"/"   : [fixed,      over,       fixedwhile,  null,       join   ],
-	"\\"  : [scanfixed,  scan,       scanwhile,   null,       split  ],
+	"/"   : [fixed,      over,       fixedwhile,  overd,      join   ],
+	"\\"  : [scanfixed,  scan,       scanwhile,   scand,      split  ],
 };
 
 function applyadverb(node, verb, left, right, env) {

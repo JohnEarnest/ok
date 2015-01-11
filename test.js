@@ -356,6 +356,12 @@ test("1 2,\\:/:3 4"                   , "((1 3\n  2 3)\n (1 4\n  2 4))"       );
 test("1 2,/:\\:3 4"                   , "((1 3\n  1 4)\n (2 3\n  2 4))"       );
 test("-1 1!'\\:(1 2 3;4 5 6)"         , "((3 1 2\n  6 4 5)\n (2 3 1\n  5 6 4))");
 test("l:(9 8 9 7);g:=l;l[g]:!#g;l"    , "0 1 0 2"                             );
+test("5+/1 2 3"                       , "11"                                  );
+test("5+\\1 2 3"                      , "5 6 8 11"                            );
+test("5+/,4"                          , "9"                                   );
+test("5+\\,4"                         , "5 9"                                 );
+test("5+/()"                          , "5"                                   );
+test("5+\\()"                         , "5"                                   );
 
 // NOTES/TODO:
 
@@ -363,9 +369,6 @@ test("l:(9 8 9 7);g:=l;l[g]:!#g;l"    , "0 1 0 2"                             );
 // doesn't take parentheses into account.
 // instance of the pattern:   a b/c
 // false positive:            a(b/c)
-
-// over and scan can optionally take a left arg to begin the fold with:
-//test("5+/1 2 3", "11");
 
 // adverbs should return a sensible result for empty lists(?) and single elements(!)
 
