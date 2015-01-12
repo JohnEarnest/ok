@@ -362,6 +362,12 @@ test("5+/,4"                          , "9"                                   );
 test("5+\\,4"                         , "5 9"                                 );
 test("5+/()"                          , "5"                                   );
 test("5+\\()"                         , "5"                                   );
+test("(8#2)\\69"                      , "1 0 0 0 1 0 1"                       );
+test("64 64 64\\32767"                , "7 63 63"                             );
+test("64 64 64\\32768"                , "8 0 0"                               );
+test("(8#2)/1 0 0 0 1 0 1"            , "69"                                  );
+test("64 64 64/7 63 63"               , "32767"                               );
+test("64 64 64/8 0 0"                 , "32768"                               );
 
 // NOTES/TODO:
 
@@ -379,11 +385,6 @@ test("5+\\()"                         , "5"                                   );
 // - a is a dict of select specifications ('aggregate')
 
 // I need to unify the two definitions of nil floating around currently
-
-// / and \ have an additional overload for pack/unpack respectively.
-// (8#2)\69 gives 01000101b
-// (64 64 64\32767) gives 7 63 63
-// (64 64 64\32768) gives 8 0 0
 
 // subscripting verbs/ verb-func unification?
 //   This would simplify a great deal of dispatch logic and remove the need for

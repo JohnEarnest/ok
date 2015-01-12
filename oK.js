@@ -258,6 +258,20 @@ function makedict(x) {
 	} return k(4, r);
 }
 
+function unpack(x, y) {
+	n(y); var t=k(0,y.v); var r=[];
+	var p=cat(reverse(scan(k(8, "*"), x)),k(0,1));
+	for(var z=0;z<len(p);z++) {
+		var q=floor(divide(t, p.v[z])); if (r.length!=0||q.v!=0) { r.push(q); }
+		t=floor(mod(t, p.v[z]));
+	} return k(3,r);
+}
+
+function pack(x, y) {
+	var p=takel(k(0,-len(y)), cat(reverse(scan(k(8, "*"), x)),k(0,1)));
+	return over(k(8, "+"), ad(times)(p, y));
+}
+
 ////////////////////////////////////
 //
 //   Primitive Adverbs
@@ -407,8 +421,8 @@ var verbs = {
 	"1:": [null,       null,       null,       null,       null,       null      ], // todo
 	"2:": [null,       null,       null,       null,       null,       null      ], // todo
 	"'" : [null,       bin,        null,       ar(bin),    null,       null      ],
-	"/" : [null,       null,       join,       null,       null,       null      ],
-	"\\": [null,       null,       split,      null,       null,       null      ],
+	"/" : [null,       null,       join,       pack,       null,       null      ],
+	"\\": [null,       unpack,     split,      null,       null,       null      ],
 };
 
 function applyverb(node, left, right, env) {
