@@ -406,6 +406,9 @@ var verbs = {
 	"0:": [write,      null,       write,      null,       read,       null      ],
 	"1:": [null,       null,       null,       null,       null,       null      ], // todo
 	"2:": [null,       null,       null,       null,       null,       null      ], // todo
+	"'" : [null,       bin,        null,       ar(bin),    null,       null      ],
+	"/" : [null,       null,       join,       null,       null,       null      ],
+	"\\": [null,       null,       split,      null,       null,       null      ],
 };
 
 function applyverb(node, left, right, env) {
@@ -431,22 +434,22 @@ function valence(node) {
 }
 
 var adverbs = {
-	//       mv          dv          l-mv         l-dv        a-a
-	"':"  : [null,       eachprior,  null,        null,       null   ],
-	"'"   : [each,       null,       null,        eachd,      ar(bin)],
-	"/:"  : [null,       null,       eachright,   eachright,  null   ],
-	"\\:" : [null,       null,       eachleft,    eachleft,   null   ],
-	"/"   : [fixed,      over,       fixedwhile,  overd,      join   ],
-	"\\"  : [scanfixed,  scan,       scanwhile,   scand,      split  ],
+	//       mv          dv          l-mv         l-dv
+	"':"  : [null,       eachprior,  null,        null     ],
+	"'"   : [each,       null,       null,        eachd    ],
+	"/:"  : [null,       null,       eachright,   eachright],
+	"\\:" : [null,       null,       eachleft,    eachleft ],
+	"/"   : [fixed,      over,       fixedwhile,  overd    ],
+	"\\"  : [scanfixed,  scan,       scanwhile,   scand    ],
 };
 
 function applyadverb(node, verb, left, right, env) {
 	var r = null; var v = valence(verb);
+	if (v == 0) { return applyverb(k(8,node.v), verb, right, env); }
 	if (v == 1 && !left) { r = adverbs[node.v][0]; }
 	if (v == 2 && !left) { r = adverbs[node.v][1]; }
 	if (v == 1 &&  left) { r = adverbs[node.v][2]; }
 	if (v == 2 &&  left) { r = adverbs[node.v][3]; }
-	if (v == 0         ) { r = adverbs[node.v][4]; }
 	if (!r) { throw new Error("invalid arguments to "+node.v+" ["+
 			(left?format(left)+" ":"")+" "+format(verb)+" (valence "+v+"), "+format(right)+"]");
 	}
