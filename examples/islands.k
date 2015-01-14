@@ -9,7 +9,7 @@ rb:  {(1_)'1_ x};                           / remove the border of zeroes
 adj: {(,x),(-1 1!'\:x),(-1 1)!\:x};         / adjacent cells
 mrg: {(~~x)*|/adj x};                       / merge neighboring ids
 rc:  {l:0,,/x; g:=l;l[g]:!#g;(#x;#*x)#1_l}; / renumber ids sequentially
-isl: {r:(mrg/ab col x);rc rb r};            / find islands
+isl: {rc rb(mrg/ab col x)};                 / find islands
 
 / Example:
 isl (1 0 0 0 1;1 1 1 0 0;0 0 0 0 1;0 0 0 1 1;1 0 1 1 1;0 0 1 0 1)

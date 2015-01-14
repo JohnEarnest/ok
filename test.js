@@ -33,7 +33,7 @@ function fail(input, errmsg) {
 }
 
 function show(input) {
-	console.log(JSON.stringify(ok.parse(input)));
+	console.log(ok.parse(input));
 }
 
 console.log("tests...");
@@ -160,8 +160,6 @@ test('{(1; "a"; 3.5; `xyz) 2}'        , '{(1;"a";3.5;`xyz)@2}'                );
 test('(1; "a"; 3.5; `xyz) 2'          , "3.5"                                 );
 test("{t:3;t+:2;t}"                   , "{t:3;t:t+2;t}"                       );
 test("t:3;t+:2;t"                     , "5"                                   );
-test("{x<5}{1+x}\\2"                  , "2 3 4 5"                             );
-test("{x<5}{1+x}/2"                   , "5"                                   );
 test("<1 2 2 1"                       , "0 3 1 2"                             );
 test('"dozen"[> "dozen"]'             , '"zoned"'                             );
 test('= "weekend"'                    , "(,0\n 1 2 4\n ,3\n ,5\n ,6)"         );
@@ -176,9 +174,6 @@ test("a:5;{a+x}[1]"                   , "6"                                   );
 test("a:5;{a:x}[3];a"                 , "5"                                   );
 test("a:5;b:{a:x;a}[3];a+b"           , "8"                                   );
 test("sum:+;sum\\1 2 3"               , "1 3 6"                               );
-test("{a b\\c}"                       , "{a b\\c}"                            );
-test("a:{x<5};b:{1+x};a b\\2"         , "2 3 4 5"                             );
-test("f:*:;r:{y!x};f(|r\\)\\24 40"    , "(24 40\n 16 24\n 8 16\n 0 8)"        );
 test("5!3"                            , "2"                                   );
 test("5!-3"                           , "-1"                                  );
 test("1.8 -2.7 ! 0.2"                 , "0 0.1"                               );
@@ -385,13 +380,16 @@ test("+\\5"                           , "5"                                   );
 test("+\\()"                          , "()"                                  );
 test("-:',5"                          , "-5"                                  );
 test("-:'()"                          , "()"                                  );
+test("{x<5}{1+x}\\2"                  , "2 3 4 5"                             );
+test("{x<5}{1+x}/2"                   , "5"                                   );
+test("a:{x<5};b:{1+x};a b\\2"         , "2 3 4 5"                             );
+test("f:*:;r:{y!x};f(|r\\)\\24 40"    , "(24 40\n 16 24\n 8 16\n 0 8)"        );
+test("{a b/c}"                        , "{a b/c}"                             );
+test("{a (b/c)}"                      , "{a@b/c}"                             );
+test("{a.b/c}"                        , "{a.b/c}"                             );
+test("{a.(b/c)}"                      , "{a.b/c}"                             );
 
 // NOTES/TODO:
-
-// my heuristic for parsing the 'fixedwhile' form is flawed, because it
-// doesn't take parentheses into account.
-// instance of the pattern:   a b/c
-// false positive:            a(b/c)
 
 // ?[t;c;b;a] query is the K4/Q "select"
 // - t is a 'table'

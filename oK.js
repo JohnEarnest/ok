@@ -730,8 +730,7 @@ function applycallright(node) {
 		var args = parseList(CLOSE_B);
 		if (args.length == 0) { args = [NIL]; }
 		node = asVerb(".", node, k(3, args));
-	}
-	if (atNoun()) { return asVerb("@", node, null); } return node;
+	} return node;
 }
 
 function applyindexright(node) {
@@ -848,17 +847,18 @@ function parseEx(node) {
 	if (node == null) { return null; }
 	if (at(ADVERB)) { return parseAdverb(null, node); }
 	if (node.t == 8 && !node.r) { node.r = parseEx(parseNoun()); }
-	if (atNoun()) { var x = parseEx(parseNoun()); x.l = node; node = x; }
+	if (atNoun()) {
+		var x = parseNoun();
+		if (at(ADVERB)) { return parseAdverb(node, x); }
+		if (node.t == 5 || node.t == 7) { return asVerb("@", node, parseEx(x)); }
+		x.l = node; x.r = parseEx(parseNoun()); node = x;
+	}
 	if (at(VERB)) {
 		var x = parseNoun();
 		if (at(ADVERB)) { return parseAdverb(node, x); }
 		x.l = node; x.r = parseEx(parseNoun()); node = x;
 	}
-	// nasty workaround/hack:
-	// refold the AST for the special case of an adverb with two function predecessors:
-	if (node.t != 8 || node.v != "@" || !node.l || !node.r ||
-	  (node.l.t != 5 && node.l.t != 7) || node.r.t != 9 || !node.r.verb) { return node; }
-	return { t:9, v:node.r.v, l:node.l, verb:node.r.verb, r:node.r.r };
+	return node;
 }
 
 function parse(str) { begin(str); return parseList(null, false); }
