@@ -47,6 +47,7 @@ function ktos(x, esc) {
 }
 function len(x) { l(x); return x.v.length; }
 function kmap(x, f) {
+	if (x.t != 3) { return f(x); }
 	var r=[]; for(var z=0;z<len(x);z++) { r.push(f(x.v[z],z)); } return k(3,r);
 }
 function kzip(x, y, f) {
@@ -279,6 +280,7 @@ function pack(x, y) {
 ////////////////////////////////////
 
 function each(monad, x, env) {
+	if (len(x) == 1) { return applym(monad, first(x), env); }
 	return kmap(x, function(x) { return applym(monad, x, env); });
 }
 
@@ -296,12 +298,13 @@ function eachleft(dyad, list, right, env) {
 }
 
 function eachprior(dyad, x, env) {
+	if (len(x)==0) { throw new Error("length error."); }
 	var r=[]; for(var z=1;z<len(x);z++) { r.push(applyd(dyad, x.v[z], x.v[z-1], env)); }
 	return k(3,r);
 }
 
 function over(dyad, x, env) {
-	if (len(x) < 1) { return x; }
+	if (x.t != 3 || len(x) < 1) { return x; }
 	return x.v.reduce(function(x, y) { return applyd(dyad, x, y, env); });
 }
 
@@ -323,7 +326,7 @@ function fixedwhile(monad, x, y, env) {
 }
 
 function scan(dyad, x, env) {
-	if (len(x) < 1) { return x; }
+	if (x.t != 3 || len(x) < 1) { return x; } if (len(x) == 1) { return first(x); }
 	var c=x.v[0]; var r=[c];
 	for(var z=1;z<len(x);z++) { c = applyd(dyad, c, x.v[z], env); r.push(c); }
 	return k(3, r);

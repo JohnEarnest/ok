@@ -368,6 +368,23 @@ test("64 64 64\\32768"                , "8 0 0"                               );
 test("(8#2)/1 0 0 0 1 0 1"            , "69"                                  );
 test("64 64 64/7 63 63"               , "32767"                               );
 test("64 64 64/8 0 0"                 , "32768"                               );
+test(",':,1"                          , "()"                                  );
+fail(",':()"                          , "length error."                       );
+test("-': 1 4 9 14 25 36"             , "3 5 5 11 11"                         );
+test("1,/:,2"                         , ",1 2"                                );
+test("1,/:2"                          , "1 2"                                 );
+test("1,/:()"                         , "()"                                  );
+test("1,\\:,2"                        , "1 2"                                 );
+test("1,\\:2"                         , "1 2"                                 );
+test("1,\\:()"                        , ",1"                                  );
+test("+/,5"                           , "5"                                   );
+test("+/5"                            , "5"                                   );
+test("+/()"                           , "()"                                  );
+test("+\\,5"                          , "5"                                   );
+test("+\\5"                           , "5"                                   );
+test("+\\()"                          , "()"                                  );
+test("-:',5"                          , "-5"                                  );
+test("-:'()"                          , "()"                                  );
 
 // NOTES/TODO:
 
@@ -375,8 +392,6 @@ test("64 64 64/8 0 0"                 , "32768"                               );
 // doesn't take parentheses into account.
 // instance of the pattern:   a b/c
 // false positive:            a(b/c)
-
-// adverbs should return a sensible result for empty lists(?) and single elements(!)
 
 // ?[t;c;b;a] query is the K4/Q "select"
 // - t is a 'table'
