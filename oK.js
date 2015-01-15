@@ -410,14 +410,15 @@ var verbs = {
 
 function applyverb(node, left, right, env) {
 	if (node.t == 9) { return applyadverb(node, node.verb, left, right, env); }
-	var r = verbs[node.forcemonad ? node.v[0] : node.v][(right.t != 3) ? 4 : 5];
-	if (left && right) {
-		if (left.t != 3 && right.t != 3) { r = verbs[node.v][0]; }
-		if (left.t == 3 && right.t != 3) { r = verbs[node.v][1]; }
-		if (left.t != 3 && right.t == 3) { r = verbs[node.v][2]; }
-		if (left.t == 3 && right.t == 3) { r = verbs[node.v][3]; }
-	}
-	if (r == null) { throw new Error("invalid arguments to "+node.v); }
+	var r = null; var v = verbs[node.forcemonad ? node.v[0] : node.v];
+	if (!v) {}
+	else if (!left       && right.t != 3) { r = v[4]; }
+	else if (!left       && right.t == 3) { r = v[5]; }
+	else if (left.t != 3 && right.t != 3) { r = v[0]; }
+	else if (left.t == 3 && right.t != 3) { r = v[1]; }
+	else if (left.t != 3 && right.t == 3) { r = v[2]; }
+	else if (left.t == 3 && right.t == 3) { r = v[3]; }
+	if (!r) { throw new Error("invalid arguments to "+node.v); }
 	return left ? r(left, right, env) : r(right, env);
 }
 
