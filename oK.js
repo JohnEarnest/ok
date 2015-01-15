@@ -114,23 +114,6 @@ function iota(x) {
 	p(x); var r=[]; for(var z=0;z<x.v;z++) { r.push(k(0,z)); } return k(3,r);
 }
 
-function write(x, y) {
-	// todo: use x to select a file descriptor
-	process.stdout.write(s(y)?ktos(y):format(y)); return y;
-}
-function read(x) {
-	// todo: use x to select a file descriptor
-	// note: line IO like this will only work on a bleeding-edge release of node.
-	var fs = require("fs");
-	function readchar() {
-		var buff = new Buffer(1); fs.readSync(process.stdin.fd, buff, 0, 1);
-		if (buff[0] === null) { return -1; } return buff[0];
-	};
-	var r=[]; while(true) {
-		var c = readchar(); if (c == "\n".charCodeAt(0)) { return k(3,r); } r.push(k(1,c));
-	}
-}
-
 function dfmt(x, y) {
 	var r = kfmt(y); var c = Math.abs(x.v);
 	if (x.v < 0) { // pad right
@@ -420,9 +403,6 @@ var verbs = {
 	"?" : [rnd,        find,       null,       find,       null,       unique    ],
 	"@" : [atd,        atl,        atd,        ar(atl),    atom,       atom      ],
 	"." : [call,       call,       call,       call,       keval,      keval     ],
-	"0:": [write,      null,       write,      null,       read,       null      ],
-	"1:": [null,       null,       null,       null,       null,       null      ], // todo
-	"2:": [null,       null,       null,       null,       null,       null      ], // todo
 	"'" : [null,       bin,        null,       ar(bin),    null,       null      ],
 	"/" : [null,       null,       join,       pack,       null,       null      ],
 	"\\": [null,       unpack,     split,      null,       null,       null      ],
@@ -911,7 +891,13 @@ function format(k, indent) {
 }
 
 // export the public interface:
+function setIO(symbol, slot, func) {
+	if (!(symbol in verbs)) { verbs[symbol]=[null,null,null,null,null,null]; }
+	verbs[symbol][slot] = func;
+}
+
 this.parse = parse;
 this.format = format;
 this.run = run;
 this.Environment = Environment;
+this.setIO = setIO;
