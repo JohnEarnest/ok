@@ -38,7 +38,7 @@ if (process.argv.length == 3) {
 	process.exit(0);
 }
 
-process.stdout.write("oK v0.1\n\n");
+process.stdout.write("oK v"+ok.version+"\n\n");
 var env = new ok.Environment(null);
 while(true) {
 	process.stdout.write("  ");
