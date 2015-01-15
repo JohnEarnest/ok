@@ -30,6 +30,9 @@ body {
 	overflow-y: scroll;
 	background-color: lightgray;
 	height: 100%;
+	word-wrap: break-word;
+	word-break: break-all;
+	hyphens: none;
 }
 #prompt {
 	display: table-row;
@@ -47,6 +50,9 @@ body {
 }
 input:focus {
 	outline: none;
+}
+::-webkit-scrollbar {
+	display: none;
 }
 </style>
 
