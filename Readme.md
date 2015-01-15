@@ -9,7 +9,7 @@ Trying oK
 ---------
 oK does not intend to be particularly fast or suitable for any practical purpose beyond learning, instead emphasizing simplicity of implementation. JavaScript was chosen as an implementation language because it is familar to many programmers and has first-class functions.
 
-The easiest way to run oK is by using [Node.js](http://nodejs.org). `test.js` runs a series of automated tests:
+The easiest way to run oK is using the [Browser-based REPL](http://johnearnest.github.io/ok/index.html). Alternatively, you can run it via the command line with  [Node.js](http://nodejs.org). `test.js` runs a series of automated tests:
 
 	je@indigo$ node test.js
 
