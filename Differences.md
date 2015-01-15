@@ -42,13 +42,13 @@ Many of the adverbs have overloads when supplied with nouns and no verb as argum
 
 - `'` applied to a left vector and right number performs a binary search in the vector for the number. Right-atomic. Equivalent to the K4 [bin](http://code.kx.com/wiki/Reference/bin) builtin.
 
-- `/` applied to a left atom and right list splits the list into sublists at instances of the given atom:
+- `\` applied to a left atom and right list splits the list into sublists at instances of the given atom:
 
 		  "&"\"foo=42&bar=69"
 		("foo=42"
 		 "bar=69")
 
-- `\` split joins a right list using a left atom. The inverse of split:
+- `/` joins a right list using a left atom. The inverse of split:
 
 		  ","/$!5
 		"0,1,2,3,4"
