@@ -14,18 +14,25 @@ body {
 }
 #repl {
 	background-color: orange;
-	position:absolute;
+	position: absolute;
+	display: table;
 	top:5%;
 	left:10%;
 	width:80%;
 	height:90%;
 }
+#scroll-w {
+	display: table-row;
+	height: 100%;
+}
 #scroll {
-	background-color: lightgray;
-	padding: 5px 5px;
+	padding: 5px;	
 	overflow-y: scroll;
+	background-color: lightgray;
+	height: 100%;
 }
 #prompt {
+	display: table-row;
 	background-color: black;
 	font-smooth: never;
 	-webkit-font-smoothing : none;
@@ -35,7 +42,6 @@ body {
 	padding: 5px 0px 5px 20px;
 	margin: 0;
 	border: none;
-	position: absolute;
 	bottom: 0px;
 	width: 100%;
 }
@@ -46,8 +52,8 @@ input:focus {
 
 <body>
 	<div id="repl">
-		<div id="scroll">Welcome to oK</div>
-		<input type="text" id="prompt">
+		<div id="scroll-w"><div id="scroll">Welcome to oK</div></div>
+		<div><input type="text" id="prompt"></div>
 	</div>
 </body>
 
@@ -61,12 +67,6 @@ var prompt = document.getElementById("prompt");
 prompt.focus();
 prompt.onkeydown = processInput;
 scroll.innerHTML += " v"+version;
-
-window.onresize = function() {
-	scroll.style.height = repl.clientHeight - prompt.clientHeight;
-	scroll.scrollTop = scroll.scrollHeight;
-};
-window.onresize();
 
 function escapeHTML(text) {
 	text += "";
