@@ -7,6 +7,7 @@
 ////////////////////////////////////
 
 var ok = require("./oK");
+var conv = require("./convert");
 var fs = require("fs");
 
 function readchar() {
@@ -23,8 +24,8 @@ function read(x) {
 }
 function write(x, y) {
 	// todo: use x to select a file descriptor
-	var r = ok.format(y); r = r[0]=='"' ? r.slice(1,-1) : r; r = ok.parse('"'+r+'"')[0];
-	for(var z=0; z<r.v.length;z++) { process.stdout.write(String.fromCharCode(r.v[z].v)); }
+	if (typeof conv.tojs(y) == 'string') { process.stdout.write(conv.tojs(y)); }
+	else { process.stdout.write(format(y)); }
 	return y;
 }
 ok.setIO("0:", 0, write);
