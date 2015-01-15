@@ -1,0 +1,123 @@
+<!-- an attempt to create a simple browser REPL for oK. -->
+<html>
+<head><title>oK repl</title></head>
+<style>
+body {
+	background-color: gray;
+	font-smooth: never;
+	-webkit-font-smoothing : none;
+	font-family: "Monaco", monospace;
+	font-size: 9pt;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+}
+#repl {
+	background-color: orange;
+	position:absolute;
+	top:5%;
+	left:10%;
+	width:80%;
+	height:90%;
+}
+#scroll {
+	background-color: lightgray;
+	padding: 5px 5px;
+	overflow-y: scroll;
+}
+#prompt {
+	background-color: black;
+	font-smooth: never;
+	-webkit-font-smoothing : none;
+	font-family: "Monaco", monospace;
+	font-size: 9pt;
+	color: white;
+	padding: 5px 0px 5px 20px;
+	margin: 0;
+	border: none;
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+}
+input:focus {
+	outline: none;
+}
+</style>
+
+<body>
+	<div id="repl">
+		<div id="scroll">Welcome to oK</div>
+		<input type="text" id="prompt">
+	</div>
+</body>
+
+<script src="oK.js"></script>
+<script src="convert.js"></script>
+
+<script>
+var repl = document.getElementById("repl");
+var scroll = document.getElementById("scroll");
+var prompt = document.getElementById("prompt");
+prompt.focus();
+prompt.onkeydown = processInput;
+scroll.innerHTML += " v"+version;
+
+window.onresize = function() {
+	scroll.style.height = repl.clientHeight - prompt.clientHeight;
+	scroll.scrollTop = scroll.scrollHeight;
+};
+window.onresize();
+
+function escapeHTML(text) {
+	text += "";
+	text = text.replace(/&/g, "&amp;");
+	text = text.replace(/</g, "&lt;");
+	text = text.replace(/>/g, "&gt;");
+	text = text.replace(/ /g, "&nbsp;");
+	text = text.replace(/\n/g, "<br>");
+	return text;
+}
+
+var env = new Environment(null);
+var entries = [];
+var entryIndex = 0;
+
+function processInput(e) {
+	if (e.keyCode == 38) {
+		if (entries.length == 0) { return; }
+		if (entryIndex > 0) { entryIndex--; }
+		prompt.value = entries[entryIndex];
+		return;
+	}
+	if (e.keyCode == 40) {
+		if (entryIndex < entries.length-1) { entryIndex++; }
+		else { prompt.value = ""; return; }
+		prompt.value = entries[entryIndex];
+		return;
+	}
+	if (e.keyCode != 13) { return; }
+	printRepl("&nbsp;&nbsp;<font color='gray'>"+escapeHTML(prompt.value)+"</font>");
+	if (prompt.value != "") {
+		try { printRepl(escapeHTML(format(run(parse(prompt.value), env)))); }
+		catch(error) { printRepl("<font color='red'>"+error.message+"</font>"); }
+	}
+	if (prompt.value != "") { entries.push(prompt.value); }
+	entryIndex = entries.length;
+	prompt.value = "";
+}
+
+function printRepl(x) {
+	scroll.innerHTML += "<br>" + x;
+	scroll.scrollTop = scroll.scrollHeight;
+}
+
+function print(x) {
+	if (typeof tojs(x) == 'string') { printRepl(tojs(x)); }
+	else { printRepl(format(x)); }
+	return x;
+}
+
+setIO("0:", 4, print);
+setIO("0:", 5, print);
+</script>
+</html>
