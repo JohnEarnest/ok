@@ -25,7 +25,8 @@ body {
 	display: table-row;
 	height: 100%;
 }
-#scroll {
+#scroll-h {
+	position: relative;
 	padding: 5px;	
 	overflow-y: scroll;
 	background-color: lightgray;
@@ -33,6 +34,11 @@ body {
 	word-wrap: break-word;
 	word-break: break-all;
 	hyphens: none;
+}
+#scroll {
+	position: absolute;
+	bottom: 0px;
+	max-height: 100%;
 }
 #prompt {
 	display: table-row;
@@ -58,8 +64,8 @@ input:focus {
 
 <body>
 	<div id="repl">
-		<div id="scroll-w"><div id="scroll">Welcome to oK</div></div>
-		<div><input type="text" id="prompt"></div>
+		<div id="scroll-w"><div id="scroll-h"><div id="scroll">Welcome to oK</div></div></div>
+		<div><input type="text" id="prompt" autocomplete="off"></div>
 	</div>
 </body>
 
@@ -69,6 +75,7 @@ input:focus {
 <script>
 var repl = document.getElementById("repl");
 var scroll = document.getElementById("scroll");
+var panel = document.getElementById("scroll-h");
 var prompt = document.getElementById("prompt");
 prompt.focus();
 prompt.onkeydown = processInput;
@@ -114,7 +121,7 @@ function processInput(e) {
 
 function printRepl(x) {
 	scroll.innerHTML += "<br>" + x;
-	scroll.scrollTop = scroll.scrollHeight;
+	panel.scrollTop = panel.scrollHeight;
 }
 
 function print(x) {
