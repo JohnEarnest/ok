@@ -125,7 +125,7 @@ function printRepl(x) {
 }
 
 function print(x) {
-	if (typeof tojs(x) == 'string') { printRepl(tojs(x)); }
+	if (typeof tojs(x) == 'string') { printRepl(escapeHTML(tojs(x))); }
 	else { printRepl(format(x)); }
 	return x;
 }
