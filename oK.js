@@ -42,8 +42,9 @@ function stok(x) {
 	var r=[]; for(var z=0;z<x.length;z++) { r.push(k(1,x.charCodeAt(z))); } return kl(r);
 }
 function ktos(x, esc) {
+	if (x.t != 3) { x = k(3, [x]); }
 	var r = x.v.map(function(k) { return String.fromCharCode(k.v); }).join("");
-	if (esc) { for(var z=0;z<EC.length;z++) { r=r.replace(EC[z][0],EC[z][1]); }} return r;
+	if (esc) { for(var z=0;z<EC.length;z++) { r=r.split(EC[z][0]).join(EC[z][1]); }} return r;
 }
 function len(x) { l(x); return x.v.length; }
 function kmap(x, f) {
@@ -387,7 +388,7 @@ var verbs = {
 	"+" : [plus,       ad(plus),   ad(plus),   ad(plus),   null,       flip      ],
 	"-" : [minus,      ad(minus),  ad(minus),  ad(minus),  negate,     am(negate)],
 	"*" : [times,      ad(times),  ad(times),  ad(times),  first,      first     ],
-	"%" : [divide,     ad(divide), ad(divide), ad(divide), sqrt,       null      ],
+	"%" : [divide,     ad(divide), ad(divide), ad(divide), sqrt,       am(sqrt)  ],
 	"!" : [mod,        al(mod),    rotate,     al(rotate), iota,       makedict  ],
 	"&" : [min,        ad(min),    ad(min),    ad(min),    zero,       where     ],
 	"|" : [max,        ad(max),    ad(max),    ad(max),    null,       reverse   ],
@@ -756,7 +757,7 @@ function parseNoun() {
 	}
 	if (at(STRING)) {
 		var str = expect(STRING); str = str.substring(1, str.length-1);
-		for(var z=0;z<EC.length;z++) { str=str.replace(EC[z][1],EC[z][0]); }
+		for(var z=0;z<EC.length;z++) { str=str.split(EC[z][1]).join(EC[z][0]); }
 		return applyindexright(stok(str));
 	}
 	if (matches(OPEN_B)) {
@@ -855,7 +856,7 @@ function format(k, indent) {
 	if (k instanceof Array) { return k.map(format).join(";"); }
 	if (k.sticky) { var s=k.sticky; k.sticky=null; var r=format(k); k.sticky=s; return "("+r+")"; }
 	if (k.t == 0) { return ""+(k.v % 1 === 0 ? k.v : Math.round(k.v * 10000) / 10000); }
-	if (k.t == 1) { return '"'+String.fromCharCode(k.v)+'"'; }
+	if (k.t == 1) { return '"'+(ktos(k, true))+'"'; }
 	if (k.t == 2) { return k.v; }
 	if (k.t == 3) {
 		if (len(k) <  1) { return "()"; }

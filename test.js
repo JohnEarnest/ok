@@ -387,6 +387,8 @@ test("{a b/c}"                        , "{a b/c}"                             );
 test("{a (b/c)}"                      , "{a@b/c}"                             );
 test("{a.b/c}"                        , "{a.b/c}"                             );
 test("{a.(b/c)}"                      , "{a.b/c}"                             );
+test('"\\n"', '"\\n"');
+test('"\\n\\n"', '"\\n\\n"');
 
 // NOTES/TODO:
 
