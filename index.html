@@ -12,6 +12,9 @@ body {
 	width: 100%;
 	overflow: hidden;
 }
+a {
+	color: black;
+}
 #repl {
 	background-color: orange;
 	position: absolute;
@@ -64,7 +67,7 @@ input:focus {
 
 <body>
 	<div id="repl">
-		<div id="scroll-w"><div id="scroll-h"><div id="scroll">Welcome to oK</div></div></div>
+		<div id="scroll-w"><div id="scroll-h"><div id="scroll"></div></div></div>
 		<div><input type="text" id="prompt" autocomplete="off"></div>
 	</div>
 </body>
@@ -79,7 +82,10 @@ var panel = document.getElementById("scroll-h");
 var prompt = document.getElementById("prompt");
 prompt.focus();
 prompt.onkeydown = processInput;
-scroll.innerHTML += " v"+version;
+scroll.innerHTML =
+	"Welcome to <a href='https://github.com/JohnEarnest/ok' target='_blank'>oK</a> v"+version+
+	"<br>(inspired by <a href='http://kparc.com/k.txt' target='_blank'>K5</a>)"+
+	"<br>&nbsp;&nbsp;";
 
 function escapeHTML(text) {
 	text += "";
@@ -98,30 +104,63 @@ var entryIndex = 0;
 function processInput(e) {
 	if (e.keyCode == 38) {
 		if (entries.length == 0) { return; }
-		if (entryIndex > 0) { entryIndex--; }
-		prompt.value = entries[entryIndex];
+		if (entryIndex > 0) {
+			entryIndex--;
+			prompt.value = entries[entryIndex];
+		}
 		return;
 	}
 	if (e.keyCode == 40) {
-		if (entryIndex < entries.length-1) { entryIndex++; }
-		else { prompt.value = ""; return; }
+		if (entries.length == 0 || entryIndex >= entries.length-1) {
+			entryIndex = entries.length;
+			prompt.value = "";
+			return;
+		}
+		entryIndex++;
 		prompt.value = entries[entryIndex];
 		return;
 	}
 	if (e.keyCode != 13) { return; }
-	printRepl("&nbsp;&nbsp;<font color='gray'>"+escapeHTML(prompt.value)+"</font>");
-	if (prompt.value != "") {
-		try { printRepl(escapeHTML(format(run(parse(prompt.value), env)))); }
-		catch(error) { printRepl("<font color='red'>"+error.message+"</font>"); }
-	}
+	printReplBare("<font color='gray'>"+escapeHTML(prompt.value)+"</font>");
+	if (prompt.value != "") { processLine(); }
 	if (prompt.value != "") { entries.push(prompt.value); }
 	entryIndex = entries.length;
 	prompt.value = "";
+	printRepl(partial == "" ? "&nbsp;&nbsp" : "&gt;&nbsp;");
+}
+
+var partial = "";
+function processLine() {
+	if (prompt.value == "\\\\") { partial = ""; return; }
+	if (prompt.value == "kOS") { printRepl("one system/all devices"); return; }
+	var parsed = null;
+	try { parsed = parse(partial + ";" + prompt.value); }
+	catch(error) {
+		if (error.message == "parse error. '}' expected." ||
+			error.message == "parse error. ')' expected." ||
+			error.message == "parse error. ']' expected.") {
+			partial += ((partial!="")?";":"") + prompt.value;
+			return;
+		}
+		else {
+			printRepl("<font color='red'>"+error.message+"</font>");
+			partial = "";
+			return;
+		}
+	}
+	partial = "";
+	try { printRepl(escapeHTML(format(run(parsed, env)))); }
+	catch(error) { printRepl("<font color='red'>"+error.message+"</font>"); }
+}
+
+function printReplBare(x) {
+	scroll.innerHTML += x;
+	panel.scrollTop = panel.scrollHeight;
 }
 
 function printRepl(x) {
-	scroll.innerHTML += "<br>" + x;
-	panel.scrollTop = panel.scrollHeight;
+	printReplBare("<br>");
+	printReplBare(x);
 }
 
 function print(x) {

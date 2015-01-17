@@ -266,7 +266,7 @@ fail("a:1 2;a[45]"                    , "index error: 45"                     );
 fail("a:1;a[2]"                       , "function or list expected."          );
 fail("f:{x+y};f[1;2;3]"               , "valence error."                      );
 fail("@[1;2]"                         , "valence error."                      );
-fail("{5;"                            , "parse error. } expected."            );
+fail("{5;"                            , "parse error. '}' expected."          );
 fail("(5"                             , "parse error. ')' expected."          );
 fail("a[3"                            , "parse error. ']' expected."          );
 test("a:1 2 3;`a[1]"                  , "2"                                   );
@@ -387,8 +387,8 @@ test("{a b/c}"                        , "{a b/c}"                             );
 test("{a (b/c)}"                      , "{a@b/c}"                             );
 test("{a.b/c}"                        , "{a.b/c}"                             );
 test("{a.(b/c)}"                      , "{a.b/c}"                             );
-test('"\\n"', '"\\n"');
-test('"\\n\\n"', '"\\n\\n"');
+test('"\\n"'                          , '"\\n"'                               );
+test('"\\n\\n"'                       , '"\\n\\n"'                            );
 
 // NOTES/TODO:
 
