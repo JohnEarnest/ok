@@ -18,7 +18,7 @@ var typenames = [
 	"function"  , //  5 : body, args, curry, env
 	"view"      , //  6 : value, r, cache, depends->val
 	"nameref"   , //  7 : name, l(index?), r(assignment), global?
-	"verb"      , //  8 : name, l(?), r
+	"verb"      , //  8 : name, l(?), r, curry?
 	"adverb"    , //  9 : name, l(?), verb, r
 	"return"    , // 10 : value (expression)
 	"nil"       , // 11 :
@@ -269,6 +269,7 @@ function each(monad, x, env) {
 }
 
 function eachd(dyad, left, right, env) {
+	if (!env) { return kmap(left, function(x) { return applyd(dyad, x, null, right); }); }
 	if (left.t!=3) { return eachright(dyad, left, right); }
 	return kzip(left, right, function(x, y) { return applyd(dyad, x, y, env); });
 }
@@ -411,6 +412,16 @@ var verbs = {
 
 function applyverb(node, left, right, env) {
 	if (node.t == 9) { return applyadverb(node, node.verb, left, right, env); }
+	if (node.curry) {
+		var c = [node.curry[0], node.curry[1]];
+		if (c[0] && c[0].t == 11) { c[0] = null; }
+		if (c[1] && c[1].t == 11) { c[1] = null; }
+		if (!left && !right && c[0] && c[1]) { right = run(c[1], env); left = run(c[0], env); }
+		else if (!left && right && c[0]) { left = run(c[0], env); }
+		else if (!left && right && !c[0] && c[1]) { left = right; right = run(c[1], env); }
+		else { return node; }
+	}
+	if (left && !right) { return { t:node.t, v:node.v, curry:[left,k(11)] }; }
 	var r = null; var v = verbs[node.forcemonad ? node.v[0] : node.v];
 	if (!v) {}
 	else if (!left       && right.t != 3) { r = v[4]; }
@@ -435,7 +446,7 @@ function valence(node) {
 var adverbs = {
 	//       mv          dv          l-mv         l-dv
 	"':"  : [null,       eachprior,  null,        null     ],
-	"'"   : [each,       null,       null,        eachd    ],
+	"'"   : [each,       eachd,      null,        eachd    ],
 	"/:"  : [null,       null,       eachright,   eachright],
 	"\\:" : [null,       null,       eachleft,    eachleft ],
 	"/"   : [fixed,      over,       fixedwhile,  overd    ],
@@ -509,6 +520,12 @@ function call(x, y, env) {
 	if (y.t == 0) { return atd(x, y, env); }
 	if (y.t == 3 && len(y) == 0) { return x; }
 	if (x.t == 3 && y.t == 3) { return atdepth(x, y, 0, env); }
+	if (x.t == 8) {
+		if (y.t != 3)        { return applyverb(x, null, y, env); }
+		if (y.v.length == 1) { return applyverb(x, null, y.v[0], env); }
+		if (y.v.length == 2) { return applyverb(x, y.v[0], y.v[1], env); }
+		throw new Error("valence error.");
+	}
 	if (x.t != 5) { throw new Error("function or list expected."); }
 	if (y.t != 3) { y = k(3, [y]); }
 	var environment = new Environment(x.env); var curry = x.curry?x.curry.concat([]):[];
@@ -534,6 +551,7 @@ function run(node, environment) {
 			r=run(node[z], environment); if (r.t == 10) { return k(10, r.v); }
 		} return r;
 	}
+	if (node.t == 8 && node.curry && !node.r) { return applyverb(node, null, null, environment); }
 	if (node.sticky) { return node; }
 	if (node.t == 3) { return kmap(node, function(x){ return run(x, environment); }); }
 	if (node.t == 6) { environment.put(node.v, false, node); return node; }
@@ -630,6 +648,7 @@ var COND    = /^\$\[/;
 var AMEND   = /^@\[/;
 var DMEND   = /^\.\[/;
 var QUERY   = /^\?\[/;
+var DICT    = /^\[([A-Za-z]+):/;
 var APPLY   = /^\./;
 var OPEN_B  = /^\[/;
 var OPEN_P  = /^\(/;
@@ -791,6 +810,10 @@ function parseNoun() {
 	if (at(VERB)) {
 		var r = k(8, expect(VERB));
 		if (matches(COLON)) { r.v += ":"; r.forcemonad = true; }
+		if (at(OPEN_B) && !at(DICT)) {
+			expect(OPEN_B); r.curry = parseList(CLOSE_B, false);
+			if (r.curry.length < 2) { r.curry.push(k(11)); }
+		}
 		return r;
 	}
 	if (at(NAME)) {
@@ -880,6 +903,7 @@ function format(k, indent) {
 	if (k.t ==  6) { return k.v+"::"+format(k.r); }
 	if (k.t ==  7) { return k.v+(k.r?(k.global?"::":":")+format(k.r):""); }
 	if (k.t ==  8) {
+		if (k.curry) { return k.v+"["+format(k.curry)+"]"+(k.r?format(k.r):""); }
 		var left = (k.l?format(k.l):""); if (k.l && k.l.l) { left = "("+left+")"; }
 		return left+k.v+(k.r?format(k.r):"");
 	}

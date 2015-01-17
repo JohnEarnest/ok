@@ -389,6 +389,20 @@ test("{a.b/c}"                        , "{a.b/c}"                             );
 test("{a.(b/c)}"                      , "{a.b/c}"                             );
 test('"\\n"'                          , '"\\n"'                               );
 test('"\\n\\n"'                       , '"\\n\\n"'                            );
+test("+[;2]"                          , "(+[;2])"                             );
+test("+[2]"                           , "(+[2;])"                             );
+test("-[2;3]"                         , "-1"                                  );
+test("{-[2]3}"                        , "{-[2;]3}"                            );
+test("-[2]3"                          , "-1"                                  );
+test("-[;100]"                        , "(-[;100])"                           );
+test("-[;100]5"                       , "-95"                                 );
+test("a:-[5;];a 2"                    , "3"                                   );
+test("a:-[5;];a[1+1]"                 , "3"                                   );
+test("a:-[;8];a 12"                   , "4"                                   );
+test("a:-;a[7;1]"                     , "6"                                   );
+test("#'1 2"                          , "(#[1;];#[2;])"                       );
+
+//test("#:[1 2 3]", "3");
 
 // NOTES/TODO:
 
@@ -400,7 +414,7 @@ test('"\\n\\n"'                       , '"\\n\\n"'                            );
 
 // I need to unify the two definitions of nil floating around currently
 
-// subscripting verbs/ verb-func unification?
+// verb-func unification?
 //   This would simplify a great deal of dispatch logic and remove the need for
 //   amend/dmend/query to be special syntactic cases.
 
