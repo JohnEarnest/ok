@@ -136,9 +136,10 @@ function processLine() {
 	var parsed = null;
 	try { parsed = parse(partial + ";" + prompt.value); }
 	catch(error) {
-		if (error.message == "parse error. '}' expected." ||
+		if (done() && (
+			error.message == "parse error. '}' expected." ||
 			error.message == "parse error. ')' expected." ||
-			error.message == "parse error. ']' expected.") {
+			error.message == "parse error. ']' expected.")) {
 			partial += ((partial!="")?";":"") + prompt.value;
 			return;
 		}
