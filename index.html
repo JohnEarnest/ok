@@ -133,6 +133,11 @@ var partial = "";
 function processLine() {
 	if (prompt.value == "\\\\") { partial = ""; return; }
 	if (prompt.value == "kOS") { printRepl("one system/all devices"); return; }
+	var showtime = false;
+	if (prompt.value.lastIndexOf("\\t") == 0) {
+		prompt.value = prompt.value.slice(2);
+		showtime = true;
+	}
 	var parsed = null;
 	try { parsed = parse(partial + ";" + prompt.value); }
 	catch(error) {
@@ -150,7 +155,14 @@ function processLine() {
 		}
 	}
 	partial = "";
-	try { printRepl(escapeHTML(format(run(parsed, env)))); }
+	try {
+		var starttime = new Date().getTime();
+		printRepl(escapeHTML(format(run(parsed, env))));
+		if (showtime) {
+			var endtime = new Date().getTime();
+			printRepl("completed in "+(endtime-starttime)+"ms.");
+		}
+	}
 	catch(error) { printRepl("<font color='red'>"+error.message+"</font>"); }
 }
 
