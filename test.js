@@ -407,6 +407,14 @@ fail("8)"                             , "unexpected character ')'"            );
 
 // NOTES/TODO:
 
+// 'error trap': .[%; (3;4); :]
+
+// 'function inverse':
+// f? y
+// ?[f; y; x]
+
+// `a`b!2 3 should construct a dictionary?
+
 // ?[t;c;b;a] query is the K4/Q "select"
 // - t is a 'table'
 // - c is 'constraints'
