@@ -2,7 +2,7 @@ What's New in K5?
 =================
 oK is an attempt to re-implement K5, a dialect of K which is still in active development, based on released example code, notes and extrapolation from previous versions of K. I am not affiliated with the K5/kOS team and my work is in no way authoritative.
 
-My efforts began with the [Reference Manual for K2](http://web.archive.org/web/20050504070651/http://www.kx.com/technical/documents/kreflite.pdf), the latest complete manual for K I could get my hands on. I then worked from Arthur Whitney's [K5 Reference Card](http://kparc.com/k.txt) and filled in features with some help from the K4/KDB+ information which can be found on the [Kx Systems Wiki](http://code.kx.com/wiki/Reference). Geo Carncross, one of the K5 developers, graciously clarified a number of remaining points for me via email.
+My efforts began with the [Reference Manual for K2](http://web.archive.org/web/20050504070651/http://www.kx.com/technical/documents/kreflite.pdf), the latest complete manual for K I could get my hands on. I then worked from Arthur Whitney's [K5 Reference Card](http://kparc.com/k.txt) and filled in features with some help from the K4/KDB+ information which can be found on the [Kx Systems Wiki](http://code.kx.com/wiki/Reference).
 
 I will attempt to keep this list updated as additional information comes to light or K5 is changed.
 
