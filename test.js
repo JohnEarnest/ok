@@ -402,12 +402,13 @@ test("a:-[;8];a 12"                   , "4"                                   );
 test("a:-;a[7;1]"                     , "6"                                   );
 test("#'1 2"                          , "(#[1;];#[2;])"                       );
 fail("8)"                             , "unexpected character ')'"            );
+test("{.[%; (3;4); :]}"               , "{.[(%);3 4;:]}"                      );
+test(".[%; (3;4); :]"                 , "0 0.75"                              );
+test(".[=; 0; :]"                     , '(1\n "invalid arguments to =")'      );
 
 //test("#:[1 2 3]", "3");
 
 // NOTES/TODO:
-
-// 'error trap': .[%; (3;4); :]
 
 // 'function inverse':
 // f? y

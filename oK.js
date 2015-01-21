@@ -579,7 +579,10 @@ function run(node, environment) {
 		} return run(node.v[node.v.length-1], environment);
 	}
 	if (node.t == 13) { return mend(node, environment, amendm, amendd); }
-	if (node.t == 14) { return mend(node, environment, dmend, dmend); }
+	if (node.t == 14) {
+		if (node.v.length == 3 && node.v[0].t != 3) { return trap(node, environment); }
+		return mend(node, environment, dmend, dmend);
+	}
 	if (node.t == 15) { return mend(node, environment, query, query); }
 	if (node.t == 5 && !node.env) { node.env = environment; }
 	return node;
@@ -594,6 +597,11 @@ function mend(node, env, monadic, dyadic) {
 	var f = run(node.v[2], env);
 	(y?dyadic:monadic)(d, i, y, f, env);
 	if (ds.t!=2) { return d; } env.put(ds.v.slice[1], true, d); return ds;
+}
+
+function trap(node, env) {
+	try { var a=run(node.v[1],env); var f=run(node.v[0],env); return k(3,[k(0,0),call(f, a)]); }
+	catch(error) { return k(3, [k(0,1), stok(error.message)]); }
 }
 
 function amendm(d, i, y, monad, env) {
@@ -878,6 +886,7 @@ function parse(str) {
 ////////////////////////////////////
 
 function format(k, indent) {
+	if (k == null) { return ""; }
 	function indented(k) { return format(k, indent+" "); };
 	if (k instanceof Array) { return k.map(format).join(";"); }
 	if (k.sticky) { var s=k.sticky; k.sticky=null; var r=format(k); k.sticky=s; return "("+r+")"; }
@@ -906,11 +915,11 @@ function format(k, indent) {
 	if (k.t ==  6) { return k.v+"::"+format(k.r); }
 	if (k.t ==  7) { return k.v+(k.r?(k.global?"::":":")+format(k.r):""); }
 	if (k.t ==  8) {
-		if (k.curry) { return k.v+"["+format(k.curry)+"]"+(k.r?format(k.r):""); }
+		if (k.curry) { return k.v+"["+format(k.curry)+"]"+format(k.r); }
 		var left = (k.l?format(k.l):""); if (k.l && k.l.l) { left = "("+left+")"; }
 		return left+k.v+(k.r?format(k.r):"");
 	}
-	if (k.t ==  9) { return (k.l?format(k.l)+" ":"")+format(k.verb)+k.v+(k.r?format(k.r):""); }
+	if (k.t ==  9) { return (k.l?format(k.l)+" ":"")+format(k.verb)+k.v+format(k.r); }
 	if (k.t == 10) { return ":"+format(k.v); }
 	if (k.t == 11) { return ""; }
 	if (k.t == 12) { return "$["+format(k.v)+"]"; }
