@@ -259,9 +259,9 @@ function pack(x, y) {
 }
 
 function inverse(f, x0, x1, n, env) {
+	var f0, f1 = applym(f, k(0,x0), env).v;
 	for(var z=0;z<20;z++) {
-		var f0 = applym(f, k(0,x0), env).v;
-		var f1 = applym(f, k(0,x1), env).v;
+		f0 = f1; f1 = applym(f, k(0,x1), env).v;
 		var x = x1-((f1-n)*(x1-x0))/(f1-f0); x0 = x1; x1 = x;
 		if (Math.abs(x1-x0)<0.000001) { return k(0,x1); }
 	} throw new Error("limit error.");
