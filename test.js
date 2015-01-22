@@ -405,14 +405,13 @@ fail("8)"                             , "unexpected character ')'"            );
 test("{.[%; (3;4); :]}"               , "{.[(%);3 4;:]}"                      );
 test(".[%; (3;4); :]"                 , "0 0.75"                              );
 test(".[=; 0; :]"                     , '(1\n "invalid arguments to =")'      );
+test("{(x*x)+(-x)+(-1)} ? 0"          , "1.618"                               );
+test("f:{(x*x)-(5*x)+2};f f?23.7"     , "23.7"                                );
+test("f:{(x*x)+(-x)+(-1)};?[f;0;.25]" , "-0.618"                              );
 
 //test("#:[1 2 3]", "3");
 
 // NOTES/TODO:
-
-// 'function inverse':
-// f? y
-// ?[f; y; x]
 
 // `a`b!2 3 should construct a dictionary?
 

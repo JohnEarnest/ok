@@ -177,7 +177,8 @@ function cut(x, y) {
 	} return k(3,r);
 }
 
-function rnd(x, y) {
+function rnd(x, y, env) {
+	if (x.t == 5 || x.t == 8 || x.t == 9) { return invm(x, y, env); }
 	p(y); return kmap(iota(x), function(x){ return k(0,Math.floor(Math.random()*y.v)); });
 }
 
@@ -256,6 +257,17 @@ function pack(x, y) {
 	var p=takel(k(0,-len(y)), cat(reverse(scan(k(8, "*"), x)),k(0,1)));
 	return over(k(8, "+"), ad(times)(p, y));
 }
+
+function inverse(f, x0, x1, n, env) {
+	for(var z=0;z<20;z++) {
+		var f0 = applym(f, k(0,x0), env).v;
+		var f1 = applym(f, k(0,x1), env).v;
+		var x = x1-((f1-n)*(x1-x0))/(f1-f0); x0 = x1; x1 = x;
+		if (Math.abs(x1-x0)<0.000001) { return k(0,x1); }
+	} throw new Error("limit error.");
+}
+function invm(f, x, env)    { n(x);       return inverse(f, 0.9999, 0.9998, x.v, env); }
+function invd(f, x, y, env) { n(x); n(y); return inverse(f, y.v, 0.9999*y.v, x.v, env); }
 
 ////////////////////////////////////
 //
@@ -583,7 +595,15 @@ function run(node, environment) {
 		if (node.v.length == 3 && node.v[0].t != 3) { return trap(node, environment); }
 		return mend(node, environment, dmend, dmend);
 	}
-	if (node.t == 15) { return mend(node, environment, query, query); }
+	if (node.t == 15) {
+		if (node.v.length == 3 && node.v[0].t != 3) {
+			var y=run(node.v[2], environment);
+			var x=run(node.v[1], environment);
+			var f=run(node.v[0], environment);
+			return invd(f, x, y, environment);
+		}
+		return mend(node, environment, query, query);
+	}
 	if (node.t == 5 && !node.env) { node.env = environment; }
 	return node;
 }
