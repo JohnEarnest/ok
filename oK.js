@@ -556,55 +556,51 @@ function call(x, y, env) {
 	return (r.t == 10) ? r.v : r;
 }
 
-function run(node, environment) {
+function run(node, env) {
 	if (node == null) { return k(11); }
 	if (node instanceof Array) {
 		var r; for(var z=0;z<node.length;z++) {
-			r=run(node[z], environment); if (r.t == 10) { return k(10, r.v); }
+			r=run(node[z], env); if (r.t == 10) { return k(10, r.v); }
 		} return r;
 	}
-	if (node.t == 8 && node.curry && !node.r) { return applyverb(node, null, null, environment); }
+	if (node.t == 8 && node.curry && !node.r) { return applyverb(node, null, null, env); }
 	if (node.sticky) { return node; }
-	if (node.t == 3) { return kmap(node, function(x){ return run(x, environment); }); }
-	if (node.t == 6) { environment.put(node.v, false, node); return node; }
+	if (node.t == 3) { return kmap(node, function(x){ return run(x, env); }); }
+	if (node.t == 6) { env.put(node.v, false, node); return node; }
 	if (node.t == 7) {
-		if (node.r) { environment.put(node.v, node.global, run(node.r, environment)); }
-		return environment.lookup(node.v);
+		if (node.r) { env.put(node.v, node.global, run(node.r, env)); }
+		return env.lookup(node.v);
 	}
 	if (node.t == 8 && node.r) {
-		var right = run(node.r, environment);
-		var left  = node.l ? run(node.l, environment) : null;
-		return applyverb(node, left, right, environment);
+		var right = run(node.r, env);
+		var left  = node.l ? run(node.l, env) : null;
+		return applyverb(node, left, right, env);
 	}
 	if (node.t == 9 && node.r) {
-		var right = run(node.r, environment);
-		var verb  = run(node.verb, environment);
-		var left  = node.l ? run(node.l, environment) : null;
-		return applyadverb(node, verb, left, right, environment);
+		var right = run(node.r, env);
+		var verb  = run(node.verb, env);
+		var left  = node.l ? run(node.l, env) : null;
+		return applyadverb(node, verb, left, right, env);
 	}
-	if (node.t == 10) { return k(10, run(node.v, environment)); }
+	if (node.t == 10) { return k(10, run(node.v, env)); }
 	if (node.t == 12) {
 		for(var z=0;z<node.v.length-1;z+=2) {
-			if (!match(k(0,0), run(node.v[z], environment)).v) {
-				return run(node.v[z+1], environment);
-			}
-		} return run(node.v[node.v.length-1], environment);
+			if (!match(k(0,0), run(node.v[z], env)).v) { return run(node.v[z+1], env); }
+		} return run(node.v[node.v.length-1], env);
 	}
-	if (node.t == 13) { return mend(node, environment, amendm, amendd); }
+	if (node.t == 13) { return mend(node, env, amendm, amendd); }
 	if (node.t == 14) {
-		if (node.v.length == 3 && node.v[0].t != 3) { return trap(node, environment); }
-		return mend(node, environment, dmend, dmend);
+		if (node.v.length == 3 && node.v[0].t != 3) { return trap(node, env); }
+		return mend(node, env, dmend, dmend);
 	}
 	if (node.t == 15) {
 		if (node.v.length == 3 && node.v[0].t != 3) {
-			var y=run(node.v[2], environment);
-			var x=run(node.v[1], environment);
-			var f=run(node.v[0], environment);
-			return invd(f, x, y, environment);
+			var y=run(node.v[2], env); var x=run(node.v[1], env); var f=run(node.v[0], env);
+			return invd(f, x, y, env);
 		}
-		return mend(node, environment, query, query);
+		return mend(node, env, query, query);
 	}
-	if (node.t == 5 && !node.env) { node.env = environment; }
+	if (node.t == 5 && !node.env) { node.env = env; }
 	return node;
 }
 
