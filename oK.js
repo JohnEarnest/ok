@@ -23,7 +23,6 @@ var typenames = [
 	"return"    , // 10 : value (expression)
 	"nil"       , // 11 :
 	"cond"      , // 12 : body (list of expressions)
-	"amend"     , // 13 : body (list of expressions)
 	"dmend"     , // 14 : body (list of expressions)
 ];
 
@@ -414,7 +413,7 @@ var verbs = {
 	"_" : [floor,  am(floor),  drop,   null,       drop,       cut,        null,    null  ],
 	"$" : [kfmt,   am(kfmt),   dfmt,   ad(dfmt),   ad(dfmt),   ad(dfmt),   null,    null  ],
 	"?" : [null,   unique,     rnd,    find,       null,       find,       query3,  query4],
-	"@" : [atom,   atom,       atd,    atl,        atd,        ar(atl),    null,    null  ],
+	"@" : [atom,   atom,       atd,    atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,  keval,      call,   call,       call,       call,       null,    null  ],
 	"'" : [null,   null,       null,   bin,        null,       ar(bin),    null,    null  ],
 	"/" : [null,   null,       null,   null,       join,       pack,       null,    null  ],
@@ -584,7 +583,6 @@ function run(node, env) {
 			if (!match(k(0,0), run(node.v[z], env)).v) { return run(node.v[z+1], env); }
 		} return run(node.v[node.v.length-1], env);
 	}
-	if (node.t == 13) { return mend(node.v, env, amendm, amendd); }
 	if (node.t == 14) {
 		if (node.v.length == 3 && node.v[0].t != 3) { return trap(node, env); }
 		return mend(node.v, env, dmend, dmend);
@@ -598,9 +596,8 @@ function query3(args, env) {
 	var y=run(args[2], env); var x=run(args[1], env); var f=run(args[0], env);
 	return invd(f, x, y, env);
 }
-function query4(args, env) {
-	return mend(args, env, query, query);
-}
+function query4(args, env) { return mend(args, env, query, query); }
+function amend4(args, env) { return mend(args, env, amendm, amendd); }
 
 function mend(args, env, monadic, dyadic) {
 	if (args.length != 3 && args.length != 4) { throw new Error("valence error."); }
@@ -667,7 +664,6 @@ var SEMI    = /^[\;\n]/;
 var COLON   = /^:/;
 var VIEW    = /^::/;
 var COND    = /^\$\[/;
-var AMEND   = /^@\[/;
 var DMEND   = /^\.\[/;
 var DICT    = /^\[([A-Za-z]+):/;
 var APPLY   = /^\./;
@@ -825,7 +821,6 @@ function parseNoun() {
 	}
 	if (matches(OPEN_P)) { return applyindexright(kl(parseList(CLOSE_P))); }
 	if (matches(COND))   { return k(12, parseList(CLOSE_B, true)); }
-	if (matches(AMEND))  { return k(13, parseList(CLOSE_B)); }
 	if (matches(DMEND))  { return k(14, parseList(CLOSE_B)); }
 	if (at(VERB)) {
 		var r = k(8, expect(VERB));
@@ -935,7 +930,6 @@ function format(k, indent) {
 	if (k.t == 10) { return ":"+format(k.v); }
 	if (k.t == 11) { return ""; }
 	if (k.t == 12) { return "$["+format(k.v)+"]"; }
-	if (k.t == 13) { return "@["+format(k.v)+"]"; }
 	if (k.t == 14) { return ".["+format(k.v)+"]"; }
 }
 

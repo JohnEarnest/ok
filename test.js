@@ -265,7 +265,7 @@ fail("[a:5] @ `b"                     , "index error: `b"                     );
 fail("a:1 2;a[45]"                    , "index error: 45"                     );
 fail("a:1;a[2]"                       , "function or list expected."          );
 fail("f:{x+y};f[1;2;3]"               , "valence error."                      );
-fail("@[1;2]"                         , "valence error."                      );
+fail("@[1;2]"                         , "dictionary expected, found number."  );
 fail("{5;"                            , "parse error. '}' expected."          );
 fail("(5"                             , "parse error. ')' expected."          );
 fail("a[3"                            , "parse error. ']' expected."          );
