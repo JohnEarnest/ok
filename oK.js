@@ -54,13 +54,13 @@ function kzip(x, y, f) {
 	var r=[]; for(var z=0;z<len(x);z++) { r.push(f(x.v[z],y.v[z])); } return k(3,r);
 }
 function checktype(n, t) {
-	if (n.t == t) { return; }
+	if (n.t == t) { return n; }
 	throw new Error(typenames[t]+" expected, found "+typenames[n.t]+".");
 }
 function n(x) { return checktype(x, 0); }
 function l(x) { return checktype(x, 3); }
 function d(x) { return checktype(x, 4); }
-function a(x) { if (x.t > 2) { throw new Error("domain error."); }}
+function a(x) { if (x.t > 2) { throw new Error("domain error."); } return x; }
 function p(x) { n(x); if (x.v < 0 || x.v%1 != 0)  { throw new Error("positive int expected."); }}
 function m(x) {
 	l(x); if (!x.v.every(function(y) { return y.t == 3 && len(y) == len(x.v[0]); })) { 
@@ -74,33 +74,34 @@ function m(x) {
 //
 ////////////////////////////////////
 
-function plus  (x, y) { n(x); n(y); return k(0, x.v + y.v); }
-function minus (x, y) { n(x); n(y); return k(0, x.v - y.v); }
-function times (x, y) { n(x); n(y); return k(0, x.v * y.v); }
-function divide(x, y) { n(x); n(y); return k(0, x.v / y.v); }
-function mod   (x, y) { n(x); n(y); return k(0, kmod(x.v, y.v)); }
-function max   (x, y) { n(x); n(y); return k(0, Math.max(x.v, y.v)); }
-function min   (x, y) { n(x); n(y); return k(0, Math.min(x.v, y.v)); }
-function less  (x, y) { a(x); a(y); return k(0, x.v <  y.v ? 1 : 0); }
-function more  (x, y) { a(x); a(y); return k(0, x.v >  y.v ? 1 : 0); }
-function equal (x, y) {             return k(0, x.v == y.v ? 1 : 0); }
-function cat   (x, y) {             return k(3, (x.t== 3?x.v:[x]).concat(y.t== 3?y.v:[y])); }
-function except(x, y) {             return exceptl(x, k(3, [y])); }
-function take  (x, y) {             return takel(x, k(3, [y])); }
-function rsh   (x, y) {             return rshl(x, k(3, [y])); }
-function negate   (x) { n(x);       return k(0, -x.v); }
-function first    (x) {             return (x.t != 3) ? x : x.v[0]; }
-function sqrt     (x) { n(x);       return k(0, Math.sqrt(x.v)); }
-function keys     (x) { d(x);       return k(3, Object.keys(x.v).map(asSymbol)); }
-function zero     (x) { p(x);       return kmap(iota(x), function(x) { return k(0,0); }); }
-function reverse  (x) { l(x);       return k(3,x.v.slice(0).reverse()); }
-function desc     (x) { l(x);       return reverse(asc(x)); }
-function not      (x) { n(x);       return k(0, x.v == 0 ?1:0); }
-function enlist   (x) {             return k(3, [x]); }
-function isnull   (x) {             return max(match(x, NIL),match(x,k(11))); }
-function count    (x) {             return k(0, x.t == 3 ? len(x) : 1); }
-function floor    (x) { n(x);       return k(0, Math.floor(x.v)); }
-function atom     (x) {             return k(0, x.t != 3 ?1:0); }
+function plus  (x, y) { return k(0, n(x).v + n(y).v); }
+function minus (x, y) { return k(0, n(x).v - n(y).v); }
+function times (x, y) { return k(0, n(x).v * n(y).v); }
+function divide(x, y) { return k(0, n(x).v / n(y).v); }
+function mod   (x, y) { return k(0, kmod(n(x).v, n(y).v)); }
+function max   (x, y) { return k(0, Math.max(n(x).v, n(y).v)); }
+function min   (x, y) { return k(0, Math.min(n(x).v, n(y).v)); }
+function less  (x, y) { return k(0, a(x).v <  a(y).v ? 1 : 0); }
+function more  (x, y) { return k(0, a(x).v >  a(y).v ? 1 : 0); }
+function equal (x, y) { return k(0, x.v == y.v ? 1 : 0); }
+function cat   (x, y) { return k(3, (x.t== 3?x.v:[x]).concat(y.t== 3?y.v:[y])); }
+function except(x, y) { return exceptl(x, k(3, [y])); }
+function take  (x, y) { return takel(x, k(3, [y])); }
+function rsh   (x, y) { return rshl(x, k(3, [y])); }
+function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
+function negate   (x) { return k(0, -n(x).v); }
+function first    (x) { return (x.t != 3) ? x : x.v[0]; }
+function sqrt     (x) { return k(0, Math.sqrt(n(x).v)); }
+function keys     (x) { return k(3, Object.keys(d(x).v).map(asSymbol)); }
+function zero     (x) { return kmap(iota(x), function(x) { return k(0,0); }); }
+function reverse  (x) { return k(3,l(x).v.slice(0).reverse()); }
+function desc     (x) { return reverse(asc(x)); }
+function not      (x) { return k(0, n(x).v == 0 ?1:0); }
+function enlist   (x) { return k(3, [x]); }
+function isnull   (x) { return max(match(x, NIL),match(x,k(11))); }
+function count    (x) { return k(0, x.t == 3 ? len(x) : 1); }
+function floor    (x) { return k(0, Math.floor(n(x).v)); }
+function atom     (x) { return k(0, x.t != 3 ?1:0); }
 function kfmt     (x) { var r=stok(format(x)); if (r.t!=3) { r=k(3,[r]); } return r; }
 
 function keval(x, env) {
@@ -126,27 +127,27 @@ function dfmt(x, y) {
 }
 
 function exceptl(x, y) {
-	l(x); l(y); return k(3, x.v.filter(function(z) {
+	l(y); return k(3, l(x).v.filter(function(z) {
 		return !y.v.some(function(w) { return match(z, w).v; })
 	}));
 }
 
 function drop(x, y) {
-	n(x); if (y.t != 3 || len(y) < 1) { return y; }
-	return k(3, x.v<0?y.v.slice(0,x.v):y.v.slice(x.v));
+	if (y.t != 3 || len(y) < 1) { return y; }
+	return k(3, n(x).v<0?y.v.slice(0,x.v):y.v.slice(x.v));
 }
 
 function takel(x, y) {
-	n(x); var s=x.v<0?kmod(x.v, len(y)):0;
+	var s=n(x).v<0?kmod(x.v, len(y)):0;
 	return krange(Math.abs(x.v), function(x) { return y.v[kmod(x+s, len(y))]; });
 }
 
 function rshl(x, y) {
-	l(x); l(y); count = 0; function rshr(x, y, index) {
+	count = 0; function rshr(x, y, index) {
 		return krange(x.v[index].v, function(z) {
 			return index==len(x)-1 ? y.v[kmod(count++, len(y))] : rshr(x, y, index+1);
 		});
-	} return rshr(x, y, 0);
+	} return rshr(l(x), l(y), 0);
 }
 
 function rotate(x, y) {
@@ -185,7 +186,7 @@ function flip(x) {
 }
 
 function asc(x) {
-	l(x); return k(3, x.v.map(function(x,i) { return k(0, i); }).sort(function(a, b) {
+	return k(3, l(x).v.map(function(x,i) { return k(0, i); }).sort(function(a, b) {
 		if (less(x.v[a.v], x.v[b.v]).v) { return -1; }
 		if (more(x.v[a.v], x.v[b.v]).v) { return  1; }
 		return 0;
@@ -217,8 +218,6 @@ function bin(x, y) {
 	return k(0, a);
 }
 
-function join(x, y) { l(y); return y.v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
-
 function split(x, y) {
 	var r=[k(3,[])]; for(var z=0;z<len(y);z++) {
 		if (match(x, y.v[z]).v) { r.push(k(3,[])); }
@@ -239,9 +238,8 @@ function makedict(x) {
 }
 
 function unpack(x, y) {
-	n(y); var t=k(0,y.v); var r=[];
-	var p=cat(reverse(scan(k(8, "*"), x)),k(0,1));
-	for(var z=0;z<len(p);z++) {
+	var t=k(0,n(y).v); var p=cat(reverse(scan(k(8, "*"), x)),k(0,1));
+	var r=[]; for(var z=0;z<len(p);z++) {
 		var q=floor(divide(t, p.v[z])); if (r.length!=0||q.v!=0) { r.push(q); }
 		t=floor(mod(t, p.v[z]));
 	} return k(3,r);
@@ -253,8 +251,7 @@ function pack(x, y) {
 }
 
 function inverse(f, x0, x1, n, env) {
-	var f0, f1 = applym(f, k(0,x0), env).v;
-	for(var z=0;z<20;z++) {
+	var f0, f1 = applym(f, k(0,x0), env).v; for(var z=0;z<20;z++) {
 		f0 = f1; f1 = applym(f, k(0,x1), env).v;
 		var x = x1-((f1-n)*(x1-x0))/(f1-f0); x0 = x1; x1 = x;
 		if (Math.abs(x1-x0)<0.000001) { return k(0,x1); }
