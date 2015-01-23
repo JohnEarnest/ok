@@ -28,9 +28,9 @@ function write(x, y) {
 	else { process.stdout.write(format(y)); }
 	return y;
 }
-ok.setIO("0:", 0, write);
 ok.setIO("0:", 2, write);
-ok.setIO("0:", 4, read);
+ok.setIO("0:", 4, write);
+ok.setIO("0:", 0, read);
 
 if (process.argv.length == 3) {
 	var program = fs.readFileSync(process.argv[2], { encoding:'utf8' });
