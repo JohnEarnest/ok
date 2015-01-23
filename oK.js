@@ -388,12 +388,12 @@ function applym(verb, x, env) {
 		var s=verb.sticky; s.r=x; verb.sticky=null;
 		var r=run(verb, env); verb.sticky=s; s.r=null; return r;
 	}
-	return applyverb(verb, null, x, env);
+	return applyverb(verb, [x], env);
 }
 
 function applyd(verb, x, y, env) {
 	if (verb.t == 5) { return call(verb, k(3,[x,y]), env); }
-	return applyverb(verb, x, y, env);
+	return applyverb(verb, [x, y], env);
 }
 
 var verbs = {
@@ -422,18 +422,18 @@ var verbs = {
 	"\\": [null,       unpack,     split,      null,       null,       null      ],
 };
 
-function applyverb(node, left, right, env) {
-	if (node.t == 9) { return applyadverb(node, node.verb, left, right, env); }
+function applyverb(node, args, env) {
 	if (node.curry) {
-		var c = [node.curry[0], node.curry[1]];
-		if (c[0] && c[0].t == 11) { c[0] = null; }
-		if (c[1] && c[1].t == 11) { c[1] = null; }
-		if (!left && !right && c[0] && c[1]) { right = run(c[1], env); left = run(c[0], env); }
-		else if (!left && right && c[0]) { left = run(c[0], env); }
-		else if (!left && right && !c[0] && c[1]) { left = right; right = run(c[1], env); }
-		else { return node; }
+		var a=[]; var i=0; for(var z=0;z<node.curry.length;z++) {
+			if (!isnull(node.curry[z]).v) { a[z]=run(node.curry[z], env); continue; }
+			while(i<args.length && !args[i]) { i++; } if (!args[i]) { return node; }
+			a[z]=args[i++];
+		} args = a;
 	}
-	if (left && !right) { return { t:node.t, v:node.v, curry:[left,k(11)] }; }
+	if (node.t == 9) { return applyadverb(node, node.verb, args, env); }
+	var left  = args.length == 2 ? args[0] : null;
+	var right = args.length == 2 ? args[1] : args[0];
+	if (!right) { return { t:node.t, v:node.v, curry:[left,k(11)] }; }
 	var r = null; var v = verbs[node.forcemonad ? node.v[0] : node.v];
 	if (!v) {}
 	else if (!left       && right.t != 3) { r = v[4]; }
@@ -465,17 +465,17 @@ var adverbs = {
 	"\\"  : [scanfixed,  scan,       scanwhile,   scand    ],
 };
 
-function applyadverb(node, verb, left, right, env) {
+function applyadverb(node, verb, args, env) {
 	var r = null; var v = valence(verb);
-	if (v == 0) { return applyverb(k(8,node.v), verb, right, env); }
-	if (v == 1 && !left) { r = adverbs[node.v][0]; }
-	if (v == 2 && !left) { r = adverbs[node.v][1]; }
-	if (v == 1 &&  left) { r = adverbs[node.v][2]; }
-	if (v == 2 &&  left) { r = adverbs[node.v][3]; }
+	if (v == 0) { return applyverb(k(8,node.v), [verb, args[1]], env); }
+	if (v == 1 && !args[0]) { r = adverbs[node.v][0]; }
+	if (v == 2 && !args[0]) { r = adverbs[node.v][1]; }
+	if (v == 1 &&  args[0]) { r = adverbs[node.v][2]; }
+	if (v == 2 &&  args[0]) { r = adverbs[node.v][3]; }
 	if (!r) { throw new Error("invalid arguments to "+node.v+" ["+
-			(left?format(left)+" ":"")+" "+format(verb)+" (valence "+v+"), "+format(right)+"]");
+		(left?format(args[0])+" ":"")+" "+format(verb)+" (valence "+v+"), "+format(args[1])+"]");
 	}
-	return left? r(verb, left, right, env) : r(verb, right, env);
+	return args[0] ? r(verb, args[0], args[1], env) : r(verb, args[1], env);
 }
 
 function Environment(pred) {
@@ -532,12 +532,7 @@ function call(x, y, env) {
 	if (y.t == 0) { return atd(x, y, env); }
 	if (y.t == 3 && len(y) == 0) { return x; }
 	if (x.t == 3 && y.t == 3) { return atdepth(x, y, 0, env); }
-	if (x.t == 8) {
-		if (y.t != 3)        { return applyverb(x, null, y, env); }
-		if (y.v.length == 1) { return applyverb(x, null, y.v[0], env); }
-		if (y.v.length == 2) { return applyverb(x, y.v[0], y.v[1], env); }
-		throw new Error("valence error.");
-	}
+	if (x.t == 8) { return applyverb(x, y.t == 3 ? y.v : [x], env); }
 	if (x.t != 5) { throw new Error("function or list expected."); }
 	if (y.t != 3) { y = k(3, [y]); }
 	var environment = new Environment(x.env); var curry = x.curry?x.curry.concat([]):[];
@@ -563,7 +558,7 @@ function run(node, env) {
 			r=run(node[z], env); if (r.t == 10) { return k(10, r.v); }
 		} return r;
 	}
-	if (node.t == 8 && node.curry && !node.r) { return applyverb(node, null, null, env); }
+	if (node.t == 8 && node.curry && !node.r) { return applyverb(node, [], env); }
 	if (node.sticky) { return node; }
 	if (node.t == 3) { return kmap(node, function(x){ return run(x, env); }); }
 	if (node.t == 6) { env.put(node.v, false, node); return node; }
@@ -574,13 +569,13 @@ function run(node, env) {
 	if (node.t == 8 && node.r) {
 		var right = run(node.r, env);
 		var left  = node.l ? run(node.l, env) : null;
-		return applyverb(node, left, right, env);
+		return applyverb(node, [left, right], env);
 	}
 	if (node.t == 9 && node.r) {
 		var right = run(node.r, env);
 		var verb  = run(node.verb, env);
 		var left  = node.l ? run(node.l, env) : null;
-		return applyadverb(node, verb, left, right, env);
+		return applyadverb(node, verb, [left, right], env);
 	}
 	if (node.t == 10) { return k(10, run(node.v, env)); }
 	if (node.t == 12) {
@@ -836,7 +831,7 @@ function parseNoun() {
 		if (matches(COLON)) { r.v += ":"; r.forcemonad = true; }
 		if (at(OPEN_B) && !at(DICT)) {
 			expect(OPEN_B); r.curry = parseList(CLOSE_B, false);
-			if (r.curry.length < 2) { r.curry.push(k(11)); }
+			if (r.curry.length < 2 && !r.forcemonad) { r.curry.push(k(11)); }
 		}
 		return r;
 	}
