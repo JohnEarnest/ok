@@ -397,29 +397,29 @@ function applyd(verb, x, y, env) {
 }
 
 var verbs = {
-	//     a-a         l-a         a-l         l-l         a           l
-	"+" : [plus,       ad(plus),   ad(plus),   ad(plus),   null,       flip      ],
-	"-" : [minus,      ad(minus),  ad(minus),  ad(minus),  negate,     am(negate)],
-	"*" : [times,      ad(times),  ad(times),  ad(times),  first,      first     ],
-	"%" : [divide,     ad(divide), ad(divide), ad(divide), sqrt,       am(sqrt)  ],
-	"!" : [mod,        al(mod),    rotate,     al(rotate), iota,       makedict  ],
-	"&" : [min,        ad(min),    ad(min),    ad(min),    zero,       where     ],
-	"|" : [max,        ad(max),    ad(max),    ad(max),    null,       reverse   ],
-	"<" : [less,       ad(less),   ad(less),   ad(less),   null,       asc       ],
-	">" : [more,       ad(more),   ad(more),   ad(more),   null,       desc      ],
-	"=" : [equal,      ad(equal),  ad(equal),  ad(equal),  null,       group     ],
-	"~" : [match,      match,      match,      match,      not,        am(not)   ],
-	"," : [cat,        cat,        cat,        cat,        enlist,     enlist    ],
-	"^" : [null,       except,     null,       exceptl,    isnull,     am(isnull)],
-	"#" : [take,       rsh,        takel,      rshl,       count,      count     ],
-	"_" : [drop,       null,       drop,       cut,        floor,      am(floor) ],
-	"$" : [dfmt,       ad(dfmt),   ad(dfmt),   ad(dfmt),   kfmt,       am(kfmt)  ],
-	"?" : [rnd,        find,       null,       find,       null,       unique    ],
-	"@" : [atd,        atl,        atd,        ar(atl),    atom,       atom      ],
-	"." : [call,       call,       call,       call,       keval,      keval     ],
-	"'" : [null,       bin,        null,       ar(bin),    null,       null      ],
-	"/" : [null,       null,       join,       pack,       null,       null      ],
-	"\\": [null,       unpack,     split,      null,       null,       null      ],
+	//     a       l           a-a     l-a         a-l         l-l         triad    tetrad
+	"+" : [null,   flip,       plus,   ad(plus),   ad(plus),   ad(plus),   null,    null],
+	"-" : [negate, am(negate), minus,  ad(minus),  ad(minus),  ad(minus),  null,    null],
+	"*" : [first,  first,      times,  ad(times),  ad(times),  ad(times),  null,    null],
+	"%" : [sqrt,   am(sqrt),   divide, ad(divide), ad(divide), ad(divide), null,    null],
+	"!" : [iota,   makedict,   mod,    al(mod),    rotate,     al(rotate), null,    null],
+	"&" : [zero,   where,      min,    ad(min),    ad(min),    ad(min),    null,    null],
+	"|" : [null,   reverse,    max,    ad(max),    ad(max),    ad(max),    null,    null],
+	"<" : [null,   asc,        less,   ad(less),   ad(less),   ad(less),   null,    null],
+	">" : [null,   desc,       more,   ad(more),   ad(more),   ad(more),   null,    null],
+	"=" : [null,   group,      equal,  ad(equal),  ad(equal),  ad(equal),  null,    null],
+	"~" : [not,    am(not),    match,  match,      match,      match,      null,    null],
+	"," : [enlist, enlist,     cat,    cat,        cat,        cat,        null,    null],
+	"^" : [isnull, am(isnull), null,   except,     null,       exceptl,    null,    null],
+	"#" : [count,  count,      take,   rsh,        takel,      rshl,       null,    null],
+	"_" : [floor,  am(floor),  drop,   null,       drop,       cut,        null,    null],
+	"$" : [kfmt,   am(kfmt),   dfmt,   ad(dfmt),   ad(dfmt),   ad(dfmt),   null,    null],
+	"?" : [null,   unique,     rnd,    find,       null,       find,       null,    null],
+	"@" : [atom,   atom,       atd,    atl,        atd,        ar(atl),    null,    null],
+	"." : [keval,  keval,      call,   call,       call,       call,       null,    null],
+	"'" : [null,   null,       null,   bin,        null,       ar(bin),    null,    null],
+	"/" : [null,   null,       null,   null,       join,       pack,       null,    null],
+	"\\": [null,   null,       null,   unpack,     split,      null,       null,    null],
 };
 
 function applyverb(node, args, env) {
@@ -436,12 +436,12 @@ function applyverb(node, args, env) {
 	if (!right) { return { t:node.t, v:node.v, curry:[left,k(11)] }; }
 	var r = null; var v = verbs[node.forcemonad ? node.v[0] : node.v];
 	if (!v) {}
-	else if (!left       && right.t != 3) { r = v[4]; }
-	else if (!left       && right.t == 3) { r = v[5]; }
-	else if (left.t != 3 && right.t != 3) { r = v[0]; }
-	else if (left.t == 3 && right.t != 3) { r = v[1]; }
-	else if (left.t != 3 && right.t == 3) { r = v[2]; }
-	else if (left.t == 3 && right.t == 3) { r = v[3]; }
+	else if (!left       && right.t != 3) { r = v[0]; }
+	else if (!left       && right.t == 3) { r = v[1]; }
+	else if (left.t != 3 && right.t != 3) { r = v[2]; }
+	else if (left.t == 3 && right.t != 3) { r = v[3]; }
+	else if (left.t != 3 && right.t == 3) { r = v[4]; }
+	else if (left.t == 3 && right.t == 3) { r = v[5]; }
 	if (!r) { throw new Error("invalid arguments to "+node.v); }
 	return left ? r(left, right, env) : r(right, env);
 }
