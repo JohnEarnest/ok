@@ -48,6 +48,7 @@ function kmap(x, f) {
 	if (x.t != 3) { return f(x); }
 	var r=[]; for(var z=0;z<len(x);z++) { r.push(f(x.v[z],z)); } return k(3,r);
 }
+function krange(x, f) { var r=[]; for(var z=0;z<x;z++) { r.push(f(z)); } return k(3,r); }
 function kzip(x, y, f) {
 	if (len(x) != len(y)) { throw new Error("length error."); }
 	var r=[]; for(var z=0;z<len(x);z++) { r.push(f(x.v[z],y.v[z])); } return k(3,r);
@@ -109,7 +110,7 @@ function keval(x, env) {
 
 function iota(x) {
 	if (x.t == 4) { return keys(x); }
-	p(x); var r=[]; for(var z=0;z<x.v;z++) { r.push(k(0,z)); } return k(3,r);
+	p(x); return krange(x.v, function(x) { return k(0,x); });
 }
 
 function dfmt(x, y) {
@@ -136,17 +137,15 @@ function drop(x, y) {
 }
 
 function takel(x, y) {
-	n(x); var r=[]; var s=x.v<0?kmod(x.v, len(y)):0;
-	for(var z=0;z<Math.abs(x.v);z++) { r.push(y.v[kmod(z+s, len(y))]); } return k(3,r);
+	n(x); var s=x.v<0?kmod(x.v, len(y)):0;
+	return krange(Math.abs(x.v), function(x) { return y.v[kmod(x+s, len(y))]; });
 }
 
 function rshl(x, y) {
-	l(x); l(y); count = 0;
-	function rshr(x, y, index) {
-		var r=[]; for(var z=0;z<x.v[index].v;z++) {
-			if (index == len(x)-1) { r.push(y.v[kmod(count++, len(y))]); }
-			else { r.push(rshr(x, y, index+1)); }
-		} return k(3,r);
+	l(x); l(y); count = 0; function rshr(x, y, index) {
+		return krange(x.v[index].v, function(z) {
+			return index==len(x)-1 ? y.v[kmod(count++, len(y))] : rshr(x, y, index+1);
+		});
 	} return rshr(x, y, 0);
 }
 
@@ -180,9 +179,9 @@ function rnd(x, y, env) {
 }
 
 function flip(x) {
-	m(x); var r=[]; var d=len(x.v[0]); for(var z=0;z<d;z++) {
-		r.push(k(3,[])); for(var t=0;t<len(x);t++) { r[z].v.push(x.v[t].v[z]); }
-	} return k(3,r);
+	m(x); return krange(len(x.v[0]), function(z) {
+		return krange(len(x), function(t) { return x.v[t].v[z]; });
+	});
 }
 
 function asc(x) {
@@ -218,9 +217,7 @@ function bin(x, y) {
 	return k(0, a);
 }
 
-function join(x, y) {
-	l(y); return y.v.reduce(function(z, y) { return cat(z, cat(x, y)); });
-}
+function join(x, y) { l(y); return y.v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
 
 function split(x, y) {
 	var r=[k(3,[])]; for(var z=0;z<len(y);z++) {
