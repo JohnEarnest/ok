@@ -25,7 +25,6 @@ var typenames = [
 	"cond"      , // 12 : body (list of expressions)
 	"amend"     , // 13 : body (list of expressions)
 	"dmend"     , // 14 : body (list of expressions)
-	"query"     , // 15 : body (list of expressions)
 ];
 
 var NIL = asSymbol("");
@@ -398,28 +397,28 @@ function applyd(verb, x, y, env) {
 
 var verbs = {
 	//     a       l           a-a     l-a         a-l         l-l         triad    tetrad
-	"+" : [null,   flip,       plus,   ad(plus),   ad(plus),   ad(plus),   null,    null],
-	"-" : [negate, am(negate), minus,  ad(minus),  ad(minus),  ad(minus),  null,    null],
-	"*" : [first,  first,      times,  ad(times),  ad(times),  ad(times),  null,    null],
-	"%" : [sqrt,   am(sqrt),   divide, ad(divide), ad(divide), ad(divide), null,    null],
-	"!" : [iota,   makedict,   mod,    al(mod),    rotate,     al(rotate), null,    null],
-	"&" : [zero,   where,      min,    ad(min),    ad(min),    ad(min),    null,    null],
-	"|" : [null,   reverse,    max,    ad(max),    ad(max),    ad(max),    null,    null],
-	"<" : [null,   asc,        less,   ad(less),   ad(less),   ad(less),   null,    null],
-	">" : [null,   desc,       more,   ad(more),   ad(more),   ad(more),   null,    null],
-	"=" : [null,   group,      equal,  ad(equal),  ad(equal),  ad(equal),  null,    null],
-	"~" : [not,    am(not),    match,  match,      match,      match,      null,    null],
-	"," : [enlist, enlist,     cat,    cat,        cat,        cat,        null,    null],
-	"^" : [isnull, am(isnull), null,   except,     null,       exceptl,    null,    null],
-	"#" : [count,  count,      take,   rsh,        takel,      rshl,       null,    null],
-	"_" : [floor,  am(floor),  drop,   null,       drop,       cut,        null,    null],
-	"$" : [kfmt,   am(kfmt),   dfmt,   ad(dfmt),   ad(dfmt),   ad(dfmt),   null,    null],
-	"?" : [null,   unique,     rnd,    find,       null,       find,       null,    null],
-	"@" : [atom,   atom,       atd,    atl,        atd,        ar(atl),    null,    null],
-	"." : [keval,  keval,      call,   call,       call,       call,       null,    null],
-	"'" : [null,   null,       null,   bin,        null,       ar(bin),    null,    null],
-	"/" : [null,   null,       null,   null,       join,       pack,       null,    null],
-	"\\": [null,   null,       null,   unpack,     split,      null,       null,    null],
+	"+" : [null,   flip,       plus,   ad(plus),   ad(plus),   ad(plus),   null,    null  ],
+	"-" : [negate, am(negate), minus,  ad(minus),  ad(minus),  ad(minus),  null,    null  ],
+	"*" : [first,  first,      times,  ad(times),  ad(times),  ad(times),  null,    null  ],
+	"%" : [sqrt,   am(sqrt),   divide, ad(divide), ad(divide), ad(divide), null,    null  ],
+	"!" : [iota,   makedict,   mod,    al(mod),    rotate,     al(rotate), null,    null  ],
+	"&" : [zero,   where,      min,    ad(min),    ad(min),    ad(min),    null,    null  ],
+	"|" : [null,   reverse,    max,    ad(max),    ad(max),    ad(max),    null,    null  ],
+	"<" : [null,   asc,        less,   ad(less),   ad(less),   ad(less),   null,    null  ],
+	">" : [null,   desc,       more,   ad(more),   ad(more),   ad(more),   null,    null  ],
+	"=" : [null,   group,      equal,  ad(equal),  ad(equal),  ad(equal),  null,    null  ],
+	"~" : [not,    am(not),    match,  match,      match,      match,      null,    null  ],
+	"," : [enlist, enlist,     cat,    cat,        cat,        cat,        null,    null  ],
+	"^" : [isnull, am(isnull), null,   except,     null,       exceptl,    null,    null  ],
+	"#" : [count,  count,      take,   rsh,        takel,      rshl,       null,    null  ],
+	"_" : [floor,  am(floor),  drop,   null,       drop,       cut,        null,    null  ],
+	"$" : [kfmt,   am(kfmt),   dfmt,   ad(dfmt),   ad(dfmt),   ad(dfmt),   null,    null  ],
+	"?" : [null,   unique,     rnd,    find,       null,       find,       query3,  query4],
+	"@" : [atom,   atom,       atd,    atl,        atd,        ar(atl),    null,    null  ],
+	"." : [keval,  keval,      call,   call,       call,       call,       null,    null  ],
+	"'" : [null,   null,       null,   bin,        null,       ar(bin),    null,    null  ],
+	"/" : [null,   null,       null,   null,       join,       pack,       null,    null  ],
+	"\\": [null,   null,       null,   unpack,     split,      null,       null,    null  ],
 };
 
 function applyverb(node, args, env) {
@@ -436,6 +435,8 @@ function applyverb(node, args, env) {
 	if (!right) { return { t:node.t, v:node.v, curry:[left,k(11)] }; }
 	var r = null; var v = verbs[node.forcemonad ? node.v[0] : node.v];
 	if (!v) {}
+	else if (args.length == 3) { return v[6](args, env); }
+	else if (args.length == 4) { return v[7](args, env); }
 	else if (!left       && right.t != 3) { r = v[0]; }
 	else if (!left       && right.t == 3) { r = v[1]; }
 	else if (left.t != 3 && right.t != 3) { r = v[2]; }
@@ -583,29 +584,31 @@ function run(node, env) {
 			if (!match(k(0,0), run(node.v[z], env)).v) { return run(node.v[z+1], env); }
 		} return run(node.v[node.v.length-1], env);
 	}
-	if (node.t == 13) { return mend(node, env, amendm, amendd); }
+	if (node.t == 13) { return mend(node.v, env, amendm, amendd); }
 	if (node.t == 14) {
 		if (node.v.length == 3 && node.v[0].t != 3) { return trap(node, env); }
-		return mend(node, env, dmend, dmend);
-	}
-	if (node.t == 15) {
-		if (node.v.length == 3 && node.v[0].t != 3) {
-			var y=run(node.v[2], env); var x=run(node.v[1], env); var f=run(node.v[0], env);
-			return invd(f, x, y, env);
-		}
-		return mend(node, env, query, query);
+		return mend(node.v, env, dmend, dmend);
 	}
 	if (node.t == 5 && !node.env) { node.env = env; }
 	return node;
 }
 
-function mend(node, env, monadic, dyadic) {
-	if (node.v.length != 3 && node.v.length != 4) { throw new Error("valence error."); }
-	var ds = run(node.v[0], env);
+function query3(args, env) {
+	if (args[0].t == 3) { return mend(args, env, query, query); }
+	var y=run(args[2], env); var x=run(args[1], env); var f=run(args[0], env);
+	return invd(f, x, y, env);
+}
+function query4(args, env) {
+	return mend(args, env, query, query);
+}
+
+function mend(args, env, monadic, dyadic) {
+	if (args.length != 3 && args.length != 4) { throw new Error("valence error."); }
+	var ds = run(args[0], env);
 	var d = (ds.t == 2 ? env.lookup(ds.v.slice(1),true) : ds); l(d);
-	var i = run(node.v[1], env);
-	var y = node.v[3] ? run(node.v[3], env) : null;
-	var f = run(node.v[2], env);
+	var i = run(args[1], env);
+	var y = args[3] ? run(args[3], env) : null;
+	var f = run(args[2], env);
 	(y?dyadic:monadic)(d, i, y, f, env);
 	if (ds.t!=2) { return d; } env.put(ds.v.slice[1], true, d); return ds;
 }
@@ -666,7 +669,6 @@ var VIEW    = /^::/;
 var COND    = /^\$\[/;
 var AMEND   = /^@\[/;
 var DMEND   = /^\.\[/;
-var QUERY   = /^\?\[/;
 var DICT    = /^\[([A-Za-z]+):/;
 var APPLY   = /^\./;
 var OPEN_B  = /^\[/;
@@ -825,7 +827,6 @@ function parseNoun() {
 	if (matches(COND))   { return k(12, parseList(CLOSE_B, true)); }
 	if (matches(AMEND))  { return k(13, parseList(CLOSE_B)); }
 	if (matches(DMEND))  { return k(14, parseList(CLOSE_B)); }
-	if (matches(QUERY))  { return k(15, parseList(CLOSE_B)); }
 	if (at(VERB)) {
 		var r = k(8, expect(VERB));
 		if (matches(COLON)) { r.v += ":"; r.forcemonad = true; }
@@ -936,7 +937,6 @@ function format(k, indent) {
 	if (k.t == 12) { return "$["+format(k.v)+"]"; }
 	if (k.t == 13) { return "@["+format(k.v)+"]"; }
 	if (k.t == 14) { return ".["+format(k.v)+"]"; }
-	if (k.t == 15) { return "?["+format(k.v)+"]"; }
 }
 
 // export the public interface:
