@@ -23,7 +23,6 @@ var typenames = [
 	"return"    , // 10 : value (expression)
 	"nil"       , // 11 :
 	"cond"      , // 12 : body (list of expressions)
-	"dmend"     , // 14 : body (list of expressions)
 ];
 
 var NIL = asSymbol("");
@@ -414,7 +413,7 @@ var verbs = {
 	"$" : [kfmt,   am(kfmt),   dfmt,   ad(dfmt),   ad(dfmt),   ad(dfmt),   null,    null  ],
 	"?" : [null,   unique,     rnd,    find,       null,       find,       query3,  query4],
 	"@" : [atom,   atom,       atd,    atl,        atd,        ar(atl),    amend4,  amend4],
-	"." : [keval,  keval,      call,   call,       call,       call,       null,    null  ],
+	"." : [keval,  keval,      call,   call,       call,       call,       dmend3,  dmend4],
 	"'" : [null,   null,       null,   bin,        null,       ar(bin),    null,    null  ],
 	"/" : [null,   null,       null,   null,       join,       pack,       null,    null  ],
 	"\\": [null,   null,       null,   unpack,     split,      null,       null,    null  ],
@@ -434,8 +433,8 @@ function applyverb(node, args, env) {
 	if (!right) { return { t:node.t, v:node.v, curry:[left,k(11)] }; }
 	var r = null; var v = verbs[node.forcemonad ? node.v[0] : node.v];
 	if (!v) {}
-	else if (args.length == 3) { return v[6](args, env); }
-	else if (args.length == 4) { return v[7](args, env); }
+	else if (args.length == 3)            { r = v[6]; }
+	else if (args.length == 4)            { r = v[7]; }
 	else if (!left       && right.t != 3) { r = v[0]; }
 	else if (!left       && right.t == 3) { r = v[1]; }
 	else if (left.t != 3 && right.t != 3) { r = v[2]; }
@@ -443,6 +442,7 @@ function applyverb(node, args, env) {
 	else if (left.t != 3 && right.t == 3) { r = v[4]; }
 	else if (left.t == 3 && right.t == 3) { r = v[5]; }
 	if (!r) { throw new Error("invalid arguments to "+node.v); }
+	if (args.length > 2) { return r(args, env); }
 	return left ? r(left, right, env) : r(right, env);
 }
 
@@ -583,21 +583,21 @@ function run(node, env) {
 			if (!match(k(0,0), run(node.v[z], env)).v) { return run(node.v[z+1], env); }
 		} return run(node.v[node.v.length-1], env);
 	}
-	if (node.t == 14) {
-		if (node.v.length == 3 && node.v[0].t != 3) { return trap(node, env); }
-		return mend(node.v, env, dmend, dmend);
-	}
 	if (node.t == 5 && !node.env) { node.env = env; }
 	return node;
 }
 
+function dmend3(args, env) {
+	if (args[0].t != 3) { return trap(args, env); } return dmend4(args, env);
+}
 function query3(args, env) {
-	if (args[0].t == 3) { return mend(args, env, query, query); }
+	if (args[0].t == 3) { return query4(args, env); }
 	var y=run(args[2], env); var x=run(args[1], env); var f=run(args[0], env);
 	return invd(f, x, y, env);
 }
 function query4(args, env) { return mend(args, env, query, query); }
 function amend4(args, env) { return mend(args, env, amendm, amendd); }
+function dmend4(args, env) { return mend(args, env, dmend, dmend); }
 
 function mend(args, env, monadic, dyadic) {
 	if (args.length != 3 && args.length != 4) { throw new Error("valence error."); }
@@ -610,8 +610,8 @@ function mend(args, env, monadic, dyadic) {
 	if (ds.t!=2) { return d; } env.put(ds.v.slice[1], true, d); return ds;
 }
 
-function trap(node, env) {
-	try { var a=run(node.v[1],env); var f=run(node.v[0],env); return k(3,[k(0,0),call(f, a)]); }
+function trap(args, env) {
+	try { var a=run(args[1],env); var f=run(args[0],env); return k(3,[k(0,0),call(f, a)]); }
 	catch(error) { return k(3, [k(0,1), stok(error.message)]); }
 }
 
@@ -664,7 +664,6 @@ var SEMI    = /^[\;\n]/;
 var COLON   = /^:/;
 var VIEW    = /^::/;
 var COND    = /^\$\[/;
-var DMEND   = /^\.\[/;
 var DICT    = /^\[([A-Za-z]+):/;
 var APPLY   = /^\./;
 var OPEN_B  = /^\[/;
@@ -724,8 +723,8 @@ function indexedassign(node, indexer) {
 	var gl = matches(COLON);
 	var ex = parseEx(parseNoun());
 	//t[x]::z  ->  ..[`t;x;{y};z]   t[x]:z  ->  t:.[t;x;{y};z]
-	if (!gl) { node.r = { t:14, v:[ k(7,node.v), kl(indexer), op, ex] }; return node; }
-	return { t:8, v:".", r:{ t:14, v:[asSymbol(node.v), kl(indexer), op, ex] }};
+	if (!gl) { node.r = { t:8, v:".", curry:[ k(7,node.v), kl(indexer), op, ex] }; return node; }
+	return { t:8, v:".", r:{ t:8, v:".", curry:[asSymbol(node.v), kl(indexer), op, ex] }};
 }
 
 function compoundassign(node, indexer) {
@@ -739,8 +738,8 @@ function compoundassign(node, indexer) {
 		return { t:node.t, v:node.v, global:gl, r:asVerb(op, v, ex) };
 	}
 	// t[x]+::z -> ..[`t;x;+:;z]   t[x]+:z -> t:.[t;x;{y};z]
-	if (!gl) { node.r = { t:14, v:[ k(7,node.v), kl(indexer), { t:8, v:op }, ex] }; return node; }
-	return { t:8, v:".", r: { t:14, v:[asSymbol(node.v), indexer, { t:8, v:op }, ex] }};
+	if (!gl) { node.r = { t:8, v:".", curry:[ k(7,node.v), kl(indexer), { t:8, v:op }, ex] }; return node; }
+	return { t:8, v:".", r: { t:8, v:".", curry:[asSymbol(node.v), indexer, { t:8, v:op }, ex] }};
 }
 
 function applycallright(node) {
@@ -758,7 +757,7 @@ function applyindexright(node) {
 
 function findSticky(node) {
 	if (node == null || node.t == 9 && node.r == null) { return null; }
-	while(node.t == 8 || node.t == 9) {
+	while(node.t == 8 && !node.curry || node.t == 9) {
 		if (node.r == null) { return node; } node = node.r;
 	} return null;
 }
@@ -821,7 +820,6 @@ function parseNoun() {
 	}
 	if (matches(OPEN_P)) { return applyindexright(kl(parseList(CLOSE_P))); }
 	if (matches(COND))   { return k(12, parseList(CLOSE_B, true)); }
-	if (matches(DMEND))  { return k(14, parseList(CLOSE_B)); }
 	if (at(VERB)) {
 		var r = k(8, expect(VERB));
 		if (matches(COLON)) { r.v += ":"; r.forcemonad = true; }
@@ -930,7 +928,6 @@ function format(k, indent) {
 	if (k.t == 10) { return ":"+format(k.v); }
 	if (k.t == 11) { return ""; }
 	if (k.t == 12) { return "$["+format(k.v)+"]"; }
-	if (k.t == 14) { return ".["+format(k.v)+"]"; }
 }
 
 // export the public interface:
