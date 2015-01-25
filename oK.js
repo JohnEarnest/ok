@@ -220,8 +220,7 @@ function bin(x, y) {
 
 function split(x, y) {
 	var r=[k(3,[])]; for(var z=0;z<len(y);z++) {
-		if (match(x, y.v[z]).v) { r.push(k(3,[])); }
-		else { r[r.length-1].v.push(y.v[z]); }
+		if (match(x, y.v[z]).v) { r.push(k(3,[])); } else { r[r.length-1].v.push(y.v[z]); }
 	} return k(3,r);
 }
 
@@ -303,27 +302,23 @@ function overd(dyad, x, y, env) {
 
 function fixed(monad, x, env) {
 	var r=x; var p=x;
-	do { p=r; r=applym(monad, r, env); } while(!match(p, r).v && !match(r, x).v);
-	return p;
+	do { p=r; r=applym(monad, r, env); } while(!match(p, r).v && !match(r, x).v); return p;
 }
 
 function fixedwhile(monad, x, y, env) {
 	if (x.t == 0) { for(var z=0;z<x.v;z++) { y = applym(monad, y, env); } }
-	else { do { y = applym(monad, y, env); } while (applym(x, y, env).v != 0); }
-	return y;
+	else { do { y = applym(monad, y, env); } while (applym(x, y, env).v != 0); } return y;
 }
 
 function scan(dyad, x, env) {
 	if (x.t != 3 || len(x) < 1) { return x; } if (len(x) == 1) { return first(x); }
 	var c=x.v[0]; var r=[c];
-	for(var z=1;z<len(x);z++) { c = applyd(dyad, c, x.v[z], env); r.push(c); }
-	return k(3, r);
+	for(var z=1;z<len(x);z++) { c = applyd(dyad, c, x.v[z], env); r.push(c); } return k(3,r);
 }
 
 function scand(dyad, x, y, env) {
-	if (len(y) < 1) { return x; }
-	var r=[x]; for(var z=0;z<len(y);z++) { x = applyd(dyad, x, y.v[z], env); r.push(x); }
-	return k(3,r);
+	if (len(y) < 1) { return x; } var r=[x];
+	for(var z=0;z<len(y);z++) { x = applyd(dyad, x, y.v[z], env); r.push(x); } return k(3,r);
 }
 
 function scanfixed(monad, x, env) {
@@ -467,7 +462,7 @@ function applyadverb(node, verb, args, env) {
 	if (v == 1 &&  args[0]) { r = adverbs[node.v][2]; }
 	if (v == 2 &&  args[0]) { r = adverbs[node.v][3]; }
 	if (!r) { throw new Error("invalid arguments to "+node.v+" ["+
-		(left?format(args[0])+" ":"")+" "+format(verb)+" (valence "+v+"), "+format(args[1])+"]");
+		(args[0]?format(args[0])+" ":"")+" "+format(verb)+" (valence "+v+"), "+format(args[1])+"]");
 	}
 	return args[0] ? r(verb, args[0], args[1], env) : r(verb, args[1], env);
 }
