@@ -553,7 +553,9 @@ function run(node, env) {
 	}
 	if (node.t == 8 && node.curry && !node.r) { return applyverb(node, [], env); }
 	if (node.sticky) { return node; }
-	if (node.t == 3) { return kmap(node, function(x){ return run(x, env); }); }
+	if (node.t == 3) {
+		var r=[]; for(var z=len(node)-1;z>=0;z--) { r.unshift(run(node.v[z], env)); } return k(3,r);
+	}
 	if (node.t == 6) { env.put(node.v, false, node); return node; }
 	if (node.t == 7) {
 		if (node.r) { env.put(node.v, node.global, run(node.r, env)); }
