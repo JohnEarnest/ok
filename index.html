@@ -56,13 +56,16 @@ a {
 	border: none;
 	bottom: 0px;
 	width: 100%;
+	height: 25px;
+	max-height: 25px;
+	overflow: hidden;
 }
 .err {
 	color: red;
 	background-color: pink;
 	display: none;
 }
-input:focus {
+textarea:focus {
 	outline: none;
 }
 ::-webkit-scrollbar {
@@ -73,7 +76,7 @@ input:focus {
 <body>
 	<div id="repl">
 		<div id="scroll-w"><div id="scroll-h"><div id="scroll"></div></div></div>
-		<div><input type="text" id="prompt" autocomplete="off"></div>
+		<div><textarea id="prompt" autocomplete="off"></textarea></div>
 	</div>
 </body>
 
@@ -113,22 +116,22 @@ var entryIndex = 0;
 
 function processInput(e) {
 	if (e.keyCode == 38) {
-		if (entries.length == 0) { return; }
+		if (entries.length == 0) { return false; }
 		if (entryIndex > 0) {
 			entryIndex--;
 			prompt.value = entries[entryIndex];
 		}
-		return;
+		return false;
 	}
 	if (e.keyCode == 40) {
 		if (entries.length == 0 || entryIndex >= entries.length-1) {
 			entryIndex = entries.length;
 			prompt.value = "";
-			return;
+			return false;
 		}
 		entryIndex++;
 		prompt.value = entries[entryIndex];
-		return;
+		return false;
 	}
 	if (e.keyCode != 13) { return; }
 	printReplBare("<font color='gray'>"+escapeHTML(prompt.value)+"</font>");
@@ -137,6 +140,7 @@ function processInput(e) {
 	entryIndex = entries.length;
 	prompt.value = "";
 	printRepl(partial == "" ? "&nbsp;&nbsp" : "&gt;&nbsp;");
+	return false;
 }
 
 var partial = "";
