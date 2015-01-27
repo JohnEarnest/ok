@@ -57,6 +57,11 @@ a {
 	bottom: 0px;
 	width: 100%;
 }
+.err {
+	color: red;
+	background-color: pink;
+	display: none;
+}
 input:focus {
 	outline: none;
 }
@@ -97,6 +102,11 @@ function escapeHTML(text) {
 	return text;
 }
 
+function toggle(id) {
+	e = document.getElementById(id);
+	e.style.display = e.style.display == "none" ? "inline" : "none";
+}
+
 var env = new Environment(null);
 var entries = [];
 var entryIndex = 0;
@@ -130,6 +140,7 @@ function processInput(e) {
 }
 
 var partial = "";
+var eid = 0;
 function processLine() {
 	if (prompt.value == "\\\\") { partial = ""; return; }
 	if (prompt.value == "kOS") { printRepl("one system/all devices"); return; }
@@ -163,7 +174,12 @@ function processLine() {
 			printRepl("completed in "+(endtime-starttime)+"ms.");
 		}
 	}
-	catch(error) { printRepl("<font color='red'>"+error.message+"</font>"); }
+	catch(error) {
+		printRepl(
+			"<span style='color: red;' onclick='toggle(\"e"+(eid)+"\")'>"+error.message+
+			"<div class='err' id='e"+(eid++)+"'><br>"+escapeHTML(error.stack)+"</div></span>"
+		);
+	}
 }
 
 function printReplBare(x) {
