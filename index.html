@@ -154,7 +154,7 @@ function processLine() {
 		showtime = true;
 	}
 	var parsed = null;
-	try { parsed = parse(partial + ";" + prompt.value); }
+	try { parsed = parse(" " + partial + "; " + prompt.value); }
 	catch(error) {
 		if (done() && (
 			error.message == "parse error. '}' expected." ||
@@ -196,13 +196,14 @@ function printRepl(x) {
 	printReplBare(x);
 }
 
-function print(x) {
-	if (typeof tojs(x) == 'string') { printRepl(escapeHTML(tojs(x))); }
-	else { printRepl(format(x)); }
+function print(x, y) {
+	// for now, ignore the left output symbol.
+	if (typeof tojs(y) == 'string') { printRepl(escapeHTML(tojs(y))); }
+	else { printRepl(format(y)); }
 	return x;
 }
 
-setIO("0:", 0, print);
-setIO("0:", 1, print);
+setIO("0:", 2, print);
+setIO("0:", 4, print);
 </script>
 </html>
