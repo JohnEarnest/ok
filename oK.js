@@ -556,6 +556,7 @@ function run(node, env) {
 	if (node.t == 3) {
 		var r=[]; for(var z=len(node)-1;z>=0;z--) { r.unshift(run(node.v[z], env)); } return k(3,r);
 	}
+	if (node.t == 5 && node.r) { return call(node, k(3,[run(node.r, env)]), env); }
 	if (node.t == 6) { env.put(node.v, false, node); return node; }
 	if (node.t == 7) {
 		if (node.r) { env.put(node.v, node.global, run(node.r, env)); }
@@ -868,6 +869,7 @@ function parseEx(node) {
 	}
 	if (at(VERB)) {
 		var x = parseNoun();
+		if (x.forcemonad) { node.r = parseEx(x); return node; }
 		if (at(ADVERB)) { return parseAdverb(node, x); }
 		x.l = node; x.r = parseEx(parseNoun()); node = x;
 	}
