@@ -748,7 +748,7 @@ function applycallright(node) {
 
 function applyindexright(node) {
 	while (matches(OPEN_B)) { node = asVerb(".", node, k(3, parseList(CLOSE_B))); }
-	if (node.t == 3 && atNoun()) { return asVerb("@", node, null); } return node;
+	if (node.t == 3 && atNoun() && !at(OPEN_C)) { return asVerb("@", node, null); } return node;
 }
 
 function findSticky(node) {
