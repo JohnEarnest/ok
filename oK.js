@@ -579,7 +579,9 @@ function run(node, env) {
 			if (!match(k(0,0), run(node.v[z], env)).v) { return run(node.v[z+1], env); }
 		} return run(node.v[node.v.length-1], env);
 	}
-	if (node.t == 5 && !node.env) { node.env = env; }
+	if (node.t == 5 && !node.env) {
+		return { t:5, v:node.v, args:node.args, curry:node.curry, env:env };
+	}
 	return node;
 }
 
