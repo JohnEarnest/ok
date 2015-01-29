@@ -658,7 +658,7 @@ var VERB    = /^(\+|-|\*|%|!|&|\||<|>|=|~|,|\^|#|_|\$|\?|@|\.)/;
 var ASSIGN  = /^(\+|-|\*|%|!|&|\||<|>|=|~|,|\^|#|_|\$|\?|@|\.):/;
 var IOVERB  = /^\d:/;
 var ADVERB  = /^(':|'|\/:|\\:|\/|\\)/;
-var SEMI    = /^[\;\n]/;
+var SEMI    = /^;/;
 var COLON   = /^:/;
 var VIEW    = /^::/;
 var COND    = /^\$\[/;
@@ -674,7 +674,7 @@ var CLOSE_C = /^}/;
 var desc = {};
 desc[NUMBER ]="number";desc[NAME   ]="name"   ;desc[SYMBOL ]="symbol";desc[STRING]="string";
 desc[VERB   ]="verb"  ;desc[IOVERB ]="IO verb";desc[ADVERB ]="adverb";desc[SEMI  ]="';'";
-desc[COLON  ]="';'"   ;desc[VIEW   ]="view"   ;desc[COND   ]="'$['"  ;desc[APPLY ]="'.'";
+desc[COLON  ]="':'"   ;desc[VIEW   ]="view"   ;desc[COND   ]="'$['"  ;desc[APPLY ]="'.'";
 desc[OPEN_B ]="'['"   ;desc[OPEN_P ]="'('"    ;desc[OPEN_C ]="'{'"   ;desc[ASSIGN]="assignment";
 desc[CLOSE_B]="']'"   ;desc[CLOSE_P]="')'"    ;desc[CLOSE_C]="'}'";
 
@@ -683,7 +683,7 @@ var funcdepth = 0;
 function begin(str) {
 	str = str.replace(/\s\/[^\n]*/g, "");                          // strip comments
 	str = str.replace(/([A-Za-z0-9\]\)])-(\d|(\.\d))/g, "$1- $2"); // minus ambiguity
-	text = str.trim(); funcdepth = 0;
+	text = str.trim().replace(/\n/g, ";"); funcdepth = 0;
 }
 function done()         { return text.length < 1; }
 function toplevel()     { return funcdepth == 0; }
