@@ -324,7 +324,7 @@ function scand(dyad, x, y, env) {
 function scanfixed(monad, x, env) {
 	var r=[x]; while(true) {
 		var p = r[r.length-1]; var n = applym(monad, p, env);
-		if (match(p, n).v || match(n, atom).v) { break; } r.push(n);
+		if (match(p, n).v || match(n, x).v) { break; } r.push(n);
 	} return k(3,r);
 }
 
