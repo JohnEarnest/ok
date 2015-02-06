@@ -214,7 +214,7 @@ function unique(x) {
 
 function bin(x, y) {
 	var a=0; var b=len(x); if (b<1 || less(y, x.v[0]).v) { return k(0,-1); }
-	while(b - a > 1) { var i=Math.floor((b+a)/2); if (more(x.v[i], y).v) { b=i; } else { a=i; }}
+	while(b - a > 1) { var i=a+Math.floor((b-a)/2); if (more(x.v[i], y).v) { b=i; } else { a=i; } }
 	return k(0, a);
 }
 
