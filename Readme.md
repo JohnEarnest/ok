@@ -9,7 +9,15 @@ Trying oK
 ---------
 oK does not intend to be particularly fast or suitable for any practical purpose beyond learning, instead emphasizing simplicity of implementation. JavaScript was chosen as an implementation language because it is familar to many programmers and has first-class functions.
 
-The easiest way to run oK is using the [Browser-based REPL](http://johnearnest.github.io/ok/index.html). Alternatively, you can run it via the command line with  [Node.js](http://nodejs.org). `test.js` runs a series of automated tests:
+The easiest way to run oK is using the [Browser-based REPL](http://johnearnest.github.io/ok/index.html). This REPL features a few special commands which can be issued at the beginning of a line:
+
+- `\\` (while entering a multiline expression) cancel this expression.
+- `\e` toggle the scratchpad editor pane. This editor's content is persisted via localstorage (in case your browser crashes or is closed accidentally). 
+- `\r` run the contents of the editor pane. Alternately, press shift+enter with the editor focused.
+- `\c` clear the output log.
+- `\t` time executing the remainder of the line.
+
+Alternatively, you can run oK via the command line with  [Node.js](http://nodejs.org). `test.js` runs a series of automated tests:
 
 	je@indigo$ node test.js
 

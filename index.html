@@ -15,6 +15,28 @@ body {
 a {
 	color: black;
 }
+#editor {
+	background-color: orange;
+	position: absolute;
+	top: 5%;
+	left: 50%;
+	width: 40%;
+	height: 90%;
+}
+textarea {
+	background-color: lightyellow;
+	font-smooth: never;
+	-webkit-font-smoothing : none;
+	font-family: "Monaco", monospace;
+	font-size: 9pt;
+	width: 100%;
+	height: 100%;
+	border: none;
+	border-left: 1px solid gray;
+	-moz-tab-size:4;
+	-o-tab-size:4;
+	tab-size:4;
+}
 #repl {
 	background-color: orange;
 	position: absolute;
@@ -78,12 +100,45 @@ textarea:focus {
 		<div id="scroll-w"><div id="scroll-h"><div id="scroll"></div></div></div>
 		<div><textarea id="prompt" autocomplete="off"></textarea></div>
 	</div>
+	<div id="editor" style="display: none;">
+		<textarea id="textedit"></textarea>
+	</div>
 </body>
 
 <script src="oK.js"></script>
 <script src="convert.js"></script>
 
 <script>
+
+document.getElementById("textedit").onkeydown = function(event) {
+	if (event.keyCode == 13 && event.shiftKey) {
+		saveBuffer();
+		prompt.value = document.getElementById("textedit").value;
+		processLine();
+		prompt.value = "";
+		printRepl("&nbsp;&nbsp");
+		return false;
+	}
+	if (event.keyCode == 9) {
+		var text  = this.value;
+		var start = this.selectionStart;
+		var end   = this.selectionEnd;
+		this.value = text.substring(0, start) + '\t' + text.substring(end);
+		this.selectionStart = this.selectionEnd = start + 1;
+		saveBuffer();
+		return false;
+	}
+	saveBuffer();
+};
+function saveBuffer() {
+	localStorage.setItem("oKeditbuffer", document.getElementById("textedit").value);
+}
+function loadBuffer() {
+	var editbuffer = localStorage.getItem("oKeditbuffer");
+	if (!editbuffer) { editbuffer = "/ contents of this editor is automatically saved in local storage."; }
+	document.getElementById("textedit").value = editbuffer;
+}
+
 var repl = document.getElementById("repl");
 var scroll = document.getElementById("scroll");
 var panel = document.getElementById("scroll-h");
@@ -147,6 +202,30 @@ var partial = "";
 var eid = 0;
 function processLine() {
 	if (prompt.value == "\\\\") { partial = ""; return; }
+	if (prompt.value == "\\e") {
+		var editor = document.getElementById("editor");
+		if (editor.style.display == "inline") {
+			editor.style.display = "none";
+			repl.style.width = "80%";
+			saveBuffer();
+		}
+		else {
+			editor.style.display = "inline";
+			repl.style.width = "40%";
+			loadBuffer();
+			document.getElementById("textedit").focus();
+		}
+		return;
+	}
+	if (prompt.value == "\\r") {
+		saveBuffer();
+		prompt.value = document.getElementById("textedit").value;
+	}
+	if (prompt.value == "\\c") {
+		scroll.innerHTML = "";
+		panel.scrollTop = panel.scrollHeight;
+		return;
+	}
 	if (prompt.value == "kOS") { printRepl("one system/all devices"); return; }
 	var showtime = false;
 	if (prompt.value.lastIndexOf("\\t") == 0) {
