@@ -113,7 +113,12 @@ textarea:focus {
 document.getElementById("textedit").onkeydown = function(event) {
 	if (event.keyCode == 13 && event.shiftKey) {
 		saveBuffer();
-		prompt.value = document.getElementById("textedit").value;
+		if (this.selectionStart == this.selectionEnd) {
+			prompt.value = this.value;
+		}
+		else {
+			prompt.value = this.value.substring(this.selectionStart, this.selectionEnd);
+		}
 		processLine();
 		prompt.value = "";
 		printRepl("&nbsp;&nbsp");
