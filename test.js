@@ -425,14 +425,14 @@ test("5 1 {x+y+z}[3]\\5 1 3"          , "(5 1\n 13 9\n 17 13\n 23 19)"        );
 test("r:{x+y+z};5 1 r[3]\\5 1 3"      , "(5 1\n 13 9\n 17 13\n 23 19)"        );
 test("r:5 1;r{x+y+z}[3]\\5 1 3"       , "(5 1\n 13 9\n 17 13\n 23 19)"        );
 test("=(-100 100;-100 5;1 5;1 5)"     , "(,0\n ,1\n 2 3)"                     );
+test("0w -0w0w0w"                     , "0w -0w 0w 0w"                        );
+test("(0w<5;0w>5;-0w<5;-0w>5)"        , "0 1 1 0"                             );
 
 // NOTES/TODO:
 
 // clear up application/dict ambiguity.
 // f[a:1]  is f.,(a:1)
 // f [a:1] is f.,[a:1]
-
-// add support for infinity literals 0w and -0w
 
 // `a`b!2 3 should construct a dictionary?
 

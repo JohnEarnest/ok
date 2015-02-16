@@ -647,7 +647,7 @@ function query(t, c, a, b, env) {
 //
 ////////////////////////////////////
 
-var NUMBER  = /^(-?\d*\.?\d+)/;
+var NUMBER  = /^((-?0w)|(-?\d*\.?\d+))/;
 var BOOL    = /^[01]+b/;
 var NAME    = /^([A-Za-z]+)/;
 var SYMBOL  = /^(`[A-Za-z]*)/;
@@ -780,8 +780,9 @@ function parseNoun() {
 		return applyindexright(k(3, r));
 	}
 	if (at(NUMBER)) {
-		var r = []; while(at(NUMBER)) { r.push(k(0, parseFloat(expect(NUMBER)))); }
-		return applyindexright(kl(r));
+		var r = []; while(at(NUMBER)) {
+			var n=expect(NUMBER); r.push(k(0, n=="0w"?1/0:n=="-0w"?-1/0:parseFloat(n)));
+		} return applyindexright(kl(r));
 	}
 	if (at(SYMBOL)) {
 		var r = []; while(at(SYMBOL)) { r.push(k(2, expect(SYMBOL))); }
@@ -893,7 +894,10 @@ function format(k, indent) {
 	function indented(k) { return format(k, indent+" "); };
 	if (k instanceof Array) { return k.map(format).join(";"); }
 	if (k.sticky) { var s=k.sticky; k.sticky=null; var r=format(k); k.sticky=s; return "("+r+")"; }
-	if (k.t == 0) { return ""+(k.v % 1 === 0 ? k.v : Math.round(k.v * 10000) / 10000); }
+	if (k.t == 0) {
+		if (k.v == 1/0) { return "0w"; } if (k.v == -1/0) { return "-0w"; }
+		return ""+(k.v % 1 === 0 ? k.v : Math.round(k.v * 10000) / 10000);
+	}
 	if (k.t == 1) { return '"'+(ktos(k, true))+'"'; }
 	if (k.t == 2) { return k.v; }
 	if (k.t == 3) {
