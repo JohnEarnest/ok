@@ -421,8 +421,16 @@ test("p:{[s]$[#s;{p[1_s]}[];s]};p[1 2]", "()"                                 );
 test('{1!x}\\"abc"'                   , '("abc"\n "bca"\n "cab")'             );
 test("(,5)'100"                       , "0"                                   );
 test("(,5)'-7"                        , "-1"                                  );
+test("5 1 {x+y+z}[3]\\5 1 3"          , "(5 1\n 13 9\n 17 13\n 23 19)"        );
+test("r:{x+y+z};5 1 r[3]\\5 1 3"      , "(5 1\n 13 9\n 17 13\n 23 19)"        );
+test("r:5 1;r{x+y+z}[3]\\5 1 3"       , "(5 1\n 13 9\n 17 13\n 23 19)"        );
+test("=(-100 100;-100 5;1 5;1 5)"     , "(,0\n ,1\n 2 3)"                     );
 
 // NOTES/TODO:
+
+// clear up application/dict ambiguity.
+// f[a:1]  is f.,(a:1)
+// f [a:1] is f.,[a:1]
 
 // `a`b!2 3 should construct a dictionary?
 

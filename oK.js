@@ -200,10 +200,8 @@ function where(x) {
 }
 
 function group(x) {
-	var r=[]; var y={}; for(var z=0;z<len(x);z++) {
-		var i = x.v[z].v; if (!(i in y)) { y[i] = r.length; r.push(k(3, [])); }
-		r[y[i]].v.push(k(0, z));
-	} return k(3,r);
+	var y=unique(x); var r=krange(len(y),function(){ return k(3, []); });
+	for(var z=0;z<len(x);z++) { r.v[find(y, x.v[z]).v].v.push(k(0, z)); } return r;
 }
 
 function unique(x) {
@@ -750,7 +748,8 @@ function applycallright(node) {
 
 function applyindexright(node) {
 	while (matches(OPEN_B)) { node = asVerb(".", node, k(3, parseList(CLOSE_B))); }
-	if (node.t == 3 && atNoun() && !at(OPEN_C)) { return asVerb("@", node, null); } return node;
+	if (node.t == 3 && atNoun() && !at(OPEN_C) && !at(NAME)) { return asVerb("@", node, null); }
+	return node;
 }
 
 function findSticky(node) {
