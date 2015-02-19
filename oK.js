@@ -415,7 +415,7 @@ function applyverb(node, args, env) {
 		} args = a;
 	}
 	if (node.t == 9) { return applyadverb(node, node.verb, args, env); }
-	var left  = args.length == 2 ? args[0] : node.l;
+	var left  = args.length == 2 ? args[0] : node.l ? run(node.l, env) : null;
 	var right = args.length == 2 ? args[1] : args[0];
 	if (!right) { return { t:node.t, v:node.v, curry:[left,k(11)] }; }
 	var r = null; var v = verbs[node.forcemonad ? node.v[0] : node.v];
