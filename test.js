@@ -34,6 +34,7 @@ function fail(input, errmsg) {
 
 function show(input) {
 	console.log(ok.parse(input));
+	//console.log(JSON.stringify(ok.parse(input)));
 }
 
 console.log("tests...");
@@ -427,6 +428,16 @@ test("r:5 1;r{x+y+z}[3]\\5 1 3"       , "(5 1\n 13 9\n 17 13\n 23 19)"        );
 test("=(-100 100;-100 5;1 5;1 5)"     , "(,0\n ,1\n 2 3)"                     );
 test("0w -0w0w0w"                     , "0w -0w 0w 0w"                        );
 test("(0w<5;0w>5;-0w<5;-0w>5)"        , "0 1 1 0"                             );
+
+test("+/+/'"                          , "(+/+/')"                             );
+test("t:+/+/'"                        , "(+/+/')"                             );
+test("+/+"                            , "(+/+)"                               );
+test("t:+/+"                          , "(+/+)"                               );
+test("f:+/+/';f ((2 3);(3 5))"        , "13"                                  );
+test("+/-/'"                          , "(+/-/')"                             );
+
+test("(1+) 4"                         , "5"                                   );
+test("f:1+;f 4"                       , "5"                                   );
 
 // NOTES/TODO:
 

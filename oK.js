@@ -415,7 +415,7 @@ function applyverb(node, args, env) {
 		} args = a;
 	}
 	if (node.t == 9) { return applyadverb(node, node.verb, args, env); }
-	var left  = args.length == 2 ? args[0] : null;
+	var left  = args.length == 2 ? args[0] : node.l;
 	var right = args.length == 2 ? args[1] : args[0];
 	if (!right) { return { t:node.t, v:node.v, curry:[left,k(11)] }; }
 	var r = null; var v = verbs[node.forcemonad ? node.v[0] : node.v];
@@ -752,19 +752,18 @@ function applyindexright(node) {
 	return node;
 }
 
-function findSticky(node) {
-	if (node == null || node.t == 9 && node.r == null) { return null; }
-	while(node.t == 8 && !node.curry || node.t == 9) {
-		if (node.r == null) { return node; } node = node.r;
-	} return null;
+function findSticky(root) {
+	var n = root; if (n == null || (n.t == 9 && n.r == null)) { return; }
+	while(n.t == 8 && !n.curry || n.t == 9) {
+		if (n.r == null) { root.sticky = n; return; } n = n.r;
+	}
 }
 
 function parseList(terminal, cull) {
 	var r = []; do {
 		if (terminal && at(terminal)) { break; }
 		while(matches(SEMI)) { if (!cull) { r.push(k(11)); } }
-		var e = parseEx(parseNoun());
-		var s = findSticky(e); if (s) { e.sticky = s; }
+		var e = parseEx(parseNoun()); findSticky(e);
 		if (e == null) { if (!cull) { r.push(k(11)); }}
 		else { r.push(e); }
 	} while(matches(SEMI));
@@ -839,6 +838,7 @@ function parseNoun() {
 		if (matches(COLON)) {
 			n.global = matches(COLON);
 			n.r = parseEx(parseNoun());
+			findSticky(n.r); if (n.r == n.r.sticky) { n.r.sticky = null; }
 			return n;
 		}
 		if (matches(OPEN_B)) {
@@ -862,7 +862,7 @@ function parseAdverb(left, verb) {
 function parseEx(node) {
 	if (node == null) { return null; }
 	if (at(ADVERB)) { return parseAdverb(null, node); }
-	if (node.t == 8 && !node.r) { node.r = parseEx(parseNoun()); }
+	if (node.t == 8 && !node.r) { node.r = parseEx(parseNoun()); node.sticky = null; }
 	if (atNoun()) {
 		var x = parseNoun();
 		if (at(ADVERB)) { return parseAdverb(node, x); }
