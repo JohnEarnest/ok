@@ -437,10 +437,13 @@ test("+/-/'"                          , "(+/-/')"                             );
 test("(1+) 4"                         , "5"                                   );
 test("f:1+;f 4"                       , "5"                                   );
 test("a:2;f:a+;f 7"                   , "9"                                   );
-test("f:(1+2)+"                       , "(1+2)+"                              );
 test("f:(1+2)+;f 3"                   , "6"                                   );
 
 // NOTES/TODO:
+
+// I need to eagerly evaluate portions of sticky expressions wherever possible:
+//test("f:(1+2)+", "3+");
+//test("a:1;b:a+;a:2;b 3", "4");
 
 // clear up application/dict ambiguity.
 // f[a:1]  is f.,(a:1)
