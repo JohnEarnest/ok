@@ -439,6 +439,11 @@ test("f:1+;f 4"                       , "5"                                   );
 test("a:2;f:a+;f 7"                   , "9"                                   );
 test("f:(1+2)+;f 3"                   , "6"                                   );
 
+test("4 +': 2 3"                      , "6 5"                                 );
+test("+': 1 2 3"                      , "3 5"                                 );
+test("+': ,99"                        , "()"                                  );
+test("*()"                            , "`"                                   );
+
 // NOTES/TODO:
 
 // I need to eagerly evaluate portions of sticky expressions wherever possible:

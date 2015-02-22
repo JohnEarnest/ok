@@ -90,7 +90,7 @@ function take  (x, y) { return takel(x, k(3, [y])); }
 function rsh   (x, y) { return rshl(x, k(3, [y])); }
 function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
 function negate   (x) { return k(0, -n(x).v); }
-function first    (x) { return (x.t != 3) ? x : x.v[0]; }
+function first    (x) { return (x.t != 3) ? x : x.v.length>0 ? x.v[0] : NIL; }
 function sqrt     (x) { return k(0, Math.sqrt(n(x).v)); }
 function keys     (x) { return k(3, Object.keys(d(x).v).map(asSymbol)); }
 function zero     (x) { return kmap(iota(x), function(x) { return k(0,0); }); }
@@ -282,10 +282,9 @@ function eachleft(dyad, list, right, env) {
 	return kmap(list, function(x) { return applyd(dyad, x, right, env); });
 }
 
-function eachprior(dyad, x, env) {
-	if (len(x)==0) { throw new Error("length error."); }
-	var r=[]; for(var z=1;z<len(x);z++) { r.push(applyd(dyad, x.v[z], x.v[z-1], env)); }
-	return k(3,r);
+function eachprior(dyad, x, env) { return eachpc(dyad, first(x), drop(k(0,1), x)); }
+function eachpc(dyad, x, y, env) {
+	return kmap(y, function(v) { var t=x; x=v; return applyd(dyad, v, t, env); });
 }
 
 function over(dyad, x, env) {
@@ -448,7 +447,7 @@ function valence(node) {
 
 var adverbs = {
 	//       mv          dv          l-mv         l-dv
-	"':"  : [null,       eachprior,  null,        null     ],
+	"':"  : [null,       eachprior,  null,        eachpc   ],
 	"'"   : [each,       eachd,      null,        eachd    ],
 	"/:"  : [null,       null,       eachright,   eachright],
 	"\\:" : [null,       null,       eachleft,    eachleft ],
