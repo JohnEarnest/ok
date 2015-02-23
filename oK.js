@@ -27,6 +27,8 @@ var typenames = [
 
 var NIL = asSymbol("");
 var EC = [["\\","\\\\"],["\"","\\\""],["\n","\\n"],["\t","\\t"]];
+var k0 = k(0, 0);
+var k1 = k(0, 1);
 
 function k(t, v)         { return { 't':t, 'v':v }; }
 function kl(vl)          { return vl.length==1?vl[0]:k(3,vl); }
@@ -34,6 +36,7 @@ function s(x)            { return x.t == 3 && x.v.every(function(c) { return c.t
 function asSymbol(x)     { return k(2, "`"+x); }
 function asVerb(x, y, z) { return { t:8, v:x, l:y, r:z }; }
 function kmod(x, y)      { return x-y*Math.floor(x/y); }
+function kb(x)           { return x ? k1 : k0; }
 
 function stok(x) {
 	var r=[]; for(var z=0;z<x.length;z++) { r.push(k(1,x.charCodeAt(z))); } return kl(r);
@@ -61,7 +64,9 @@ function n(x) { return checktype(x, 0); }
 function l(x) { return checktype(x, 3); }
 function d(x) { return checktype(x, 4); }
 function a(x) { if (x.t > 2) { throw new Error("domain error."); } return x; }
-function p(x) { n(x); if (x.v < 0 || x.v%1 != 0)  { throw new Error("positive int expected."); }}
+function p(x) {
+	n(x); if (x.v < 0 || x.v%1 != 0) { throw new Error("positive int expected."); } return x.v;
+}
 function m(x) {
 	l(x); if (!x.v.every(function(y) { return y.t == 3 && len(y) == len(x.v[0]); })) { 
 		throw new Error("matrix expected.");
@@ -81,37 +86,33 @@ function divide(x, y) { return k(0, n(x).v / n(y).v); }
 function mod   (x, y) { return k(0, kmod(n(x).v, n(y).v)); }
 function max   (x, y) { return k(0, Math.max(n(x).v, n(y).v)); }
 function min   (x, y) { return k(0, Math.min(n(x).v, n(y).v)); }
-function less  (x, y) { return k(0, a(x).v <  a(y).v ? 1 : 0); }
-function more  (x, y) { return k(0, a(x).v >  a(y).v ? 1 : 0); }
-function equal (x, y) { return k(0, x.v == y.v ? 1 : 0); }
-function cat   (x, y) { return k(3, (x.t== 3?x.v:[x]).concat(y.t== 3?y.v:[y])); }
+function less  (x, y) { return kb(a(x).v < a(y).v); }
+function more  (x, y) { return kb(a(x).v > a(y).v); }
+function equal (x, y) { return kb(x.v == y.v); }
+function cat   (x, y) { return k(3, (x.t==3?x.v:[x]).concat(y.t==3?y.v:[y])); }
 function except(x, y) { return exceptl(x, k(3, [y])); }
 function take  (x, y) { return takel(x, k(3, [y])); }
 function rsh   (x, y) { return rshl(x, k(3, [y])); }
 function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
+function rotate(x, y) { n(x); return kmap(y, function(a,i) { return y.v[kmod(x.v+i,len(y))]; }); }
 function negate   (x) { return k(0, -n(x).v); }
-function first    (x) { return (x.t != 3) ? x : x.v.length>0 ? x.v[0] : NIL; }
+function first    (x) { return (x.t != 3) ? x : len(x) ? x.v[0] : NIL; }
 function sqrt     (x) { return k(0, Math.sqrt(n(x).v)); }
 function keys     (x) { return k(3, Object.keys(d(x).v).map(asSymbol)); }
 function zero     (x) { return kmap(iota(x), function(x) { return k(0,0); }); }
 function reverse  (x) { return k(3,l(x).v.slice(0).reverse()); }
 function desc     (x) { return reverse(asc(x)); }
-function not      (x) { return k(0, n(x).v == 0 ?1:0); }
+function not      (x) { return equal(n(x), k0); }
 function enlist   (x) { return k(3, [x]); }
 function isnull   (x) { return max(match(x, NIL),match(x,k(11))); }
 function count    (x) { return k(0, x.t == 3 ? len(x) : 1); }
 function floor    (x) { return k(0, Math.floor(n(x).v)); }
-function atom     (x) { return k(0, x.t != 3 ?1:0); }
+function atom     (x) { return kb(x.t != 3); }
 function kfmt     (x) { var r=stok(format(x)); if (r.t!=3) { r=k(3,[r]); } return r; }
+function iota     (x) { return x.t == 4 ? keys(x) : krange(p(x), function(x) { return k(0,x); }); }
 
 function keval(x, env) {
-	if (x.t == 2) { return env.lookup(x.v.slice(1), true); }
-	return run(parse(ktos(x)), env);
-}
-
-function iota(x) {
-	if (x.t == 4) { return keys(x); }
-	p(x); return krange(x.v, function(x) { return k(0,x); });
+	return x.t == 2 ? env.lookup(x.v.slice(1), true) : run(parse(ktos(x)), env);
 }
 
 function dfmt(x, y) {
@@ -133,8 +134,7 @@ function exceptl(x, y) {
 }
 
 function drop(x, y) {
-	if (y.t != 3 || len(y) < 1) { return y; }
-	return k(3, n(x).v<0?y.v.slice(0,x.v):y.v.slice(x.v));
+	return (y.t != 3 || len(y) < 1) ? y : k(3, n(x).v<0 ? y.v.slice(0,x.v) : y.v.slice(x.v));
 }
 
 function takel(x, y) {
@@ -150,27 +150,21 @@ function rshl(x, y) {
 	} return rshr(l(x), l(y), 0);
 }
 
-function rotate(x, y) {
-	n(x); return kmap(y, function(a,i){ return y.v[kmod(x.v+i,len(y))]; });
-}
-
 function match(x, y) {
-	if (x.t != y.t) { return k(0,0); }
+	if (x.t != y.t) { return k0; }
 	if (x.t != 3) { return equal(x, y); }
-	if (len(x) != len(y)) { return k(0,0); }
-	return k(0, x.v.every(function(x,i) { return match(x, y.v[i]).v; })?1:0);
+	if (len(x) != len(y)) { return k0; }
+	return kb(x.v.every(function(x,i) { return match(x, y.v[i]).v; }));
 }
 
 function find(x, y) {
-	for(var z=0;z<len(x);z++) { if(match(x.v[z],y).v) { return k(0,z); } }
-	return k(0,len(x));
+	for(var z=0;z<len(x);z++) { if(match(x.v[z],y).v) { return k(0,z); } } return k(0,len(x));
 }
 
 function cut(x, y) {
 	l(y); var r=[]; for(var z=0;z<len(x);z++) {
-		r.push(k(3, [])); p(x.v[z]);
-		var max = len(x)-1 == z ? len(y) : x.v[z+1].v;
-		for(var i=x.v[z].v;i<max;i++) { r[z].v.push(y.v[i]); }
+		r.push(k(3, [])); var max = len(x)-1 == z ? len(y) : x.v[z+1].v;
+		for(var i=p(x.v[z]);i<max;i++) { r[z].v.push(y.v[i]); }
 	} return k(3,r);
 }
 
@@ -195,7 +189,7 @@ function asc(x) {
 
 function where(x) {
 	var r=[]; for(var z=0;z<len(x);z++) {
-		p(x.v[z]); for(var t=0;t<x.v[z].v;t++) { r.push(k(0, z)); }
+		for(var t=0;t<p(x.v[z]);t++) { r.push(k(0, z)); }
 	} return k(3,r);
 }
 
@@ -235,7 +229,7 @@ function makedict(x) {
 }
 
 function unpack(x, y) {
-	var t=k(0,n(y).v); var p=cat(reverse(scan(k(8, "*"), x)),k(0,1));
+	var t=k(0,n(y).v); var p=cat(reverse(scan(k(8, "*"), x)),k1);
 	var r=[]; for(var z=0;z<len(p);z++) {
 		var q=floor(divide(t, p.v[z])); if (r.length!=0||q.v!=0) { r.push(q); }
 		t=floor(mod(t, p.v[z]));
@@ -243,7 +237,7 @@ function unpack(x, y) {
 }
 
 function pack(x, y) {
-	var p=takel(k(0,-len(y)), cat(reverse(scan(k(8, "*"), x)),k(0,1)));
+	var p=takel(k(0,-len(y)), cat(reverse(scan(k(8, "*"), x)),k1));
 	return over(k(8, "+"), ad(times)(p, y));
 }
 
@@ -282,7 +276,7 @@ function eachleft(dyad, list, right, env) {
 	return kmap(list, function(x) { return applyd(dyad, x, right, env); });
 }
 
-function eachprior(dyad, x, env) { return eachpc(dyad, first(x), drop(k(0,1), x)); }
+function eachprior(dyad, x, env) { return eachpc(dyad, first(x), drop(k1, x)); }
 function eachpc(dyad, x, y, env) {
 	return kmap(y, function(v) { var t=x; x=v; return applyd(dyad, v, t, env); });
 }
@@ -434,8 +428,7 @@ function applyverb(node, args, env) {
 
 function valence(node) {
 	if (node.t == 5)     {
-		if (!node.curry) { return node.args.length; }
-		var r=node.args.length;
+		if (!node.curry) { return node.args.length; } var r=node.args.length;
 		for(var z=0;z<node.curry.length;z++) { if (!isnull(node.curry[z]).v) { r--; } } return r;
 	}
 	if (node.t == 9)     { return 1; }
@@ -606,26 +599,25 @@ function mend(args, env, monadic, dyadic) {
 }
 
 function trap(args, env) {
-	try { var a=run(args[1],env); var f=run(args[0],env); return k(3,[k(0,0),call(f, a)]); }
-	catch(error) { return k(3, [k(0,1), stok(error.message)]); }
+	try { var a=run(args[1],env); var f=run(args[0],env); return k(3,[k0, call(f, a)]); }
+	catch(error) { return k(3, [k1, stok(error.message)]); }
 }
 
 function amendm(d, i, y, monad, env) {
 	if (i.t != 3) { d.v[i.v] = applym(monad, atl(d, i, env), env); return; }
-	for(var z=0;z<len(i);z++) { amendm(d, i.v[z], y, monad, env); }
+	kmap(i, function(v) { amendm(d, v, y, monad, env); });
 }
 
 function amendd(d, i, y, dyad, env) {
 	if      (i.t==3&y.t==3) { for(var z=0;z<len(i);z++) { amendd(d,i.v[z],y.v[z],dyad,env); } }
 	else if (i.t==3&y.t!=3) { for(var z=0;z<len(i);z++) { amendd(d,i.v[z],y     ,dyad,env); } }
-	else { p(i); d.v[i.v] = applyd(dyad, atl(d, i, env), y, env) }
+	else { d.v[p(i)] = applyd(dyad, atl(d, i, env), y, env) }
 }
 
 function dmend(d, i, y, f, env) {
 	if (i.t != 3) { (y?amendd:amendm)(d, i, y, f, env); return; }
 	if (len(i) == 1) { dmend(d, i.v[0], y, f, env); return; }
-	var rest = drop(k(0,1),i);
-	if (i.v[0].t == 3) {
+	var rest = drop(k1,i); if (i.v[0].t == 3) {
 		if (y && y.t == 3) { kzip(i, y, function(a, b) { amendd(d, a, b, f, env); }); return; }
 		kmap(i.v[0],function(x) { dmend(atl(d,x,env), rest, y, f, env); });
 	}
@@ -635,9 +627,8 @@ function dmend(d, i, y, f, env) {
 
 function query(t, c, a, b, env) {
 	l(t); if (a) { throw new Error("not implemented!"); }
-	if (c.t == 3) { var x=c.v[0]; var y=c.v[1]; p(x); p(y); t.v.splice(x.v, y.v-x.v); c = x; }
-	if (b.t != 3) { b = k(3,[b]); }
-	p(c); var x=c.v; for(var z=0;z<len(b);z++) { t.v.splice(x++, 0, b.v[z]); }
+	if (c.t == 3) { var x=c.v[0]; var y=c.v[1]; t.v.splice(p(x), p(y)-x.v); c = x; }
+	if (b.t != 3) { b = k(3,[b]); } var x=p(c); kmap(b, function(v) { t.v.splice(x++,0,v); });
 }
 
 ////////////////////////////////////
@@ -724,24 +715,20 @@ function indexedassign(node, indexer) {
 
 function compoundassign(node, indexer) {
 	if (!at(ASSIGN)) { return node; }
-	var op = expect(ASSIGN).slice(0,1);
-	var gl = matches(COLON);
-	var ex = parseEx(parseNoun());
+	var op = expect(ASSIGN).slice(0,1); var gl = matches(COLON); var ex = parseEx(parseNoun());
 	if (!indexer) {
 		// t+::z  -> t::(.`t)+z
 		var v = gl ? asVerb(".", null, asSymbol(node.v)) : node;
 		return { t:node.t, v:node.v, global:gl, r:asVerb(op, v, ex) };
 	}
 	// t[x]+::z -> ..[`t;x;+:;z]   t[x]+:z -> t:.[t;x;{y};z]
-	if (!gl) { node.r = { t:8, v:".", curry:[ k(7,node.v), kl(indexer), { t:8, v:op }, ex] }; return node; }
-	return { t:8, v:".", r: { t:8, v:".", curry:[asSymbol(node.v), indexer, { t:8, v:op }, ex] }};
+	if (!gl) { node.r={ t:8, v:".", curry:[ k(7,node.v),kl(indexer),asVerb(op),ex] }; return node; }
+	return asVerb(".", null, { t:8, v:".", curry:[asSymbol(node.v), indexer, asVerb(op), ex] });
 }
 
 function applycallright(node) {
 	while (matches(OPEN_B)) {
-		var args = parseList(CLOSE_B);
-		if (args.length == 0) { args = [NIL]; }
-		node = asVerb(".", node, k(3, args));
+		var args = parseList(CLOSE_B); node = asVerb(".", node, k(3, args.length ? args : [NIL]));
 	} return node;
 }
 
@@ -759,31 +746,30 @@ function findSticky(root) {
 }
 
 function parseList(terminal, cull) {
-	var r = []; do {
+	var r=[]; do {
 		if (terminal && at(terminal)) { break; }
 		while(matches(SEMI)) { if (!cull) { r.push(k(11)); } }
 		var e = parseEx(parseNoun()); findSticky(e);
-		if (e == null) { if (!cull) { r.push(k(11)); }}
-		else { r.push(e); }
-	} while(matches(SEMI));
-	if (terminal) { expect(terminal); } return r;
+		if (e != null) { r.push(e); }
+		else if (!cull) { r.push(k(11)); }
+	} while(matches(SEMI)); if (terminal) { expect(terminal); } return r;
 }
 
 function parseNoun() {
 	if (matches(COLON)) { return k(10, parseEx(parseNoun())); }
 	if (at(IOVERB)) { return k(8, expect(IOVERB)); }
 	if (at(BOOL)) {
-		var n = expect(BOOL); var r = [];
+		var n = expect(BOOL); var r=[];
 		for(var z=0;z<n.length-1;z++) { r.push(k(0, parseInt(n[z]))); }
 		return applyindexright(k(3, r));
 	}
 	if (at(NUMBER)) {
-		var r = []; while(at(NUMBER)) {
+		var r=[]; while(at(NUMBER)) {
 			var n=expect(NUMBER); r.push(k(0, n=="0w"?1/0:n=="-0w"?-1/0:parseFloat(n)));
 		} return applyindexright(kl(r));
 	}
 	if (at(SYMBOL)) {
-		var r = []; while(at(SYMBOL)) { r.push(k(2, expect(SYMBOL))); }
+		var r=[]; while(at(SYMBOL)) { r.push(k(2, expect(SYMBOL))); }
 		return applyindexright(kl(r));
 	}
 	if (at(STRING)) {
@@ -792,16 +778,14 @@ function parseNoun() {
 		return applyindexright(stok(str));
 	}
 	if (matches(OPEN_B)) {
-		var map = {}; do {
+		var map={}; do {
 			var key = expect(NAME); expect(COLON);
 			if (matches(COLON)) { var alias = expect(NAME); map[key] = map[alias]; }
 			else { map[key] = parseEx(parseNoun()); }
-		} while(matches(SEMI)); expect(CLOSE_B);
-		return k(4, map);
+		} while(matches(SEMI)); expect(CLOSE_B); return k(4, map);
 	}
 	if (matches(OPEN_C)) {
-		var args = [];
-		if (matches(OPEN_B)) {
+		var args=[]; if (matches(OPEN_B)) {
 			do { args.push(expect(NAME)); } while(matches(SEMI)); expect(CLOSE_B);
 		}
 		var r = k(5, parseList(CLOSE_C, true));
@@ -811,8 +795,7 @@ function parseNoun() {
 			else if ("y" in names) { args = ["x","y"]; }
 			else if ("x" in names) { args = ["x"]; }
 		}
-		r.args = args;
-		return applycallright(r);
+		r.args = args; return applycallright(r);
 	}
 	if (matches(OPEN_P)) { return applyindexright(kl(parseList(CLOSE_P))); }
 	if (matches(COND))   { return k(12, parseList(CLOSE_B, true)); }
@@ -822,8 +805,7 @@ function parseNoun() {
 		if (at(OPEN_B) && !at(DICT)) {
 			expect(OPEN_B); r.curry = parseList(CLOSE_B, false);
 			if (r.curry.length < 2 && !r.forcemonad) { r.curry.push(k(11)); }
-		}
-		return r;
+		} return r;
 	}
 	if (at(NAME)) {
 		var n = k(7, expect(NAME));
