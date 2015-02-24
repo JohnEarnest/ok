@@ -92,6 +92,7 @@ function take  (x, y) { return takel(x, k(3, [y])); }
 function rsh   (x, y) { return rshl(x, k(3, [y])); }
 function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
 function rotate(x, y) { n(x); return kmap(y, function(a,i) { return y.v[kmod(x.v+i,len(y))]; }); }
+function ident    (x) { return x; }
 function negate   (x) { return k(0, -n(x).v); }
 function first    (x) { return (x.t != 3) ? x : len(x) ? x.v[0] : NIL; }
 function sqrt     (x) { return k(0, Math.sqrt(n(x).v)); }
@@ -378,7 +379,7 @@ var verbs = {
 	"%" : [sqrt,   am(sqrt),   divide, ad(divide), ad(divide), ad(divide), null,    null  ],
 	"!" : [iota,   makedict,   mod,    al(mod),    rotate,     al(rotate), null,    null  ],
 	"&" : [zero,   where,      min,    ad(min),    ad(min),    ad(min),    null,    null  ],
-	"|" : [null,   reverse,    max,    ad(max),    ad(max),    ad(max),    null,    null  ],
+	"|" : [ident,  reverse,    max,    ad(max),    ad(max),    ad(max),    null,    null  ],
 	"<" : [null,   asc,        less,   ad(less),   ad(less),   ad(less),   null,    null  ],
 	">" : [null,   desc,       more,   ad(more),   ad(more),   ad(more),   null,    null  ],
 	"=" : [null,   group,      equal,  ad(equal),  ad(equal),  ad(equal),  null,    null  ],
