@@ -26,35 +26,33 @@ var typenames = [
 ];
 
 var NIL = asSymbol("");
-var EC = [["\\","\\\\"],["\"","\\\""],["\n","\\n"],["\t","\\t"]];
 var k0 = k(0, 0);
 var k1 = k(0, 1);
+var EC = [["\\","\\\\"],["\"","\\\""],["\n","\\n"],["\t","\\t"]];
 
 function k(t, v)         { return { 't':t, 'v':v }; }
-function kl(vl)          { return vl.length==1?vl[0]:k(3,vl); }
+function kl(vl)          { return vl.length==1 ? vl[0] : k(3,vl); }
+function kb(x)           { return x ? k1 : k0; }
 function s(x)            { return x.t == 3 && x.v.every(function(c) { return c.t == 1; }); }
 function asSymbol(x)     { return k(2, "`"+x); }
 function asVerb(x, y, z) { return { t:8, v:x, l:y, r:z }; }
 function kmod(x, y)      { return x-y*Math.floor(x/y); }
-function kb(x)           { return x ? k1 : k0; }
+function len(x)          { l(x); return x.v.length; }
+function krange(x, f)    { var r=[]; for(var z=0;z<x;z++) { r.push(f(z)); } return k(3,r); }
 
-function stok(x) {
-	var r=[]; for(var z=0;z<x.length;z++) { r.push(k(1,x.charCodeAt(z))); } return kl(r);
-}
+function stok(x) { return kl(krange(x.length, function(z) { return k(1,x.charCodeAt(z)); }).v); }
 function ktos(x, esc) {
 	if (x.t != 3) { x = k(3, [x]); }
 	var r = x.v.map(function(k) { return String.fromCharCode(k.v); }).join("");
 	if (esc) { for(var z=0;z<EC.length;z++) { r=r.split(EC[z][0]).join(EC[z][1]); }} return r;
 }
-function len(x) { l(x); return x.v.length; }
 function kmap(x, f) {
 	if (x.t != 3) { return f(x); }
 	var r=[]; for(var z=0;z<len(x);z++) { r.push(f(x.v[z],z)); } return k(3,r);
 }
-function krange(x, f) { var r=[]; for(var z=0;z<x;z++) { r.push(f(z)); } return k(3,r); }
 function kzip(x, y, f) {
 	if (len(x) != len(y)) { throw new Error("length error."); }
-	var r=[]; for(var z=0;z<len(x);z++) { r.push(f(x.v[z],y.v[z])); } return k(3,r);
+	return kmap(x, function(z, i) { return f(z, y.v[i]); });
 }
 function checktype(n, t) {
 	if (n.t == t) { return n; }
@@ -68,9 +66,8 @@ function p(x) {
 	n(x); if (x.v < 0 || x.v%1 != 0) { throw new Error("positive int expected."); } return x.v;
 }
 function m(x) {
-	l(x); if (!x.v.every(function(y) { return y.t == 3 && len(y) == len(x.v[0]); })) { 
-		throw new Error("matrix expected.");
-	}
+	l(x); if (x.v.every(function(y) { return y.t == 3 && len(y) == len(x.v[0]); })) { return; }
+	throw new Error("matrix expected.");
 }
 
 ////////////////////////////////////
