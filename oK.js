@@ -511,7 +511,7 @@ function atdepth(x, y, i, env) {
 function call(x, y, env) {
 	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
 	if (y.t == 0) { return atd(x, y, env); }
-	if (y.t == 3 && len(y) == 0) { return x; }
+	if (y.t == 3 && len(y) == 0) { return (x.t==5&&x.args.length==0) ? run(x.v, env) : x; }
 	if (x.t == 3 && y.t == 3) { return atdepth(x, y, 0, env); }
 	if (x.t == 8) { return applyverb(x, y.t == 3 ? y.v : [x], env); }
 	if (x.t != 5) { throw new Error("function or list expected."); }
