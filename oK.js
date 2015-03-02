@@ -29,6 +29,7 @@ var NIL = asSymbol("");
 var k0 = k(0, 0);
 var k1 = k(0, 1);
 var EC = [["\\","\\\\"],["\"","\\\""],["\n","\\n"],["\t","\\t"]];
+var kt = [-9, -10, -11, 0, -99, -100, NaN, NaN, NaN, NaN, NaN, NaN, NaN];
 
 function k(t, v)         { return { 't':t, 'v':v }; }
 function kl(vl)          { return vl.length==1 ? vl[0] : k(3,vl); }
@@ -105,7 +106,7 @@ function enlist   (x) { return k(3, [x]); }
 function isnull   (x) { return max(match(x, NIL),match(x,k(11))); }
 function count    (x) { return k(0, x.t == 3 ? len(x) : 1); }
 function floor    (x) { return k(0, Math.floor(n(x).v)); }
-function atom     (x) { return kb(x.t != 3); }
+function type     (x) { return k(0, kt[x.t]); }
 function kfmt     (x) { var r=stok(format(x)); if (r.t!=3) { r=k(3,[r]); } return r; }
 function iota     (x) { return x.t == 4 ? keys(x) : krange(p(x), function(x) { return k(0,x); }); }
 
@@ -390,7 +391,7 @@ var verbs = {
 	"_" : [floor,  am(floor),  drop,   null,       drop,       cut,        null,    null  ],
 	"$" : [kfmt,   am(kfmt),   dfmt,   ad(dfmt),   ad(dfmt),   ad(dfmt),   null,    null  ],
 	"?" : [null,   unique,     rnd,    find,       null,       find,       query3,  query4],
-	"@" : [atom,   atom,       atd,    atl,        atd,        ar(atl),    amend4,  amend4],
+	"@" : [type,   type,       atd,    atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,  keval,      call,   call,       call,       call,       dmend3,  dmend4],
 	"'" : [null,   null,       null,   bin,        null,       ar(bin),    null,    null  ],
 	"/" : [null,   null,       null,   null,       join,       pack,       null,    null  ],

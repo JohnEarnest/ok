@@ -28,7 +28,10 @@ function fail(input, errmsg) {
 		}
 		else { console.log(errmsg); }
 	}
-	if (!caught) { console.log(input, "<------- NO ERROR, EXPECTED:\n"+errmsg); }
+	if (!caught) {
+		fails++;
+		console.log(input, "<------- NO ERROR, EXPECTED:\n"+errmsg);
+	}
 	tests++;
 }
 
@@ -119,9 +122,9 @@ test("-10#1 2 3"                      , "3 1 2 3 1 2 3 1 2 3"                 );
 test("8#1 2 3"                        , "1 2 3 1 2 3 1 2"                     );
 test("-2#4 7 18 12"                   , "18 12"                               );
 test("5{x,+/-2#x}/1"                  , "1 2 3 5 8 13"                        );
-test('@ "Z"'                          , "1"                                   );
+test('@ "Z"'                          , "-10"                                 );
 test("@ (+;-)"                        , "0"                                   );
-test("@ {x+y}"                        , "1"                                   );
+test("@ {x+y}"                        , "-100"                                );
 test('#"A"'                           , "1"                                   );
 test("#3 1 4 2"                       , "4"                                   );
 test("#9"                             , "1"                                   );
@@ -364,7 +367,7 @@ test("(8#2)/1 0 0 0 1 0 1"            , "69"                                  );
 test("64 64 64/7 63 63"               , "32767"                               );
 test("64 64 64/8 0 0"                 , "32768"                               );
 test(",':,1"                          , "()"                                  );
-fail(",':()"                          , "length error."                       );
+test(",':()"                          , "()"                                  );
 test("-': 1 4 9 14 25 36"             , "3 5 5 11 11"                         );
 test("1,/:,2"                         , ",1 2"                                );
 test("1,/:2"                          , "1 2"                                 );
