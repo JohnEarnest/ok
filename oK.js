@@ -847,7 +847,7 @@ function parseEx(node) {
 	if (atNoun()) {
 		var x = parseNoun();
 		if (at(ADVERB)) { return parseAdverb(node, x); }
-		if (node.t == 5 || node.t == 7) { return asVerb("@", node, parseEx(x)); }
+		if (node.t == 5 || node.t == 7 || node.t == 8) { return asVerb("@", node, parseEx(x)); }
 		x.l = node; x.r = parseEx(parseNoun()); node = x;
 	}
 	if (at(VERB)) {

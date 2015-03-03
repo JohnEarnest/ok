@@ -454,7 +454,13 @@ test('+"ABC"'                         , '"ABC"'                               );
 test("{x,y}'0 1"                      , "({[x;y]x,y}[0;];{[x;y]x,y}[1;])"     );
 test("({x,y}'0 1).\\:3"               , "(0 3\n 1 3)"                         );
 
+test("{({x,y,z}1)2}"                  , "{({[x;y;z]x,y,z}@1)@2}"              );
+test("({x,y,z}1)2"                    , "{[x;y;z]x,y,z}[1;2;]"                );
+test("(2+)2"                          , "4"                                   );
+
 // NOTES/TODO:
+
+//test("{x,y,z}'1 2 3");
 
 // I need to eagerly evaluate portions of sticky expressions wherever possible:
 //test("f:(1+2)+", "3+");
