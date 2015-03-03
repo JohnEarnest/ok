@@ -263,7 +263,6 @@ fail("[a:1]<3"                        , "domain error."                       );
 fail("&-30"                           , "positive int expected."              );
 fail("+(1 2;3)"                       , "matrix expected."                    );
 fail("2 -3 4_1 3 4"                   , "positive int expected."              );
-fail("+1"                             , "invalid arguments to +"              );
 fail("a:b"                            , "the name 'b' has not been defined."  );
 fail("[a:5] @ `b"                     , "index error: `b"                     );
 fail("a:1 2;a[45]"                    , "index error: 45"                     );
@@ -450,6 +449,8 @@ test("|2"                             , "2"                                   );
 test("{5+2}.()"                       , "7"                                   );
 test(".[{5+2};();:]"                  , "0 7"                                 );
 test("a1:5;b2:37;a1+b2"               , "42"                                  );
+test("+55"                            , "55"                                  );
+test('+"ABC"'                         , '"ABC"'                               );
 
 // NOTES/TODO:
 

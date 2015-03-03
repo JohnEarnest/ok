@@ -66,6 +66,7 @@ function a(x) { if (x.t > 2) { throw new Error("domain error."); } return x; }
 function p(x) {
 	n(x); if (x.v < 0 || x.v%1 != 0) { throw new Error("positive int expected."); } return x.v;
 }
+function loa(x) { return l(x).v.every(function(y) { return y.t != 3; }); }
 function m(x) {
 	l(x); if (x.v.every(function(y) { return y.t == 3 && len(y) == len(x.v[0]); })) { return; }
 	throw new Error("matrix expected.");
@@ -173,7 +174,7 @@ function rnd(x, y, env) {
 }
 
 function flip(x) {
-	m(x); return krange(len(x.v[0]), function(z) {
+	if (loa(x)) { return x; } m(x); return krange(len(x.v[0]), function(z) {
 		return krange(len(x), function(t) { return x.v[t].v[z]; });
 	});
 }
@@ -374,7 +375,7 @@ function applyd(verb, x, y, env) {
 
 var verbs = {
 	//     a       l           a-a     l-a         a-l         l-l         triad    tetrad
-	"+" : [null,   flip,       plus,   ad(plus),   ad(plus),   ad(plus),   null,    null  ],
+	"+" : [ident,  flip,       plus,   ad(plus),   ad(plus),   ad(plus),   null,    null  ],
 	"-" : [negate, am(negate), minus,  ad(minus),  ad(minus),  ad(minus),  null,    null  ],
 	"*" : [first,  first,      times,  ad(times),  ad(times),  ad(times),  null,    null  ],
 	"%" : [sqrt,   am(sqrt),   divide, ad(divide), ad(divide), ad(divide), null,    null  ],
