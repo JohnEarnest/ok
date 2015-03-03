@@ -10,9 +10,19 @@ var ok = require("./oK");
 
 var fails = 0; var tests = 0;
 function test(input, output) {
-	var got = ok.format(ok.run(ok.parse(input), new ok.Environment(null)));
-	console.log(got + (!output || got == output ? "" : "<------- FAILED, EXPECTED:\n"+output));
-	if (output && got != output) { fails++; }
+	try {
+		var got = ok.format(ok.run(ok.parse(input), new ok.Environment(null)));
+		if (output && output != got) {
+			console.log("TEST "+tests+" FAILED: "+input+"\nEXPECTED:\n"+output+"\nGOT:\n"+got);
+			fails++;
+		}
+		else if (!output) { console.log(got); }
+	}
+	catch(err) {
+		console.log("TEST "+tests+" FAILED: "+input);
+		console.log(err.stack);
+		fails++;
+	}
 	tests++;
 }
 
@@ -22,15 +32,14 @@ function fail(input, errmsg) {
 	catch(err) {
 		caught = true;
 		if (err.message != errmsg) {
-			fails++;
-			console.log(input, "<------- BAD ERROR, EXPECTED:\n"+errmsg);
+			console.log("TEST "+tests+" FAILED: "+input+"\nBAD ERROR, EXPECTED:\n"+errmsg+"\nGOT:");
 			console.log(err.stack);
+			fails++;
 		}
-		else { console.log(errmsg); }
 	}
 	if (!caught) {
+		console.log("TEST "+tests+" FAILED: "+input+"\nNO ERROR, EXPECTED:\n"+errmsg);
 		fails++;
-		console.log(input, "<------- NO ERROR, EXPECTED:\n"+errmsg);
 	}
 	tests++;
 }
@@ -453,7 +462,6 @@ test("+55"                            , "55"                                  );
 test('+"ABC"'                         , '"ABC"'                               );
 test("{x,y}'0 1"                      , "({[x;y]x,y}[0;];{[x;y]x,y}[1;])"     );
 test("({x,y}'0 1).\\:3"               , "(0 3\n 1 3)"                         );
-
 test("{({x,y,z}1)2}"                  , "{({[x;y;z]x,y,z}@1)@2}"              );
 test("({x,y,z}1)2"                    , "{[x;y;z]x,y,z}[1;2;]"                );
 test("(2+)2"                          , "4"                                   );
