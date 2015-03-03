@@ -523,7 +523,7 @@ function call(x, y, env) {
 		var all=true; var i=0; for(var z=0;z<x.args.length;z++) {
 			if (curry[z] && !isnull(curry[z]).v) { continue; }
 			if (i >= len(y)) { all=false; break; }
-			if (isnull(y.v[i]).v) { all=false; }
+			if (y.v[i] == null || isnull(y.v[i]).v) { all=false; }
 			curry[z]=y.v[i++];
 		}
 		if (!all) { return { t:5, v:x.v, args:x.args, env:x.env, curry:curry }; }
