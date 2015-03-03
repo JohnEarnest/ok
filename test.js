@@ -44,6 +44,23 @@ function fail(input, errmsg) {
 	tests++;
 }
 
+function files() {
+	var fs = require("fs");
+	var sourcefiles = [
+		"examples/binpack.k",
+		"examples/islands.k",
+		"examples/strings.k",
+		"examples/treedepth.k",
+		"examples/idioms.k",
+		"examples/runlength.k"
+	];
+	for(var z=0;z<sourcefiles.length;z++) {
+		var program = fs.readFileSync(sourcefiles[z], { encoding:'utf8' });
+		process.stdout.write(ok.format(ok.run(ok.parse(program), new ok.Environment(null))));
+		process.stdout.write("\n");
+	}
+}
+
 function show(input) {
 	console.log(ok.parse(input));
 	//console.log(JSON.stringify(ok.parse(input)));
@@ -465,6 +482,8 @@ test("({x,y}'0 1).\\:3"               , "(0 3\n 1 3)"                         );
 test("{({x,y,z}1)2}"                  , "{({[x;y;z]x,y,z}@1)@2}"              );
 test("({x,y,z}1)2"                    , "{[x;y;z]x,y,z}[1;2;]"                );
 test("(2+)2"                          , "4"                                   );
+
+//files();
 
 // NOTES/TODO:
 
