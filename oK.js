@@ -258,6 +258,7 @@ function invd(f, x, y, env) { n(x); n(y); return inverse(f, y.v, 0.9999*y.v, x.v
 ////////////////////////////////////
 
 function each(monad, x, env) {
+	if (x.t != 3) { return applym(monad, x, env); }
 	if (len(x) == 1) { return applym(monad, first(x), env); }
 	return kmap(x, function(x) { return applym(monad, x, env); });
 }
