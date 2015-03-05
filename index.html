@@ -192,6 +192,7 @@ setTrace(function(verb, a, v, b, env, value) {
 	if (showtrace) {
 		var r = [""];
 		r = rectadd(r, (a ? format(a) : ""));
+		if (a) { r = rectadd(r, " "); }
 		r = rectadd(r, (v ? format(v) : ""));
 		r = rectadd(r, verb + " ");
 		r = rectadd(r, (b ? format(b) : ""));
