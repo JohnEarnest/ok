@@ -424,7 +424,8 @@ function applyverb(node, args, env) {
 	else if (left.t == 3 && right.t == 3) { r = v[5]; }
 	if (!r) { throw new Error("invalid arguments to "+node.v); }
 	if (args.length > 2) { return r(args, env); }
-	return left ? r(left, right, env) : r(right, env);
+	return tracer(node.v, left, null, right, env,
+		(left ? r(left, right, env) : r(right, env)));
 }
 
 function valence(node) {
@@ -459,7 +460,8 @@ function applyadverb(node, verb, args, env) {
 	if (!r) { throw new Error("invalid arguments to "+node.v+" ["+
 		(args[0]?format(args[0])+" ":"")+" "+format(verb)+" (valence "+v+"), "+format(args[1])+"]");
 	}
-	return args[0] ? r(verb, args[0], args[1], env) : r(verb, args[1], env);
+	return tracer(node.v, args[0], verb, args[1], env,
+		(args[0] ? r(verb, args[0], args[1], env) : r(verb, args[1], env)));
 }
 
 function Environment(pred) {
@@ -919,6 +921,8 @@ function setIO(symbol, slot, func) {
 	if (!(symbol in verbs)) { verbs[symbol]=[null,null,null,null,null,null]; }
 	verbs[symbol][slot] = func;
 }
+var tracer = function(verb, a, v, b, env, r) { return r; }
+function setTrace(t) { tracer = t; }
 
 this.version = "0.1";
 this.parse = parse;
@@ -926,3 +930,4 @@ this.format = format;
 this.run = run;
 this.Environment = Environment;
 this.setIO = setIO;
+this.setTrace = setTrace;

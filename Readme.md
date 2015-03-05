@@ -16,6 +16,7 @@ The easiest way to run oK is using the [Browser-based REPL](http://johnearnest.g
 - `\r` run the contents of the editor pane. Alternately, press shift+enter with the editor focused.
 - `\c` clear the output log.
 - `\t` time executing the remainder of the line.
+- `\x` execute the remainder of the line and show a step-by-step trace.
 
 Alternatively, you can run oK via the command line with  [Node.js](http://nodejs.org). `test.js` runs a series of automated tests:
 
