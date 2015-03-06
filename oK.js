@@ -700,6 +700,7 @@ function findNames(node, names) {
 	if (node.l)                { findNames(node.l, names); }
 	if (node.r)                { findNames(node.r, names); }
 	if (node.verb)             { findNames(node.verb, names); }
+	if (node.curry)            { findNames(node.curry, names); }
 	return names;
 }
 
