@@ -162,6 +162,7 @@ function escapeHTML(text) {
 	text = text.replace(/</g, "&lt;");
 	text = text.replace(/>/g, "&gt;");
 	text = text.replace(/ /g, "&nbsp;");
+	text = text.replace(/\r/g, "<font color='gray'>&rarr;</font>");
 	text = text.replace(/\n/g, "<br>");
 	return text;
 }
@@ -196,9 +197,10 @@ setTrace(function(verb, a, v, b, env, value) {
 		r = rectadd(r, (v ? format(v) : ""));
 		r = rectadd(r, verb + " ");
 		r = rectadd(r, (b ? format(b) : ""));
-		r = rectadd(r, " --> ");
+		r = rectadd(r, " \r ");
 		r = rectadd(r, format(value));
 		printRepl(escapeHTML(r.join("\n")));
+		printRepl("");
 	}
 	return value;
 });
