@@ -502,6 +502,7 @@ function atd(x, y, env) {
 }
 
 function atl(x, y, env) {
+	if (x.t == 4) { return dget(x, y); }
 	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
 	if (y.t != 0 || y.v < 0 || y.v >= len(x) || y.v%1 != 0) {
 		throw new Error("index error: "+format(y));
@@ -515,7 +516,10 @@ function atdepth(x, y, i, env) {
 	return kmap(y.v[i], function(t) { return atdepth(ar(atl)(x, t, env), y, i+1, env); });
 }
 
+function dget(x, y) { y = checktype(y, 2).v.slice(1); return y in x.v ? x.v[y] : NIL; }
+
 function call(x, y, env) {
+	if (x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : dget(x, y); }
 	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
 	if (y.t == 0) { return atd(x, y, env); }
 	if (y.t == 3 && len(y) == 0) { return (x.t==5&&x.args.length==0) ? run(x.v, env) : x; }

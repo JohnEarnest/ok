@@ -323,17 +323,26 @@ function print(x, y) {
 	return x;
 }
 
-function read(x) {
+function readAjax(x) {
 	var url = tojs(x);
 	if (typeof url != 'string') { throw new Error("string expected."); }
 	var request = new XMLHttpRequest();
 	request.open('GET', url, false);
 	request.send(null);
-	return tok([request.status, request.responseText]);
+	return [request.status, request.responseText];
+}
+
+function readText(x) { return tok(readAjax(x)); }
+
+function readJSON(x) {
+	var t = readAjax(x);
+	t[1] = JSON.parse(t[1]);
+	return tok(t);
 }
 
 setIO("0:", 2, print);
 setIO("0:", 4, print);
-setIO("0:", 1, read);
+setIO("0:", 1, readText);
+setIO("1:", 1, readJSON);
 </script>
 </html>

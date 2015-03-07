@@ -40,6 +40,15 @@ oK provides several numbered IO verbs:
 		 0 8 16 24 32 40 48 56 64 72
 		 0 9 18 27 36 45 54 63 72 81)
 
+- monadic `1:` works just like monadic 0: except it expects the response to be JSON rather than arbitrary text, and it attempts to parse it into a K data structure you can then manipulate:
+
+		  url:"http://api.openweathermap.org/data/2.5/weather?q=London,uk"
+		"http://api.openweathermap.org/data/2.5/weather?q=London,uk"
+		  t:1:url
+		(200;[coord:[lon:-0.13;lat:51.51];sys:[type:1;id:5091;message:0.0224;country:"GB";sunrise:1425709902;sunset:1425750674];weather:,[id:800;main:"Clear";description:"Sky is Clear";icon:"01d"];base:"cmc stations";main:[temp:288.11;pressure:1024;humidity:44;temp_min:286.85;temp_max:289.82];wind:[speed:6.2;deg:230];clouds:[all:0];dt:1425736003;id:2643743;name:"London";cod:200])
+		  t[1;`weather;0;`description]
+		"Sky is Clear"
+
 Command Line Mode
 -----------------
 Alternatively, you can run oK via the command line with  [Node.js](http://nodejs.org). `test.js` runs a series of automated tests:

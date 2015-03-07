@@ -492,6 +492,13 @@ test("+/()"                           , "0"                                   );
 test("*/()"                           , "1"                                   );
 test("|/()"                           , "0"                                   );
 test("&/()"                           , "1"                                   );
+test("a:[foo:23];a.`foo"              , "23"                                  );
+test("a:[foo:23];a.`bar"              , "`"                                   );
+test("a:[foo:23];a[`foo]"             , "23"                                  );
+test("a:(3;(4 5));a.(1 0)"            , "4"                                   );
+test("a:[foo:[bar:5]];a.(`foo `bar)"  , "5"                                   );
+test("a:[foo:[bar:5]];a[`foo;`bar]"   , "5"                                   );
+test("a:[f:[m:5;p:9]];a[`f;`m `p]"    , "5 9"                                 );
 
 //files();
 
