@@ -323,7 +323,17 @@ function print(x, y) {
 	return x;
 }
 
+function read(x) {
+	var url = tojs(x);
+	if (typeof url != 'string') { throw new Error("string expected."); }
+	var request = new XMLHttpRequest();
+	request.open('GET', url, false);
+	request.send(null);
+	return tok([request.status, request.responseText]);
+}
+
 setIO("0:", 2, print);
 setIO("0:", 4, print);
+setIO("0:", 1, read);
 </script>
 </html>

@@ -866,7 +866,7 @@ function parseEx(node) {
 }
 
 function parse(str) {
-	begin(str); var r = parseList(null, false); if (done()) { return r; }
+	begin(" "+str); var r = parseList(null, false); if (done()) { return r; }
 	throw new Error("unexpected character '"+text[0]+"'");
 }
 

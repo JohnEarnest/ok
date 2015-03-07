@@ -18,6 +18,27 @@ The easiest way to run oK is using the [Browser-based REPL](http://johnearnest.g
 - `\t` time executing the remainder of the line.
 - `\x` execute the remainder of the line and show a step-by-step trace.
 
+oK provides several numbered IO verbs:
+
+- dyadic `0:` takes a symbol as its left argument and writes the right argument to that destination as text. Currently the symbol is ignored and output is always sent to the console. Use the empty symbol as a left argument.
+- monadic `0:` takes a string as its right argument and performs a synchronous HTTP request to that URL. The result will be a tuple containing the HTTP status code followed by the response (if any). You can use this in conjunction with pastebins to load code from elsewhere or access RESTful web APIs:
+
+	(200
+	 "/ generate a times table→\nt*/:t:!10")
+	  .*|0:"http://pastebin.com/raw.php?i=MQkT5mAc"
+	(0 0 0 0 0 0 0 0 0 0
+	 0 1 2 3 4 5 6 7 8 9
+	 0 2 4 6 8 10 12 14 16 18
+	 0 3 6 9 12 15 18 21 24 27
+	 0 4 8 12 16 20 24 28 32 36
+	 0 5 10 15 20 25 30 35 40 45
+	 0 6 12 18 24 30 36 42 48 54
+	 0 7 14 21 28 35 42 49 56 63
+	 0 8 16 24 32 40 48 56 64 72
+	 0 9 18 27 36 45 54 63 72 81)
+
+Command Line Mode
+-----------------
 Alternatively, you can run oK via the command line with  [Node.js](http://nodejs.org). `test.js` runs a series of automated tests:
 
 	je@indigo$ node test.js
