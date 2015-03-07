@@ -300,7 +300,7 @@ function processLine() {
 	}
 	catch(error) {
 		printRepl(
-			"<span style='color: red;' onclick='toggle(\"e"+(eid)+"\")'>"+error.message+
+			"<span style='color: red; cursor:pointer;' onclick='toggle(\"e"+(eid)+"\")'>"+error.message+
 			"<div class='err' id='e"+(eid++)+"'><br>"+escapeHTML(error.stack)+"</div></span>"
 		);
 	}
