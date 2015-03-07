@@ -5,10 +5,10 @@ oK is a toy interpreter for a dialect of the [K programming language](http://en.
 
 If you are interested in learning more about K, consider downloading the free version of [kdb](http://kx.com/software-download.php) from Kx Systems, the fine makers of K. Alternatively, [Kona](https://github.com/kevinlawler/kona) is an open-source reimplementation of K3/K4.
 
-Trying oK
----------
 oK does not intend to be particularly fast or suitable for any practical purpose beyond learning, instead emphasizing simplicity of implementation. JavaScript was chosen as an implementation language because it is familar to many programmers and has first-class functions.
 
+Trying oK
+---------
 The easiest way to run oK is using the [Browser-based REPL](http://johnearnest.github.io/ok/index.html). This REPL features a few special commands which can be issued at the beginning of a line:
 
 - `\\` (while entering a multiline expression) cancel this expression.
@@ -21,13 +21,14 @@ The easiest way to run oK is using the [Browser-based REPL](http://johnearnest.g
 oK provides several numbered IO verbs:
 
 - dyadic `0:` takes a symbol as its left argument and writes the right argument to that destination as text. Currently the symbol is ignored and output is always sent to the console. Use the empty symbol as a left argument.
-- monadic `0:` takes a string as its right argument and performs a synchronous HTTP request to that URL. The result will be a tuple containing the HTTP status code followed by the response (if any). You can use this in conjunction with pastebins to load code from elsewhere or access RESTful web APIs:
+- monadic `0:` takes a string as its right argument and performs a synchronous HTTP request to that URL. The result will be a tuple containing the HTTP status code followed by the response, if any. You can use this in conjunction with pastebins to load code from elsewhere or access RESTful web APIs. Note that most web browsers restrict cross-site HTTP requests from javascript under the [same-origin policy](http://en.wikipedia.org/wiki/Same-origin_policy)- you'll need a server which responds with an Access-Control-Allow-Origin header. GitHub gists will do:
 
-		  0:"http://pastebin.com/raw.php?i=MQkT5mAc"
+		  url: "https://gist.githubusercontent.com/anonymous/cc0ef05c00940044eb0a/raw/c728a7dd0b3266f7a42de637a961cd9990caf102/gistfile1.txt"
+		"https://gist.githubusercontent.com/anonymous/cc0ef05c00940044eb0a/raw/c728a7dd0b3266f7a42de637a961cd9990caf102/gistfile1.txt"
+		  0:url
 		(200
-		 "/ generate a times table\nt*/:t:!10")
-		
-		  .*|0:"http://pastebin.com/raw.php?i=MQkT5mAc"
+		 "/ generate a times table\nt*/:t:!10\n")
+		  .*|0:url
 		(0 0 0 0 0 0 0 0 0 0
 		 0 1 2 3 4 5 6 7 8 9
 		 0 2 4 6 8 10 12 14 16 18
