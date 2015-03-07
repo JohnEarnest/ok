@@ -145,10 +145,23 @@ function loadBuffer() {
 	document.getElementById("textedit").value = editbuffer;
 }
 
+var env = new Environment(null);
+var entries = [];
+var entryIndex = 0;
+var showtrace = false;
+var partial = "";
+var eid = 0;
+
+setIO("0:", 2, print);
+setIO("0:", 4, print);
+setIO("0:", 1, readText);
+setIO("1:", 1, readJSON);
+
 var repl = document.getElementById("repl");
 var scroll = document.getElementById("scroll");
 var panel = document.getElementById("scroll-h");
 var prompt = document.getElementById("prompt");
+
 prompt.focus();
 prompt.onkeydown = processInput;
 scroll.innerHTML =
@@ -172,10 +185,6 @@ function toggle(id) {
 	e.style.display = e.style.display == "none" ? "inline" : "none";
 }
 
-var env = new Environment(null);
-var entries = [];
-var entryIndex = 0;
-
 function rectadd(a, b) {
 	b = b.split("\n");
 	// pad heights vertically to match
@@ -188,7 +197,6 @@ function rectadd(a, b) {
 	return a;
 }
 
-var showtrace = false;
 setTrace(function(verb, a, v, b, env, value) {
 	if (showtrace) {
 		var r = [""];
@@ -234,8 +242,6 @@ function processInput(e) {
 	return false;
 }
 
-var partial = "";
-var eid = 0;
 function processLine() {
 	if (prompt.value == "\\\\") { partial = ""; return; }
 	if (prompt.value == "\\e") {
@@ -263,6 +269,13 @@ function processLine() {
 		return;
 	}
 	if (prompt.value == "kOS") { printRepl("one system/all devices"); return; }
+	if (prompt.value.lastIndexOf("\\u") == 0) {
+		var code = prompt.value.slice(2);
+		var url = document.location + "?run=" + encodeURIComponent(code);
+		printRepl("oK code url:");
+		printRepl("<a href='"+url+"' target='_blank'>"+url+"</a>");
+		return;
+	}
 	var showtime = false;
 	if (prompt.value.lastIndexOf("\\t") == 0) {
 		prompt.value = prompt.value.slice(2);
@@ -340,9 +353,12 @@ function readJSON(x) {
 	return tok(t);
 }
 
-setIO("0:", 2, print);
-setIO("0:", 4, print);
-setIO("0:", 1, readText);
-setIO("1:", 1, readJSON);
+var urlstring = location.search.match(/run=([a-zA-Z0-9-_.!~*'()%]+)/);
+if (urlstring) {
+	var code = decodeURIComponent(urlstring[1]).trim();
+	printRepl("from url ");
+	prompt.value = code;
+	processInput({keyCode:13});
+}
 </script>
 </html>
