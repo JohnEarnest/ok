@@ -17,14 +17,15 @@ The easiest way to run oK is using the [Browser-based REPL](http://johnearnest.g
 - `\c` clear the output log.
 - `\t` time executing the remainder of the line.
 - `\x` execute the remainder of the line and show a step-by-step trace.
+- `\u` generates a code url from the remainder of the line, as described below.
 
 oK provides several numbered IO verbs:
 
 - dyadic `0:` takes a symbol as its left argument and writes the right argument to that destination as text. Currently the symbol is ignored and output is always sent to the console. Use the empty symbol as a left argument.
 - monadic `0:` takes a string as its right argument and performs a synchronous HTTP request to that URL. The result will be a tuple containing the HTTP status code followed by the response, if any. You can use this in conjunction with pastebins to load code from elsewhere or access RESTful web APIs. Note that most web browsers restrict cross-site HTTP requests from javascript under the [same-origin policy](http://en.wikipedia.org/wiki/Same-origin_policy)- you'll need a server which responds with an Access-Control-Allow-Origin header. GitHub gists will do:
 
-		  url: "https://gist.githubusercontent.com/anonymous/cc0ef05c00940044eb0a/raw/c728a7dd0b3266f7a42de637a961cd9990caf102/gistfile1.txt"
-		"https://gist.githubusercontent.com/anonymous/cc0ef05c00940044eb0a/raw/c728a7dd0b3266f7a42de637a961cd9990caf102/gistfile1.txt"
+		  url: "https://gist.githubusercontent.com/anonymous/cc0ef05c00940044eb0a/raw/"
+		"https://gist.githubusercontent.com/anonymous/cc0ef05c00940044eb0a/raw/"
 		  0:url
 		(200
 		 "/ generate a times table\nt*/:t:!10\n")
@@ -48,6 +49,16 @@ oK provides several numbered IO verbs:
 		(200;[coord:[lon:-0.13;lat:51.51];sys:[type:1;id:5091;message:0.0224;country:"GB";sunrise:1425709902;sunset:1425750674];weather:,[id:800;main:"Clear";description:"Sky is Clear";icon:"01d"];base:"cmc stations";main:[temp:288.11;pressure:1024;humidity:44;temp_min:286.85;temp_max:289.82];wind:[speed:6.2;deg:230];clouds:[all:0];dt:1425736003;id:2643743;name:"London";cod:200])
 		  t[1;`weather;0;`description]
 		"Sky is Clear"
+
+If you visit the page with a `?run=` URL parameter, the remainder of the URL will be URI decoded and executed. The `\u` command can create a link for you based on an expression. You can combine this feature with monadic `0:` to run larger programs:
+
+	  \u 1+2
+	oK code url:
+	http://johnearnest.github.io/ok/index.html?run=%201%2B2
+	
+	  \u .*|0:"https://gist.githubusercontent.com/anonymous/cc0ef05c00940044eb0a/raw/"
+	oK code url:
+	http://johnearnest.github.io/ok/index.html?run=%20.*%7C0%3A%22https%3A%2F%2Fgist.githubusercontent.com%2Fanonymous%2Fcc0ef05c00940044eb0a%2Fraw%2F%22
 
 Command Line Mode
 -----------------
