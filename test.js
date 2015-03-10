@@ -504,6 +504,9 @@ test('`i$"*"'                         , "42"                                  );
 test('`i$"Hello."'                    , "72 101 108 108 111 46"               );
 test("`c$72 101 108 108 111 46"       , '"Hello."'                            );
 test("`i$37.4 -31.9"                  , "37 -31"                              );
+test("`b$30"                          , "1"                                   );
+test("`b$0"                           , "0"                                   );
+test("`h$65539"                       , "3"                                   );
 
 //files();
 
@@ -512,6 +515,22 @@ test("`i$37.4 -31.9"                  , "37 -31"                              );
 //should 1^1 yield ()?
 
 //test("{x,y,z}'1 2 3");
+
+//casts for date/time:
+// `y - years
+// `d - days
+// `m - minutes
+// `r - hours+minutes,
+// `s - seconds
+// `t - hoursminutessecondsmsec
+//
+// `T - time
+// `D - date
+// `H - hour
+// `M - month
+// `Y - year
+// `R - date,hour,minute
+// `S - date,hour,minute,second
 
 // I need to eagerly evaluate portions of sticky expressions wherever possible:
 //test("f:(1+2)+", "3+");

@@ -117,6 +117,8 @@ function keval(x, env) {
 
 function dfmt(x, y) {
 	if (x.t == 2) {
+		if (x.v == "`b") { return kb(y.v); }
+		if (x.v == "`h") { return k(0, y.v & 0xFFFF); }
 		if (x.v == "`i") { return k(0, y.v | 0); }
 		if (x.v == "`f") { return k(0, y.v); }
 		if (x.v == "`c") { return k(1, y.v); }
