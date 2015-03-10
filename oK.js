@@ -116,6 +116,11 @@ function keval(x, env) {
 }
 
 function dfmt(x, y) {
+	if (x.t == 2) {
+		if (x.v == "`i") { return k(0, y.v | 0); }
+		if (x.v == "`f") { return k(0, y.v); }
+		if (x.v == "`c") { return k(1, y.v); }
+	}
 	var r = kfmt(y); var c = Math.abs(x.v);
 	if (x.v < 0) { // pad right
 		while(len(r) > c) { r.v.pop(); }
