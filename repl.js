@@ -9,6 +9,8 @@
 var ok = require("./oK");
 var conv = require("./convert");
 var fs = require("fs");
+var fd = process.stdin.fd;
+var usingDevice = false;
 
 function readchar() {
 	var buff = new Buffer(1);
@@ -16,7 +18,9 @@ function readchar() {
 	return String.fromCharCode(buff[0]);
 }
 function readline() {
-	var r=""; while(true) { var c = readchar(); if (c == "\n") { return r; } r += c; }
+	try { fd = fs.openSync('/dev/stdin', 'rs'); usingDevice = true; } catch (e) {}
+	var r=""; while(true) { var c = readchar(); if (c == "\n") { break; } r += c; }
+	if (usingDevice) { fs.closeSync(fd); } return r;
 }
 function read(x) {
 	// todo: use x to select a file descriptor
