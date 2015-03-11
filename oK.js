@@ -25,17 +25,17 @@ var typenames = [
 	"cond"      , // 12 : body (list of expressions)
 ];
 
-var NIL = asSymbol("");
+var NIL = ks("");
 var k0 = k(0, 0);
 var k1 = k(0, 1);
 var EC = [["\\","\\\\"],["\"","\\\""],["\n","\\n"],["\t","\\t"]];
-var kt = [-9, -10, -11, 0, -99, -100, NaN, NaN, NaN, NaN, NaN, NaN, NaN];
+var kt = [ks("f"), ks("c"), ks("n"), ks("l"), ks("a"), ks("u"), NIL, NIL, NIL, NIL, NIL, NIL, NIL];
 
 function k(t, v)         { return { 't':t, 'v':v }; }
 function kl(vl)          { return vl.length==1 ? vl[0] : k(3,vl); }
 function kb(x)           { return x ? k1 : k0; }
 function s(x)            { return x.t == 3 && x.v.every(function(c) { return c.t == 1; }); }
-function asSymbol(x)     { return k(2, "`"+x); }
+function ks(x)           { return k(2, "`"+x); }
 function asVerb(x, y, z) { return { t:8, v:x, l:y, r:z }; }
 function kmod(x, y)      { return x-y*Math.floor(x/y); }
 function len(x)          { l(x); return x.v.length; }
@@ -98,7 +98,7 @@ function ident    (x) { return x; }
 function negate   (x) { return k(0, -n(x).v); }
 function first    (x) { return (x.t != 3) ? x : len(x) ? x.v[0] : NIL; }
 function sqrt     (x) { return k(0, Math.sqrt(n(x).v)); }
-function keys     (x) { return k(3, Object.keys(d(x).v).map(asSymbol)); }
+function keys     (x) { return k(3, Object.keys(d(x).v).map(ks)); }
 function zero     (x) { return kmap(iota(x), function(x) { return k(0,0); }); }
 function reverse  (x) { return k(3,l(x).v.slice(0).reverse()); }
 function desc     (x) { return reverse(asc(x)); }
@@ -107,7 +107,7 @@ function enlist   (x) { return k(3, [x]); }
 function isnull   (x) { return max(match(x, NIL),match(x,k(11))); }
 function count    (x) { return k(0, x.t == 3 ? len(x) : 1); }
 function floor    (x) { return k(0, Math.floor(n(x).v)); }
-function type     (x) { return k(0, kt[x.t]); }
+function type     (x) { return kt[x.t]; }
 function kfmt     (x) { var r=stok(format(x)); if (r.t!=3) { r=k(3,[r]); } return r; }
 function iota     (x) { return x.t == 4 ? keys(x) : krange(p(x), function(x) { return k(0,x); }); }
 
@@ -727,7 +727,7 @@ function indexedassign(node, indexer) {
 	var ex = parseEx(parseNoun());
 	//t[x]::z  ->  ..[`t;x;{y};z]   t[x]:z  ->  t:.[t;x;{y};z]
 	if (!gl) { node.r = { t:8, v:".", curry:[ k(7,node.v), kl(indexer), op, ex] }; return node; }
-	return { t:8, v:".", r:{ t:8, v:".", curry:[asSymbol(node.v), kl(indexer), op, ex] }};
+	return { t:8, v:".", r:{ t:8, v:".", curry:[ks(node.v), kl(indexer), op, ex] }};
 }
 
 function compoundassign(node, indexer) {
@@ -735,12 +735,12 @@ function compoundassign(node, indexer) {
 	var op = expect(ASSIGN).slice(0,1); var gl = matches(COLON); var ex = parseEx(parseNoun());
 	if (!indexer) {
 		// t+::z  -> t::(.`t)+z
-		var v = gl ? asVerb(".", null, asSymbol(node.v)) : node;
+		var v = gl ? asVerb(".", null, ks(node.v)) : node;
 		return { t:node.t, v:node.v, global:gl, r:asVerb(op, v, ex) };
 	}
 	// t[x]+::z -> ..[`t;x;+:;z]   t[x]+:z -> t:.[t;x;{y};z]
 	if (!gl) { node.r={ t:8, v:".", curry:[ k(7,node.v),kl(indexer),asVerb(op),ex] }; return node; }
-	return asVerb(".", null, { t:8, v:".", curry:[asSymbol(node.v), indexer, asVerb(op), ex] });
+	return asVerb(".", null, { t:8, v:".", curry:[ks(node.v), indexer, asVerb(op), ex] });
 }
 
 function applycallright(node) {
