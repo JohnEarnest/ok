@@ -333,7 +333,7 @@ function print(x, y) {
 	// for now, ignore the left output symbol.
 	if (typeof tojs(y) == 'string') { printRepl(escapeHTML(tojs(y))); }
 	else { printRepl(format(y)); }
-	return x;
+	return y;
 }
 
 function readAjax(x) {
