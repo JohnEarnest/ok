@@ -523,7 +523,8 @@ function atdepth(x, y, i, env) {
 	return kmap(y.v[i], function(t) { return atdepth(ar(atl)(x, t, env), y, i+1, env); });
 }
 
-function dget(x, y) { y = checktype(y, 2).v.slice(1); return y in x.v ? x.v[y] : NIL; }
+function dget(x, y)    { y = checktype(y, 2).v.slice(1); return y in x.v ? x.v[y] : k(3,[]); }
+function dset(x, y, z) { y = checktype(y, 2).v.slice(1); x.v[y] = z; }
 
 function call(x, y, env) {
 	if (x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : dget(x, y); }
@@ -606,7 +607,7 @@ function dmend4(args, env) { return mend(args, env, dmend, dmend); }
 function mend(args, env, monadic, dyadic) {
 	if (args.length != 3 && args.length != 4) { throw new Error("valence error."); }
 	var ds = run(args[0], env);
-	var d = (ds.t == 2 ? env.lookup(ds.v.slice(1),true) : ds); l(d);
+	var d = (ds.t == 2 ? env.lookup(ds.v.slice(1),true) : ds); d;
 	var i = run(args[1], env);
 	var y = args[3] ? run(args[3], env) : null;
 	var f = run(args[2], env);
@@ -627,7 +628,8 @@ function amendm(d, i, y, monad, env) {
 function amendd(d, i, y, dyad, env) {
 	if      (i.t==3&y.t==3) { for(var z=0;z<len(i);z++) { amendd(d,i.v[z],y.v[z],dyad,env); } }
 	else if (i.t==3&y.t!=3) { for(var z=0;z<len(i);z++) { amendd(d,i.v[z],y     ,dyad,env); } }
-	else { d.v[p(i)] = applyd(dyad, atl(d, i, env), y, env) }
+	else if (i.t==2) { dset(d, i, applyd(dyad, atl(d, i, env), y, env)); }
+	else { d.v[p(i)] = applyd(dyad, atl(d, i, env), y, env); }
 }
 
 function dmend(d, i, y, f, env) {
