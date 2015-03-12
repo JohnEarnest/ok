@@ -14,7 +14,7 @@ var usingDevice = false;
 
 function readchar() {
 	var buff = new Buffer(1);
-	fs.readSync(process.stdin.fd, buff, 0, 1);
+	fs.readSync(fd, buff, 0, 1);
 	return String.fromCharCode(buff[0]);
 }
 function readline() {
