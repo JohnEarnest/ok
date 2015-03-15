@@ -9,7 +9,7 @@
 {(x@<x)~(y@<y)}["teapot";"toptea"]                           /  2. are two strings anagrams?
 {x@*t@&{2>#x}'t:=x}"oorning"                                 /  3. first unique character
 |"backwards"                                                 /  4. reverse a string
-&/10>{"0123456789"?x}'"697"                                  /  5. string contains only digits?
+&/{(x<58)&x>47}`i$"697"                                      /  5. string contains only digits?
 {(w@*x;#x)}'t@&{1<#x}'t:=:w:"Programming"                    /  6. find duplicates and their count
 {(t;(#x)-t:+/x)}@{6>"aeiouy"?x}'"verbage"                    /  7. count vowels and consonants
 {+/x=y}["skimmed";"m"]                                       /  8. count occurrences of a character
