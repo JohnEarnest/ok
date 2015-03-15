@@ -273,7 +273,7 @@ function processLine() {
 		var code = prompt.value.slice(2);
 		var url = document.location + "?run=" + encodeURIComponent(code);
 		printRepl("oK code url:");
-		printRepl("<a href='"+url+"' target='_blank'>"+url+"</a>");
+		printRepl("<a href=\""+url+"\" target='_blank'>"+url+"</a>");
 		return;
 	}
 	var showtime = false;
