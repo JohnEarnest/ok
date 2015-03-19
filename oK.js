@@ -755,7 +755,6 @@ function applycallright(node) {
 
 function applyindexright(node) {
 	while (matches(OPEN_B)) { node = asVerb(".", node, k(3, parseList(CLOSE_B))); }
-	if (node.t == 3 && atNoun() && !at(OPEN_C) && !at(NAME)) { return asVerb("@", node, null); }
 	return node;
 }
 
@@ -868,7 +867,7 @@ function parseEx(node) {
 	if (atNoun()) {
 		var x = parseNoun();
 		if (at(ADVERB)) { return parseAdverb(node, x); }
-		if (node.t == 5 || node.t == 7 || node.t == 8) { return asVerb("@", node, parseEx(x)); }
+		if (node.t in {3:0,5:0,7:0,8:0}) { return asVerb("@", node, parseEx(x)); }
 		x.l = node; x.r = parseEx(parseNoun()); node = x;
 	}
 	if (at(VERB)) {
