@@ -223,7 +223,16 @@ function split(x, y) {
 	} return k(3,r);
 }
 
+function odometer(x) {
+	var r = iota(x.v[0]); for(var z=1; z<len(x); z++) {
+		var t = k(3, []); for(var p=0; p<len(r); p++) {
+			for(var i=0; i<x.v[z].v; i++) { t.v.push(cat(r.v[p], k(0, i))); }
+		} r = t;
+	} return r;
+}
+
 function makedict(x) {
+	if (loa(x)) { return odometer(x); }
 	m(x); if (len(x) != 2) { throw new Error("valence error."); }
 	var r={}; for(var z=0;z<len(x.v[0]);z++) {
 		var key = x.v[0].v[z];
