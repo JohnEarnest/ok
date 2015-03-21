@@ -59,7 +59,7 @@ function checktype(n, t) {
 	if (n.t == t) { return n; }
 	throw new Error(typenames[t]+" expected, found "+typenames[n.t]+".");
 }
-function n(x) { return checktype(x, 0); }
+function n(x) { if (x.t==0||x.t==1) { return x; } return checktype(x, 0); }
 function l(x) { return checktype(x, 3); }
 function d(x) { return checktype(x, 4); }
 function a(x) { if (x.t > 2) { throw new Error("domain error."); } return x; }
