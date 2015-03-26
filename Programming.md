@@ -105,6 +105,24 @@ If `D` consists of atomic primitives, you can often just use one of `eachleft` o
 
 Combining a Cartesian Product with a Filter (as described above) is a straightforward way to approach many search or optimization problems. While a naive K interpreter may perform a great deal of unnecessary work while executing such a program, an interpreter which performs the Cartesian Product lazily using an approach similar to that described in [An APL Machine](http://www.slac.stanford.edu/cgi-wrap/getdoc/slac-r-114.pdf)(1970) could avoid this overhead.
 
+Since this type of operation is so common, there's a primitive which which will handle many such cases- monadic `!` applied to a list, sometimes called "odometer":
+
+	  !3 2
+	(0 0
+	 0 1
+	 1 0
+	 1 1
+	 2 0
+	 2 1)
+	 
+	("ABC"@)'!3 2
+	("AA"
+	 "AB"
+	 "BA"
+	 "BB"
+	 "CA"
+	 "CB")
+ 
 Iterative Algorithms
 --------------------
 If an algorithm can be completed in a known number of steps, it is well suited to a solution involving array processing as in the above techniques. Some algorithms, however, must execute for a number of steps which is not easily determined ahead of time or yield a variable number of results depending on the input. K includes some verbs which handle very common algorithms of this nature- for example:
@@ -118,7 +136,7 @@ If an algorithm can be completed in a known number of steps, it is well suited t
 
 When these "irregular" problems come up, the above verbs should come to mind. Do any of them offer a solution, or allow you to break the problem into pieces which are each regular?
 
-Otherwise, we consider the special forms of `over` (`/`) and `scan` (`/`):
+Otherwise, we consider the special forms of `over` (`/`) and `scan` (`\`):
 
 - `f/ x` (where `f` is a monadic function) iteratively applies `f` to `x` until the value stops changing or the initial value of `x` is revisited. Also known as _Fixed Point_.
 - `n f/ x` (where `f` is a monadic function and `n` is a number) iteratively applies `f` to `x`, `n` times. This is essentially a "for" loop, and often instances of this form could be replaced with a use of `'!`.
