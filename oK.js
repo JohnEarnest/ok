@@ -228,7 +228,7 @@ function odometer(x) {
 		var t = k(3, []); for(var p=0; p<len(r); p++) {
 			for(var i=0; i<x.v[z].v; i++) { t.v.push(cat(r.v[p], k(0, i))); }
 		} r = t;
-	} return r;
+	} return flip(r);
 }
 
 function makedict(x) {
