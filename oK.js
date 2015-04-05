@@ -82,7 +82,7 @@ function plus  (x, y) { return k(0, n(x).v + n(y).v); }
 function minus (x, y) { return k(0, n(x).v - n(y).v); }
 function times (x, y) { return k(0, n(x).v * n(y).v); }
 function divide(x, y) { return k(0, n(x).v / n(y).v); }
-function mod   (x, y) { return k(0, kmod(n(x).v, n(y).v)); }
+function mod   (x, y) { return k(0, n(x).v>0 ? kmod(n(y).v, x.v) : Math.floor(n(y).v / -x.v)); }
 function max   (x, y) { return k(0, Math.max(n(x).v, n(y).v)); }
 function min   (x, y) { return k(0, Math.min(n(x).v, n(y).v)); }
 function less  (x, y) { return kb(a(x).v < a(y).v); }
@@ -248,7 +248,7 @@ function unpack(x, y) {
 	var t=k(0,n(y).v); var p=cat(reverse(scan(k(8, "*"), x)),k1);
 	var r=[]; for(var z=0;z<len(p);z++) {
 		var q=floor(divide(t, p.v[z])); if (r.length!=0||q.v!=0) { r.push(q); }
-		t=floor(mod(t, p.v[z]));
+		t=floor(mod(p.v[z], t));
 	} return k(3,r);
 }
 
