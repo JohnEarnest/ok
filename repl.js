@@ -38,13 +38,13 @@ ok.setIO("0:", 0, read);
 
 if (process.argv.length == 3) {
 	var program = fs.readFileSync(process.argv[2], { encoding:'utf8' });
-	process.stdout.write(ok.format(ok.run(ok.parse(program), new ok.Environment(null))));
+	process.stdout.write(ok.format(ok.run(ok.parse(program), ok.baseEnv())));
 	process.stdout.write("\n");
 	process.exit(0);
 }
 
 process.stdout.write("oK v"+ok.version+"\n\n");
-var env = new ok.Environment(null);
+var env = ok.baseEnv();
 while(true) {
 	process.stdout.write("  ");
 	var input = readline();

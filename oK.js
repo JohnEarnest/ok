@@ -23,6 +23,7 @@ var typenames = [
 	"return"    , // 10 : value (expression)
 	"nil"       , // 11 :
 	"cond"      , // 12 : body (list of expressions)
+	"native"    , // 13 : conceptually a verb
 ];
 
 var NIL = ks("");
@@ -510,6 +511,7 @@ function Environment(pred) {
 }
 
 function atd(x, y, env) {
+	if (x.t == 13) { return x.v(y); }
 	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
 	if (x.t == 3) { return atl(x, y, env); }
 	if (x.t == 5) { return call(x, k(3,[y]), env); }
@@ -881,6 +883,7 @@ function parseEx(node) {
 	}
 	if (at(VERB)) {
 		var x = parseNoun();
+		if (node.v in natives) { return asVerb("@", node, parseEx(x)); }
 		if (x.forcemonad) { node.r = parseEx(x); return node; }
 		if (at(ADVERB)) { return parseAdverb(node, x); }
 		x.l = node; x.r = parseEx(parseNoun()); node = x;
@@ -940,6 +943,7 @@ function format(k, indent) {
 	if (k.t == 10) { return ":"+format(k.v); }
 	if (k.t == 11) { return ""; }
 	if (k.t == 12) { return "$["+format(k.v)+"]"; }
+	if (k.t == 13) { return "(native)"; }
 }
 
 // export the public interface:
@@ -950,10 +954,21 @@ function setIO(symbol, slot, func) {
 var tracer = function(verb, a, v, b, env, r) { return r; }
 function setTrace(t) { tracer = t; }
 
+var natives = {"log":0,"exp":0,"cos":0,"sin":0};
+function baseEnv() {
+	var env = new Environment(null);
+	env.put("log", true, k(13, am(function(x) { return k(0, Math.log(n(x).v)) })));
+	env.put("exp", true, k(13, am(function(x) { return k(0, Math.exp(n(x).v)) })));
+	env.put("cos", true, k(13, am(function(x) { return k(0, Math.cos(n(x).v)) })));
+	env.put("sin", true, k(13, am(function(x) { return k(0, Math.sin(n(x).v)) })));
+	return env;
+}
+
 this.version = "0.1";
 this.parse = parse;
 this.format = format;
 this.run = run;
 this.Environment = Environment;
+this.baseEnv = baseEnv;
 this.setIO = setIO;
 this.setTrace = setTrace;

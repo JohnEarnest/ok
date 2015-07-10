@@ -11,7 +11,7 @@ var ok = require("./oK");
 var fails = 0; var tests = 0;
 function test(input, output) {
 	try {
-		var got = ok.format(ok.run(ok.parse(input), new ok.Environment(null)));
+		var got = ok.format(ok.run(ok.parse(input), ok.baseEnv()));
 		if (output && output != got) {
 			console.log("TEST "+tests+" FAILED: "+input+"\nEXPECTED:\n"+output+"\nGOT:\n"+got);
 			fails++;
@@ -521,7 +521,14 @@ test("-3!7"                           , "2"                                   );
 test("5!-3"                           , "2"                                   );
 test("9!80"                           , "8"                                   );
 
-test("3/2 1");
+test("log 5 18"                       , "1.6094 2.8904"                       );
+test("exp 2"                          , "7.3891"                              );
+test("10*sin 2 3"                     , "9.093 1.4112"                        );
+test("10*cos 2 3"                     , "-4.1615 -9.8999"                     );
+test("{10*sin!5}"                     , "{10*sin@!5}"                         );
+test("10*sin!5"                       , "0 8.4147 9.093 1.4112 -7.568"        );
+
+//test("3/2 1");
 
 //files();
 
