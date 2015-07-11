@@ -90,7 +90,6 @@ function less  (x, y) { return kb(a(x).v < a(y).v); }
 function more  (x, y) { return kb(a(x).v > a(y).v); }
 function equal (x, y) { return kb(x.v == y.v); }
 function cat   (x, y) { return k(3, (x.t==3?x.v:[x]).concat(y.t==3?y.v:[y])); }
-function except(x, y) { return exceptl(x, k(3, [y])); }
 function take  (x, y) { return takel(x, k(3, [y])); }
 function rsh   (x, y) { return rshl(x, k(3, [y])); }
 function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
@@ -135,8 +134,9 @@ function dfmt(x, y) {
 	} return r;
 }
 
-function exceptl(x, y) {
-	l(y); return k(3, l(x).v.filter(function(z) {
+function except(x, y) {
+	if (x.t != 3) { x = iota(x); } if (y.t != 3) { y = k(3, [y]); }
+	return k(3, l(x).v.filter(function(z) {
 		return !y.v.some(function(w) { return match(z, w).v; })
 	}));
 }
@@ -408,7 +408,7 @@ var verbs = {
 	"=" : [null,   group,      equal,  ad(equal),  ad(equal),  ad(equal),  null,    null  ],
 	"~" : [not,    am(not),    match,  match,      match,      match,      null,    null  ],
 	"," : [enlist, enlist,     cat,    cat,        cat,        cat,        null,    null  ],
-	"^" : [isnull, am(isnull), null,   except,     null,       exceptl,    null,    null  ],
+	"^" : [isnull, am(isnull), except, except,     except,     except,     null,    null  ],
 	"#" : [count,  count,      take,   rsh,        takel,      rshl,       null,    null  ],
 	"_" : [floor,  am(floor),  drop,   null,       drop,       cut,        null,    null  ],
 	"$" : [kfmt,   am(kfmt),   dfmt,   ad(dfmt),   ad(dfmt),   ad(dfmt),   null,    null  ],
