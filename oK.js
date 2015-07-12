@@ -177,6 +177,7 @@ function cut(x, y) {
 }
 
 function rnd(x, y, env) {
+	if (y.t == 3) { return ar(atl)(y, rnd(x, k(0, len(y)))); }
 	if (x.t == 5 || x.t == 8 || x.t == 9) { return invm(x, y, env); }
 	p(y); return kmap(iota(x), function(x){ return k(0,Math.floor(Math.random()*y.v)); });
 }
@@ -412,7 +413,7 @@ var verbs = {
 	"#" : [count,  count,      take,   rsh,        take,       rshl,       null,    null  ],
 	"_" : [floor,  am(floor),  drop,   null,       drop,       cut,        null,    null  ],
 	"$" : [kfmt,   am(kfmt),   dfmt,   ad(dfmt),   ad(dfmt),   ad(dfmt),   null,    null  ],
-	"?" : [null,   unique,     rnd,    find,       null,       find,       query3,  query4],
+	"?" : [null,   unique,     rnd,    find,       rnd,        find,       query3,  query4],
 	"@" : [type,   type,       atd,    atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,  keval,      call,   call,       call,       call,       dmend3,  dmend4],
 	"'" : [null,   null,       null,   bin,        null,       ar(bin),    null,    null  ],
