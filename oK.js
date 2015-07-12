@@ -90,7 +90,6 @@ function less  (x, y) { return kb(a(x).v < a(y).v); }
 function more  (x, y) { return kb(a(x).v > a(y).v); }
 function equal (x, y) { return kb(x.v == y.v); }
 function cat   (x, y) { return k(3, (x.t==3?x.v:[x]).concat(y.t==3?y.v:[y])); }
-function take  (x, y) { return takel(x, k(3, [y])); }
 function rsh   (x, y) { return rshl(x, k(3, [y])); }
 function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
 function rotate(x, y) { n(x); return kmap(y, function(a,i) { return y.v[kmod(x.v+i,len(y))]; }); }
@@ -145,7 +144,8 @@ function drop(x, y) {
 	return (y.t != 3 || len(y) < 1) ? y : k(3, n(x).v<0 ? y.v.slice(0,x.v) : y.v.slice(x.v));
 }
 
-function takel(x, y) {
+function take(x, y) {
+	if (y.t != 3 || len(y) == 0) { y = k(3, [y]); }
 	var s=n(x).v<0?kmod(x.v, len(y)):0;
 	return krange(Math.abs(x.v), function(x) { return y.v[kmod(x+s, len(y))]; });
 }
@@ -254,7 +254,7 @@ function unpack(x, y) {
 }
 
 function pack(x, y) {
-	var p=takel(k(0,-len(y)), cat(reverse(scan(k(8, "*"), x)),k1));
+	var p=take(k(0,-len(y)), cat(reverse(scan(k(8, "*"), x)),k1));
 	return over(k(8, "+"), ad(times)(p, y));
 }
 
@@ -409,7 +409,7 @@ var verbs = {
 	"~" : [not,    am(not),    match,  match,      match,      match,      null,    null  ],
 	"," : [enlist, enlist,     cat,    cat,        cat,        cat,        null,    null  ],
 	"^" : [isnull, am(isnull), except, except,     except,     except,     null,    null  ],
-	"#" : [count,  count,      take,   rsh,        takel,      rshl,       null,    null  ],
+	"#" : [count,  count,      take,   rsh,        take,       rshl,       null,    null  ],
 	"_" : [floor,  am(floor),  drop,   null,       drop,       cut,        null,    null  ],
 	"$" : [kfmt,   am(kfmt),   dfmt,   ad(dfmt),   ad(dfmt),   ad(dfmt),   null,    null  ],
 	"?" : [null,   unique,     rnd,    find,       null,       find,       query3,  query4],
