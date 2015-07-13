@@ -154,7 +154,7 @@ function reshape(x, y) {
 		return krange(x.v[index].v, function(z) {
 			return index==len(x)-1 ? y.v[kmod(count++, len(y))] : rshr(x, y, index+1);
 		});
-	} return rshr(l(x), l(y), 0);
+	} return rshr(l(x), y, 0);
 }
 
 function match(x, y) {
