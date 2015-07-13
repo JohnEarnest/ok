@@ -20,7 +20,6 @@ var typenames = [
 	"nameref"   , //  7 : name, l(index?), r(assignment), global?
 	"verb"      , //  8 : name, l(?), r, curry?
 	"adverb"    , //  9 : name, l(?), verb, r
-	"return"    , // 10 : value (expression)
 	"nil"       , // 11 :
 	"cond"      , // 12 : body (list of expressions)
 	"native"    , // 13 : conceptually a verb
@@ -560,16 +559,13 @@ function call(x, y, env) {
 		if (i < len(y)) { throw new Error("valence error."); }
 		for(var z=0;z<x.args.length;z++) { environment.put(x.args[z], false, curry[z]); }
 	}
-	var r = run(x.v, environment);
-	return (r.t == 10) ? r.v : r;
+	return run(x.v, environment);
 }
 
 function run(node, env) {
 	if (node == null) { return k(11); }
 	if (node instanceof Array) {
-		var r; for(var z=0;z<node.length;z++) {
-			r=run(node[z], env); if (r.t == 10) { return k(10, r.v); }
-		} return r;
+		var r; for(var z=0;z<node.length;z++) { r=run(node[z], env); } return r;
 	}
 	if (node.t == 8 && node.curry && !node.r) { return applyverb(node, [], env); }
 	if (node.sticky) { return node; }
@@ -593,7 +589,6 @@ function run(node, env) {
 		var left  = node.l ? run(node.l, env) : null;
 		return applyadverb(node, verb, [left, right], env);
 	}
-	if (node.t == 10) { return k(10, run(node.v, env)); }
 	if (node.t == 12) {
 		for(var z=0;z<node.v.length-1;z+=2) {
 			if (!match(k(0,0), run(node.v[z], env)).v) { return run(node.v[z+1], env); }
@@ -787,7 +782,7 @@ function parseList(terminal, cull) {
 }
 
 function parseNoun() {
-	if (matches(COLON)) { return k(10, parseEx(parseNoun())); }
+	if (matches(COLON)) { return { t:5, args:["x","y"], v:[{ t:7, v:"y" }] }; } // {y}
 	if (at(IOVERB)) { return k(8, expect(IOVERB)); }
 	if (at(BOOL)) {
 		var n = expect(BOOL); var r=[];
@@ -940,7 +935,6 @@ function format(k, indent) {
 		return left+k.v+(k.r?format(k.r):"");
 	}
 	if (k.t ==  9) { return (k.l?format(k.l)+" ":"")+format(k.verb)+k.v+format(k.r); }
-	if (k.t == 10) { return ":"+format(k.v); }
 	if (k.t == 11) { return ""; }
 	if (k.t == 12) { return "$["+format(k.v)+"]"; }
 	if (k.t == 13) { return "(native)"; }
