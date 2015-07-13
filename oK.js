@@ -90,7 +90,6 @@ function less  (x, y) { return kb(a(x).v < a(y).v); }
 function more  (x, y) { return kb(a(x).v > a(y).v); }
 function equal (x, y) { return kb(x.v == y.v); }
 function cat   (x, y) { return k(3, (x.t==3?x.v:[x]).concat(y.t==3?y.v:[y])); }
-function rsh   (x, y) { return rshl(x, k(3, [y])); }
 function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
 function rotate(x, y) { n(x); return kmap(y, function(a,i) { return y.v[kmod(x.v+i,len(y))]; }); }
 function ident    (x) { return x; }
@@ -150,8 +149,8 @@ function take(x, y) {
 	return krange(Math.abs(x.v), function(x) { return y.v[kmod(x+s, len(y))]; });
 }
 
-function rshl(x, y) {
-	count = 0; function rshr(x, y, index) {
+function reshape(x, y) {
+	if (y.t != 3) { y = k(3, [y]); } count = 0; function rshr(x, y, index) {
 		return krange(x.v[index].v, function(z) {
 			return index==len(x)-1 ? y.v[kmod(count++, len(y))] : rshr(x, y, index+1);
 		});
@@ -410,7 +409,7 @@ var verbs = {
 	"~" : [not,    am(not),    match,  match,      match,      match,      null,    null  ],
 	"," : [enlist, enlist,     cat,    cat,        cat,        cat,        null,    null  ],
 	"^" : [isnull, am(isnull), except, except,     except,     except,     null,    null  ],
-	"#" : [count,  count,      take,   rsh,        take,       rshl,       null,    null  ],
+	"#" : [count,  count,      take,   reshape,    take,       reshape,    null,    null  ],
 	"_" : [floor,  am(floor),  drop,   null,       drop,       cut,        null,    null  ],
 	"$" : [kfmt,   am(kfmt),   dfmt,   ad(dfmt),   ad(dfmt),   ad(dfmt),   null,    null  ],
 	"?" : [null,   unique,     rnd,    find,       rnd,        find,       query3,  query4],
