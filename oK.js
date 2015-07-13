@@ -411,7 +411,7 @@ var verbs = {
 	"#" : [count,  count,      take,   reshape,    take,       reshape,    null,    null  ],
 	"_" : [floor,  am(floor),  drop,   null,       drop,       cut,        null,    null  ],
 	"$" : [kfmt,   am(kfmt),   dfmt,   ad(dfmt),   ad(dfmt),   ad(dfmt),   null,    null  ],
-	"?" : [null,   unique,     rnd,    find,       rnd,        find,       query3,  query4],
+	"?" : [null,   unique,     rnd,    find,       rnd,        ar(find),   query3,  query4],
 	"@" : [type,   type,       atd,    atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,  keval,      call,   call,       call,       call,       dmend3,  dmend4],
 	"'" : [null,   null,       null,   bin,        null,       ar(bin),    null,    null  ],
