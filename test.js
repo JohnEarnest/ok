@@ -530,7 +530,7 @@ test("[a:3;b:4]"                      , "[a:3;b:4]"                           );
 test("![a:5;d:7]"                     , "`a`d"                                );
 test('[a:2 3 4;b:"abcd"]@`a'          , "2 3 4"                               );
 test("[a:5] @ `b"                     , "()"                                  );
-//test(". [a:4;b:3]", "4 3");
+test(".[a:4;b:3]"                     , "4 3"                                 );
 
 // `a`b!2 3 should construct a dictionary?
 

@@ -110,7 +110,7 @@ function kfmt     (x) { var r=stok(format(x)); if (r.t!=3) { r=k(3,[r]); } retur
 function iota     (x) { return x.t == 4 ? keys(x) : krange(p(x), function(x) { return k(0,x); }); }
 
 function keval(x, env) {
-	return x.t == 2 ? env.lookup(x.v.slice(1), true) : run(parse(ktos(x)), env);
+	return x.t == 4 ? x.v : x.t == 2 ? env.lookup(x.v.slice(1), true) : run(parse(ktos(x)), env);
 }
 
 function dfmt(x, y) {
