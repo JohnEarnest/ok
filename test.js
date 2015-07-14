@@ -336,9 +336,6 @@ test("0 2 4 6 8 10'-10 0 4 5 6 20"    , "-1 0 2 2 3 5"                        );
 test("1 2 3 3 4'2 3"                  , "1 3"                                 );
 test("4 5 6'1"                        , "-1"                                  );
 test('+"="\\\'"&"\\"foo=42&bar=69"'   , '(("foo"\n  "bar")\n ("42"\n  "69"))' );
-test('!+"="\\\'"&"\\"foo=42&bar=69"'  , '[foo:"42";bar:"69"]'                 );
-fail("!(1 2 3;4 5)"                   , "matrix expected."                    );
-fail("!(1 2 3;4 5 6)"                 , "map keys must be strings or symbols.");
 test("{a::99}"                        , "{a::99}"                             );
 test("a:5; {a::3}[]; a"               , "3"                                   );
 test("b:1 2 3;{b[1]::4}[]; b"         , "1 4 3"                               );
@@ -531,8 +528,11 @@ test("-4#()"                          , "(()\n ()\n ()\n ())"                 );
 test('#5?"abc"'                       , 5                                     );
 test("#10?4 7 2"                      , 10                                    );
 test("1<3?4 7 2"                      , "1 1 1"                               );
-
 fail("a:1;.[`a;();:;1]"               , "index error."                        );
+
+test("![a:4;b:3]", "`a `b");
+
+// `a`b!2 3 should construct a dictionary?
 
 //test("3/2 1");
 
@@ -565,8 +565,6 @@ fail("a:1;.[`a;();:;1]"               , "index error."                        );
 // clear up application/dict ambiguity.
 // f[a:1]  is f.,(a:1)
 // f [a:1] is f.,[a:1]
-
-// `a`b!2 3 should construct a dictionary?
 
 // ?[t;c;b;a] query is the K4/Q "select"
 // - t is a 'table'

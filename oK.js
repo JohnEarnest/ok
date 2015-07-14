@@ -232,19 +232,6 @@ function odometer(x) {
 	} return flip(r);
 }
 
-function makedict(x) {
-	if (loa(x)) { return odometer(x); }
-	m(x); if (len(x) != 2) { throw new Error("valence error."); }
-	var r={}; for(var z=0;z<len(x.v[0]);z++) {
-		var key = x.v[0].v[z];
-		if      (key.t == 1) { key = String.fromCharCode(key.v); }
-		else if (key.t == 2) { key = key.v.slice(1); }
-		else if (s(key))     { key = ktos(key, true); }
-		else { throw new Error("map keys must be strings or symbols."); }
-		r[key] = x.v[1].v[z];
-	} return k(4, r);
-}
-
 function unpack(x, y) {
 	var t=k(0,n(y).v); var p=cat(reverse(scan(k(8, "*"), x)),k1);
 	var r=[]; for(var z=0;z<len(p);z++) {
@@ -400,7 +387,7 @@ var verbs = {
 	"-" : [negate, am(negate), minus,  ad(minus),  ad(minus),  ad(minus),  null,    null  ],
 	"*" : [first,  first,      times,  ad(times),  ad(times),  ad(times),  null,    null  ],
 	"%" : [sqrt,   am(sqrt),   divide, ad(divide), ad(divide), ad(divide), null,    null  ],
-	"!" : [iota,   makedict,   mod,    al(mod),    rotate,     al(rotate), null,    null  ],
+	"!" : [iota,   odometer,   mod,    al(mod),    rotate,     al(rotate), null,    null  ],
 	"&" : [zero,   where,      min,    ad(min),    ad(min),    ad(min),    null,    null  ],
 	"|" : [ident,  reverse,    max,    ad(max),    ad(max),    ad(max),    null,    null  ],
 	"<" : [null,   asc,        less,   ad(less),   ad(less),   ad(less),   null,    null  ],
