@@ -20,6 +20,7 @@ var typenames = [
 	"nameref"   , //  7 : name, l(index?), r(assignment), global?
 	"verb"      , //  8 : name, l(?), r, curry?
 	"adverb"    , //  9 : name, l(?), verb, r
+	"return"    , // 10 : return (deprecated)
 	"nil"       , // 11 :
 	"cond"      , // 12 : body (list of expressions)
 	"native"    , // 13 : conceptually a verb
