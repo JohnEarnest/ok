@@ -99,7 +99,6 @@ test("28 9 4@0 1 1 0 2"               , "28 9 9 28 4"                         );
 test("{x+y}"                          , "{[x;y]x+y}"                          );
 test("{y; {z}}"                       , "{[x;y]y;{[x;y;z]z}}"                 );
 test("a:5;b:3;a*b"                    , "15"                                  );
-test("[a:3;b:4]"                      , "[a:3;b:4]"                           );
 test("{x*x}3"                         , "9"                                   );
 test("sq:{x*x};sq 25"                 , "625"                                 );
 test("(1;(2 3))=2"                    , "(0\n 1 0)"                           );
@@ -162,7 +161,6 @@ test("0 3 7_0 1 2 3 4 5 6 7"          , "(0 1 2\n 3 4 5 6\n ,7)"              );
 test("0 4 _ 0 1 2 3 4 5"              , "(0 1 2 3\n 4 5)"                     );
 test('m:"cut it";(0,&m=" ")_m'        , '("cut"\n " it")'                     );
 test(",1 2 3"                         , ",1 2 3"                              );
-test("![a:5;d:7]"                     , "`a `d"                               );
 test("23 4 9 18?9"                    , "2"                                   );
 test("9 8 7 6 5 4 3?1"                , "7"                                   ); // *
 test('("abe";"i";"cat")?"i"'          , "1"                                   );
@@ -190,7 +188,6 @@ test('"dozen"[> "dozen"]'             , '"zoned"'                             );
 test('= "weekend"'                    , "(,0\n 1 2 4\n ,3\n ,5\n ,6)"         ); // *
 test("=1 1 2 3 3 1 2 1"               , "(0 1 5 7\n 2 6\n 3 4)"               ); // *
 test('"abcdef"@(5 0;(3;,4 3))'        , '("fa"\n ("d"\n  ,"ed"))'             );
-test('[a:2 3 4;b:"abcd"]@`a'          , "2 3 4"                               );
 test("()"                             , "()"                                  );
 test("#()"                            , "0"                                   );
 test("^45"                            , "0"                                   );
@@ -282,7 +279,6 @@ fail("&-30"                           , "positive int expected."              );
 fail("+(1 2;3)"                       , "matrix expected."                    );
 fail("2 -3 4_1 3 4"                   , "positive int expected."              );
 fail("a:b"                            , "the name 'b' has not been defined."  );
-fail("[a:5] @ `b"                     , "index error: `b"                     );
 fail("a:1 2;a[45]"                    , "index error: 45"                     );
 fail("a:1;a[2]"                       , "function or list expected."          );
 fail("f:{x+y};f[1;2;3]"               , "valence error."                      );
@@ -473,7 +469,7 @@ test("(2+)2"                          , "4"                                   );
 test("{x}'2"                          , "2"                                   );
 test("2 {x,y}'3"                      , "2 3"                                 );
 test("1 {x,y}\\: 2"                   , "1 2"                                 );
-test("`a {x,y}/: `b"                  , "`a `b"                               );
+test("`a {x,y}/: `b"                  , "`a`b"                                );
 test("{+[x;y]}"                       , "{[x;y]+[x;y]}"                       );
 test("{t[x;y]:1}"                     , "{[x;y]t:.[t;(x;y);{[x;y]y};1]}"      );
 test("{+[x;y]}.'(1 2;3 4)"            , "3 7"                                 );
@@ -530,7 +526,11 @@ test("#10?4 7 2"                      , 10                                    );
 test("1<3?4 7 2"                      , "1 1 1"                               );
 fail("a:1;.[`a;();:;1]"               , "index error."                        );
 
-test("![a:4;b:3]", "`a `b");
+test("[a:3;b:4]"                      , "[a:3;b:4]"                           );
+test("![a:5;d:7]"                     , "`a`d"                                );
+test('[a:2 3 4;b:"abcd"]@`a'          , "2 3 4"                               );
+test("[a:5] @ `b"                     , "()"                                  );
+//test(". [a:4;b:3]", "4 3");
 
 // `a`b!2 3 should construct a dictionary?
 

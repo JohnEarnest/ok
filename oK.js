@@ -14,7 +14,7 @@ var typenames = [
 	"char"      , //  1 : value
 	"symbol"    , //  2 : value
 	"list"      , //  3 : array -> k
-	"dictionary", //  4 : value (map string->kval)
+	"dictionary", //  4 : values, k(keys)
 	"function"  , //  5 : body, args, curry, env
 	"view"      , //  6 : value, r, cache, depends->val
 	"nameref"   , //  7 : name, l(index?), r(assignment), global?
@@ -96,7 +96,7 @@ function ident    (x) { return x; }
 function negate   (x) { return k(0, -n(x).v); }
 function first    (x) { return (x.t != 3) ? x : len(x) ? x.v[0] : NIL; }
 function sqrt     (x) { return k(0, Math.sqrt(n(x).v)); }
-function keys     (x) { return k(3, Object.keys(d(x).v).map(ks)); }
+function keys     (x) { return k(3, d(x).k.v.slice(0)); }
 function zero     (x) { return kmap(iota(x), function(x) { return k(0,0); }); }
 function reverse  (x) { return k(3,l(x).v.slice(0).reverse()); }
 function desc     (x) { return reverse(asc(x)); }
@@ -503,9 +503,7 @@ function atd(x, y, env) {
 	if (x.t == 3) { return atl(x, y, env); }
 	if (x.t == 5) { return call(x, k(3,[y]), env); }
 	if (x.t == 8 || x.t == 9) { return applym(x, y, env); }
-	d(x); checktype(y, 2); if (!(y.v.slice(1) in x.v)) {
-		throw new Error("index error: "+format(y));
-	} return x.v[y.v.slice(1)];
+	d(x); return dget(x, y);
 }
 
 function atl(x, y, env) {
@@ -523,8 +521,8 @@ function atdepth(x, y, i, env) {
 	return kmap(y.v[i], function(t) { return atdepth(ar(atl)(x, t, env), y, i+1, env); });
 }
 
-function dget(x, y)    { y = checktype(y, 2).v.slice(1); return y in x.v ? x.v[y] : k(3,[]); }
-function dset(x, y, z) { y = checktype(y, 2).v.slice(1); x.v[y] = z; }
+function dget(x, y)    { var i=find(x.k, y); return (i.v==len(x.k)) ? k(3,[]) : atl(x.v, i); }
+function dset(x, y, z) { var i=find(x.k, y).v; if(i==len(x.k)) { x.k.v.push(y); } x.v.v[i]=z; }
 
 function call(x, y, env) {
 	if (x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : dget(x, y); }
@@ -792,11 +790,10 @@ function parseNoun() {
 		return applyindexright(stok(str));
 	}
 	if (matches(OPEN_B)) {
-		var map={}; do {
-			var key = expect(NAME); expect(COLON);
-			if (matches(COLON)) { var alias = expect(NAME); map[key] = map[alias]; }
-			else { map[key] = parseEx(parseNoun()); }
-		} while(matches(SEMI)); expect(CLOSE_B); return k(4, map);
+		var m=k(4, k(3,[])); m.k=k(3,[]); do {
+			var key = ks(expect(NAME)); expect(COLON);
+			dset(m, key, matches(COLON) ? dget(m, ks(expect(NAME))) : parseEx(parseNoun()));
+		} while(matches(SEMI)); expect(CLOSE_B); return m;
 	}
 	if (matches(OPEN_C)) {
 		var args=[]; if (matches(OPEN_B)) {
@@ -903,11 +900,12 @@ function format(k, indent) {
 		for(var z=0;z<len(k);z++) { same &= k.v[z].t == k.v[0].t; sublist |= k.v[z].t == 3; }
 		if (sublist) { return "("+k.v.map(indented).join("\n "+indent)+")"; }
 		if (same & k.v[0].t == 1) { return '"'+ktos(k, true)+'"'; }
-		if (same & k.v[0].t <  3) { return k.v.map(format).join(" "); }
+		if (same & k.v[0].t <  3) { return k.v.map(format).join(k.v[0].t == 2 ? "" : " "); }
 		return "("+k.v.map(format).join(";")+")" ;
 	}
 	if (k.t == 4) {
-		return "["+Object.keys(k.v).map(function(x) { return x+":"+format(k.v[x]); }).join(";")+"]";
+		if (len(k.k)<1 || k.k.v[0].t != 2) { return format(k.k) + "!" + format(k.v); }
+		return "["+kzip(k.k,k.v,function(x,y){return x.v.slice(1)+":"+format(y);}).v.join(";")+"]";
 	}
 	if (k.t == 5) {
 		var r = ""; if (k.curry) {
