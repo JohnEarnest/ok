@@ -202,8 +202,8 @@ function where(x) {
 }
 
 function group(x) {
-	var y=unique(x); var r=krange(len(y),function(){ return k(3, []); });
-	for(var z=0;z<len(x);z++) { r.v[find(y, x.v[z]).v].v.push(k(0, z)); } return r;
+	var r={t:4, k:unique(x)}; r.v=kmap(r.k, function(){ return k(3,[]); });
+	for(var z=0;z<len(x);z++) { dget(r, x.v[z]).v.push(k(0, z)); } return r;
 }
 
 function unique(x) {

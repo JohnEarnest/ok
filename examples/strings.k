@@ -5,12 +5,12 @@
 
 (
 
-{x@&{1<#x}'=:x}"applause"                                    /  1. find duplicated characters
+{x@&(1<#)'.=:x}"applause"                                    /  1. find duplicated characters
 {(x@<x)~(y@<y)}["teapot";"toptea"]                           /  2. are two strings anagrams?
-{x@*t@&{2>#x}'t:=x}"oorning"                                 /  3. first unique character
+{x@*t@&(2>#)'t:.=x}"oorning"                                 /  3. first unique character
 |"backwards"                                                 /  4. reverse a string
 &/{(x<58)&x>47}`i$"697"                                      /  5. string contains only digits?
-{(w@*x;#x)}'t@&{1<#x}'t:=:w:"Programming"                    /  6. find duplicates and their count
+{(w@*x;#x)}'t@&(1<#)'t:.=:w:"Programming"                    /  6. find duplicates and their count
 {(t;(#x)-t:+/x)}@{6>"aeiouy"?x}'"verbage"                    /  7. count vowels and consonants
 {+/x=y}["skimmed";"m"]                                       /  8. count occurrences of a character
 ."231"                                                       /  9. convert numeric string to int
@@ -21,7 +21,7 @@
 ?"bananas"                                                   / 14. unique characters in order
 {[a;s]t:#:'a;t~0 0{x+y~'a@'x&t-1}/s}[("ab";"def");"dabef"]   / 15. is s an interleave of two others?
 {|/(y~(#y)#)'{1!x}\x}["hneay";"ne"]                          / 16. string contains a substring?
-{x@**{x@>#:'x}=:x}"abdbbac"                                  / 17. most frequently occurring char
+{x@**{x@>#:'x}.:=x}"abdbbac"                                 / 17. most frequently occurring char
 "peeled"^"e"                                                 / 18. remove instances of a character
 {[w]s@*|&{x~|x}'s:,/i#'\:{x!w}'i:!#w}"issrawar"              / 19. longest palindrome substring
 {x@<#:'x}("am";"i";"you";"they")                             / 20. sort list of strings by length
