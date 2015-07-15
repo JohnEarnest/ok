@@ -33,6 +33,7 @@ var EC = [["\\","\\\\"],["\"","\\\""],["\n","\\n"],["\t","\\t"]];
 var kt = [ks("f"), ks("c"), ks("n"), ks("l"), ks("a"), ks("u"), NIL, NIL, NIL, NIL, NIL, NIL, NIL];
 
 function k(t, v)         { return { 't':t, 'v':v }; }
+function md(k, v)        { return { t:4, k:k, v:v }; }
 function kl(vl)          { return vl.length==1 ? vl[0] : k(3,vl); }
 function kb(x)           { return x ? k1 : k0; }
 function s(x)            { return x.t == 3 && x.v.every(function(c) { return c.t == 1; }); }
@@ -94,7 +95,7 @@ function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(
 function rotate(x, y) { n(x); return kmap(y, function(a,i) { return y.v[kmod(x.v+i,len(y))]; }); }
 function ident    (x) { return x; }
 function negate   (x) { return k(0, -n(x).v); }
-function first    (x) { return (x.t != 3) ? x : len(x) ? x.v[0] : NIL; }
+function first    (x) { return (x.t == 4) ? first(x.v) : (x.t != 3) ? x : len(x) ? x.v[0] : NIL; }
 function sqrt     (x) { return k(0, Math.sqrt(n(x).v)); }
 function keys     (x) { return k(3, d(x).k.v.slice(0)); }
 function zero     (x) { return kmap(iota(x), function(x) { return k(0,0); }); }
@@ -103,7 +104,7 @@ function desc     (x) { return reverse(asc(x)); }
 function not      (x) { return equal(n(x), k0); }
 function enlist   (x) { return k(3, [x]); }
 function isnull   (x) { return max(match(x, NIL),match(x,k(11))); }
-function count    (x) { return k(0, x.t == 3 ? len(x) : 1); }
+function count    (x) { return k(0, x.t == 4 ? len(x.v) : x.t == 3 ? len(x) : 1); }
 function floor    (x) { return k(0, Math.floor(n(x).v)); }
 function type     (x) { return kt[x.t]; }
 function kfmt     (x) { var r=stok(format(x)); if (r.t!=3) { r=k(3,[r]); } return r; }
@@ -341,12 +342,16 @@ function scanwhile(monad, x, y, env) {
 
 function am(monad) { // create an atomic monad
 	return function recur(value, env) {
+		if (value.t == 4) { return md(value.k, recur(value.v, env)); }
 		if (value.t != 3) { return monad(value, env); }
 		return kmap(value, function(x) { return recur(x, env); });
 	};
 }
 function ad(dyad) { // create an atomic dyad
 	return function recur(left, right, env) {
+		if (left.t == 4 && right.t == 4) { return md(left.k, recur(left.v, right.v, env)); }
+		if (left.t  == 4) { return md(left.k,  recur(left.v, right, env)); }
+		if (right.t == 4) { return md(right.k, recur(left, right.v, env)); }
 		if (left.t != 3 && right.t != 3) { return dyad(left, right, env); }
 		if (left.t  != 3) { return kmap(right, function(x) { return recur(left, x, env); }); }
 		if (right.t != 3) { return kmap(left,  function(x) { return recur(x, right, env); }); }
@@ -382,29 +387,29 @@ function applyd(verb, x, y, env) {
 }
 
 var verbs = {
-	//     a       l           a-a     l-a         a-l         l-l         triad    tetrad
-	"+" : [ident,  flip,       plus,   ad(plus),   ad(plus),   ad(plus),   null,    null  ],
-	"-" : [negate, am(negate), minus,  ad(minus),  ad(minus),  ad(minus),  null,    null  ],
-	"*" : [first,  first,      times,  ad(times),  ad(times),  ad(times),  null,    null  ],
-	"%" : [sqrt,   am(sqrt),   divide, ad(divide), ad(divide), ad(divide), null,    null  ],
-	"!" : [iota,   odometer,   mod,    al(mod),    rotate,     al(rotate), null,    null  ],
-	"&" : [zero,   where,      min,    ad(min),    ad(min),    ad(min),    null,    null  ],
-	"|" : [ident,  reverse,    max,    ad(max),    ad(max),    ad(max),    null,    null  ],
-	"<" : [null,   asc,        less,   ad(less),   ad(less),   ad(less),   null,    null  ],
-	">" : [null,   desc,       more,   ad(more),   ad(more),   ad(more),   null,    null  ],
-	"=" : [null,   group,      equal,  ad(equal),  ad(equal),  ad(equal),  null,    null  ],
-	"~" : [not,    am(not),    match,  match,      match,      match,      null,    null  ],
-	"," : [enlist, enlist,     cat,    cat,        cat,        cat,        null,    null  ],
-	"^" : [isnull, am(isnull), except, except,     except,     except,     null,    null  ],
-	"#" : [count,  count,      take,   reshape,    take,       reshape,    null,    null  ],
-	"_" : [floor,  am(floor),  drop,   null,       drop,       cut,        null,    null  ],
-	"$" : [kfmt,   am(kfmt),   dfmt,   ad(dfmt),   ad(dfmt),   ad(dfmt),   null,    null  ],
-	"?" : [null,   unique,     rnd,    find,       rnd,        ar(find),   query3,  query4],
-	"@" : [type,   type,       atd,    atl,        atd,        ar(atl),    amend4,  amend4],
-	"." : [keval,  keval,      call,   call,       call,       call,       dmend3,  dmend4],
-	"'" : [null,   null,       null,   bin,        null,       ar(bin),    null,    null  ],
-	"/" : [null,   null,       null,   null,       join,       pack,       null,    null  ],
-	"\\": [null,   null,       null,   unpack,     split,      null,       null,    null  ],
+	//     a          l           a-a         l-a         a-l         l-l         triad    tetrad
+	"+" : [ident,     flip,       ad(plus),   ad(plus),   ad(plus),   ad(plus),   null,    null  ],
+	"-" : [am(negate),am(negate), ad(minus),  ad(minus),  ad(minus),  ad(minus),  null,    null  ],
+	"*" : [first,     first,      ad(times),  ad(times),  ad(times),  ad(times),  null,    null  ],
+	"%" : [sqrt,      am(sqrt),   ad(divide), ad(divide), ad(divide), ad(divide), null,    null  ],
+	"!" : [iota,      odometer,   mod,        al(mod),    rotate,     al(rotate), null,    null  ],
+	"&" : [zero,      where,      min,        ad(min),    ad(min),    ad(min),    null,    null  ],
+	"|" : [ident,     reverse,    max,        ad(max),    ad(max),    ad(max),    null,    null  ],
+	"<" : [null,      asc,        less,       ad(less),   ad(less),   ad(less),   null,    null  ],
+	">" : [null,      desc,       more,       ad(more),   ad(more),   ad(more),   null,    null  ],
+	"=" : [null,      group,      ad(equal),  ad(equal),  ad(equal),  ad(equal),  null,    null  ],
+	"~" : [am(not),   am(not),    match,      match,      match,      match,      null,    null  ],
+	"," : [enlist,    enlist,     cat,        cat,        cat,        cat,        null,    null  ],
+	"^" : [isnull,    am(isnull), except,     except,     except,     except,     null,    null  ],
+	"#" : [count,     count,      take,       reshape,    take,       reshape,    null,    null  ],
+	"_" : [am(floor), am(floor),  drop,       null,       drop,       cut,        null,    null  ],
+	"$" : [kfmt,      am(kfmt),   dfmt,       ad(dfmt),   ad(dfmt),   ad(dfmt),   null,    null  ],
+	"?" : [null,      unique,     rnd,        find,       rnd,        ar(find),   query3,  query4],
+	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
+	"." : [keval,     keval,      call,       call,       call,       call,       dmend3,  dmend4],
+	"'" : [null,      null,       null,       bin,        null,       ar(bin),    null,    null  ],
+	"/" : [null,      null,       null,       null,       join,       pack,       null,    null  ],
+	"\\": [null,      null,       null,       unpack,     split,      null,       null,    null  ],
 };
 
 function applyverb(node, args, env) {
@@ -790,7 +795,7 @@ function parseNoun() {
 		return applyindexright(stok(str));
 	}
 	if (matches(OPEN_B)) {
-		var m=k(4, k(3,[])); m.k=k(3,[]); do {
+		var m=md(k(3,[]), k(3,[])); do {
 			var key = ks(expect(NAME)); expect(COLON);
 			dset(m, key, matches(COLON) ? dget(m, ks(expect(NAME))) : parseEx(parseNoun()));
 		} while(matches(SEMI)); expect(CLOSE_B); return m;
