@@ -272,7 +272,6 @@ test("{t:0 1 2;t[1],:9;t}"            , "{t:0 1 2;t:.[t;1;,;9];t}"            );
 test("t:0 1 2;t[1],:9;t"              , "(0\n 1 9\n 2)"                       );
 fail("1 2 3+4 5"                      , "length error."                       );
 fail("`a+2"                           , "number expected, found symbol."      );
-fail("[a:1]<3"                        , "domain error."                       );
 fail("&-30"                           , "positive int expected."              );
 fail("+(1 2;3)"                       , "matrix expected."                    );
 fail("2 -3 4_1 3 4"                   , "positive int expected."              );
@@ -540,12 +539,24 @@ test("[a:3;b:5]-1"                    , "[a:2;b:4]"                           );
 test("1+[a:3;b:5]"                    , "[a:4;b:6]"                           );
 test("[a:3;b:4]*[a:2;b:6]"            , "[a:6;b:24]"                          );
 test("[a:3;b:5]=5"                    , "[a:0;b:1]"                           );
+test("5|[a:3;b:5]"                    , "[a:5;b:5]"                           );
+test("[a:3;b:5]&3"                    , "[a:3;b:3]"                           );
+test("[a:3;b:5;c:7]<4"                , "[a:1;b:0;c:0]"                       );
+test("[a:4]>/:1 4 6"                  , "([a:1];[a:0];[a:0])"                 );
+test("[a:1],[b:2]"                    , "[a:1;b:2]"                           );
+test("[a:1;b:3],[b:5]"                , "[a:1;b:5]"                           );
+test("t:[a:1];t,[b:2];t"              , "[a:1]"                               );
+test("1_[a:1;b:2]"                    , "[b:2]"                               );
+test("1#[a:1;b:2]"                    , "[a:1]"                               );
 
 //test("3/2 1");
 
 //files();
 
 // NOTES/TODO:
+
+// [a:4]>/:1 4 6 prints in k5 as +[a:100b]
+// (+[a:4 3;b:3 4])@1   ~   [a:3;b:4]
 
 //test("{x,y,z}'1 2 3");
 

@@ -43,6 +43,7 @@ function kmod(x, y)      { return x-y*Math.floor(x/y); }
 function len(x)          { l(x); return x.v.length; }
 function krange(x, f)    { var r=[]; for(var z=0;z<x;z++) { r.push(f(z)); } return k(3,r); }
 
+function c(x) { return (x.t==3) ? k(x.t, x.v.slice(0)) : (x.t==4) ? md(c(x.k), c(x.v)) : x; }
 function stok(x) { return kl(krange(x.length, function(z) { return k(1,x.charCodeAt(z)); }).v); }
 function ktos(x, esc) {
 	if (x.t != 3) { x = k(3, [x]); }
@@ -90,14 +91,13 @@ function min   (x, y) { return k(0, Math.min(n(x).v, n(y).v)); }
 function less  (x, y) { return kb(a(x).v < a(y).v); }
 function more  (x, y) { return kb(a(x).v > a(y).v); }
 function equal (x, y) { return kb(x.v == y.v); }
-function cat   (x, y) { return k(3, (x.t==3?x.v:[x]).concat(y.t==3?y.v:[y])); }
 function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
 function rotate(x, y) { n(x); return kmap(y, function(a,i) { return y.v[kmod(x.v+i,len(y))]; }); }
 function ident    (x) { return x; }
 function negate   (x) { return k(0, -n(x).v); }
 function first    (x) { return (x.t == 4) ? first(x.v) : (x.t != 3) ? x : len(x) ? x.v[0] : NIL; }
 function sqrt     (x) { return k(0, Math.sqrt(n(x).v)); }
-function keys     (x) { return k(3, d(x).k.v.slice(0)); }
+function keys     (x) { return c(d(x).k); }
 function zero     (x) { return kmap(iota(x), function(x) { return k(0,0); }); }
 function reverse  (x) { return k(3,l(x).v.slice(0).reverse()); }
 function desc     (x) { return reverse(asc(x)); }
@@ -110,8 +110,13 @@ function type     (x) { return kt[x.t]; }
 function kfmt     (x) { var r=stok(format(x)); if (r.t!=3) { r=k(3,[r]); } return r; }
 function iota     (x) { return x.t == 4 ? keys(x) : krange(p(x), function(x) { return k(0,x); }); }
 
+function cat(x, y) {
+	if (x.t==4&&y.t==4) { x=c(x); kmap(y.k, function(v) { dset(x,v,dget(y,v)); }); return x; };
+	return k(3, (x.t==3?x.v:[x]).concat(y.t==3?y.v:[y]));
+}
+
 function keval(x, env) {
-	return x.t == 4 ? x.v : x.t == 2 ? env.lookup(x.v.slice(1), true) : run(parse(ktos(x)), env);
+	return x.t == 4 ? c(x.v) : x.t == 2 ? env.lookup(x.v.slice(1), true) : run(parse(ktos(x)), env);
 }
 
 function dfmt(x, y) {
@@ -141,10 +146,12 @@ function except(x, y) {
 }
 
 function drop(x, y) {
+	if (y.t == 4) { return md(drop(x, y.k), drop(x, y.v)); }
 	return (y.t != 3 || len(y) < 1) ? y : k(3, n(x).v<0 ? y.v.slice(0,x.v) : y.v.slice(x.v));
 }
 
 function take(x, y) {
+	if (y.t == 4) { return md(take(x, y.k), take(x, y.v)); }
 	if (y.t != 3 || len(y) == 0) { y = k(3, [y]); }
 	var s=n(x).v<0?kmod(x.v, len(y)):0;
 	return krange(Math.abs(x.v), function(x) { return y.v[kmod(x+s, len(y))]; });
@@ -393,10 +400,10 @@ var verbs = {
 	"*" : [first,     first,      ad(times),  ad(times),  ad(times),  ad(times),  null,    null  ],
 	"%" : [sqrt,      am(sqrt),   ad(divide), ad(divide), ad(divide), ad(divide), null,    null  ],
 	"!" : [iota,      odometer,   mod,        al(mod),    rotate,     al(rotate), null,    null  ],
-	"&" : [zero,      where,      min,        ad(min),    ad(min),    ad(min),    null,    null  ],
-	"|" : [ident,     reverse,    max,        ad(max),    ad(max),    ad(max),    null,    null  ],
-	"<" : [null,      asc,        less,       ad(less),   ad(less),   ad(less),   null,    null  ],
-	">" : [null,      desc,       more,       ad(more),   ad(more),   ad(more),   null,    null  ],
+	"&" : [zero,      where,      ad(min),    ad(min),    ad(min),    ad(min),    null,    null  ],
+	"|" : [ident,     reverse,    ad(max),    ad(max),    ad(max),    ad(max),    null,    null  ],
+	"<" : [null,      asc,        ad(less),   ad(less),   ad(less),   ad(less),   null,    null  ],
+	">" : [null,      desc,       ad(more),   ad(more),   ad(more),   ad(more),   null,    null  ],
 	"=" : [null,      group,      ad(equal),  ad(equal),  ad(equal),  ad(equal),  null,    null  ],
 	"~" : [am(not),   am(not),    match,      match,      match,      match,      null,    null  ],
 	"," : [enlist,    enlist,     cat,        cat,        cat,        cat,        null,    null  ],
