@@ -33,7 +33,7 @@ var EC = [["\\","\\\\"],["\"","\\\""],["\n","\\n"],["\t","\\t"]];
 var kt = [ks("f"), ks("c"), ks("n"), ks("l"), ks("a"), ks("u"), NIL, NIL, NIL, NIL, NIL, NIL, NIL];
 
 function k(t, v)         { return { 't':t, 'v':v }; }
-function md(k, v)        { return { t:4, k:k, v:v }; }
+function md(x, y)        { if (y.t != 3) { y=take(k(0,len(x)),y); } return { t:4, k:x, v:y }; }
 function kl(vl)          { return vl.length==1 ? vl[0] : k(3,vl); }
 function kb(x)           { return x ? k1 : k0; }
 function s(x)            { return x.t == 3 && x.v.every(function(c) { return c.t == 1; }); }
@@ -92,7 +92,6 @@ function less  (x, y) { return kb(a(x).v < a(y).v); }
 function more  (x, y) { return kb(a(x).v > a(y).v); }
 function equal (x, y) { return kb(x.v == y.v); }
 function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
-function rotate(x, y) { n(x); return kmap(y, function(a,i) { return y.v[kmod(x.v+i,len(y))]; }); }
 function ident    (x) { return x; }
 function negate   (x) { return k(0, -n(x).v); }
 function first    (x) { return (x.t == 4) ? first(x.v) : (x.t != 3) ? x : len(x) ? x.v[0] : NIL; }
@@ -399,7 +398,7 @@ var verbs = {
 	"-" : [am(negate),am(negate), ad(minus),  ad(minus),  ad(minus),  ad(minus),  null,    null  ],
 	"*" : [first,     first,      ad(times),  ad(times),  ad(times),  ad(times),  null,    null  ],
 	"%" : [sqrt,      am(sqrt),   ad(divide), ad(divide), ad(divide), ad(divide), null,    null  ],
-	"!" : [iota,      odometer,   mod,        al(mod),    rotate,     al(rotate), null,    null  ],
+	"!" : [iota,      odometer,   mod,        md,         ar(mod),    md,         null,    null  ],
 	"&" : [zero,      where,      ad(min),    ad(min),    ad(min),    ad(min),    null,    null  ],
 	"|" : [ident,     reverse,    ad(max),    ad(max),    ad(max),    ad(max),    null,    null  ],
 	"<" : [null,      asc,        ad(less),   ad(less),   ad(less),   ad(less),   null,    null  ],
