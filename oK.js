@@ -248,6 +248,8 @@ function unpack(x, y) {
 }
 
 function pack(x, y) {
+	if (x.t == 1) { return join(x, y); }
+	if (x.t == 0) { x = take(k(0, len(y)), x); }
 	var p=take(k(0,-len(y)), cat(reverse(scan(k(8, "*"), x)),k1));
 	return over(k(8, "+"), ad(times)(p, y));
 }
@@ -414,7 +416,7 @@ var verbs = {
 	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,     keval,      call,       call,       call,       call,       dmend3,  dmend4],
 	"'" : [null,      null,       null,       bin,        null,       ar(bin),    null,    null  ],
-	"/" : [null,      null,       null,       null,       join,       pack,       null,    null  ],
+	"/" : [null,      null,       null,       null,       pack,       pack,       null,    null  ],
 	"\\": [null,      null,       null,       unpack,     split,      null,       null,    null  ],
 };
 
@@ -440,7 +442,7 @@ function applyverb(node, args, env) {
 	else if (left.t == 3 && right.t != 3) { r = v[3]; }
 	else if (left.t != 3 && right.t == 3) { r = v[4]; }
 	else if (left.t == 3 && right.t == 3) { r = v[5]; }
-	if (!r) { throw new Error("invalid arguments to "+node.v); }
+	if (!r) { throw new Error("invalid arguments to "+format(node.v)); }
 	if (args.length > 2) { return r(args, env); }
 	return tracer(node.v, left, null, right, env,
 		(left ? r(left, right, env) : r(right, env)));
