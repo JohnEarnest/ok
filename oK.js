@@ -442,7 +442,7 @@ function applyverb(node, args, env) {
 	else if (left.t == 3 && right.t != 3) { r = v[3]; }
 	else if (left.t != 3 && right.t == 3) { r = v[4]; }
 	else if (left.t == 3 && right.t == 3) { r = v[5]; }
-	if (!r) { throw new Error("invalid arguments to "+format(node.v)); }
+	if (!r) { throw new Error("invalid arguments to "+node.v); }
 	if (args.length > 2) { return r(args, env); }
 	return tracer(node.v, left, null, right, env,
 		(left ? r(left, right, env) : r(right, env)));
@@ -628,6 +628,7 @@ function trap(args, env) {
 }
 
 function amendm(d, i, y, monad, env) {
+	if (monad.t == 0) { monad = { t:5, args:["x"], v:[{ t:0, v:monad.v }] }; }
 	if (i.t != 3) { d.v[i.v] = applym(monad, atl(d, i, env), env); return; }
 	kmap(i, function(v) { amendm(d, v, y, monad, env); });
 }
