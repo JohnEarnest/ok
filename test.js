@@ -309,8 +309,6 @@ test(".[(1 2 3;4 5 6);1;(0,)]"        , "(1 2 3\n 0 4 5 6)"                   );
 test(".[(1 2 3;4 5 6);1 2;(0,)]"      , "(1 2 3\n (4\n  5\n  0 6))"           );
 test(".[(1 2 3;4 5 6);(0 1;1);(0,)]"  , "((1\n  0 2\n  3)\n (4\n  0 5\n  6))" );
 test(".[(1 2 3;4 5 6);(;0);(0,)]"     , "((0 1\n  2\n  3)\n (0 4\n  5\n  6))" );
-test("1 2 3 4 1 3^1"                  , "2 3 4 3"                             ); // *
-test("1 2 3 4 1 3^2 3"                , "1 4 1"                               ); // *
 fail("1 2 3 @ 1.7"                    , "index error: 1.7"                    ); // *
 fail("1 2 3[0.9]"                     , "index error: 0.9"                    ); // *
 fail("a:1 2 3;a[1.4]:5;a"             , "positive int expected."              );
@@ -500,9 +498,6 @@ test("10*sin 2 3"                     , "9.093 1.4112"                        );
 test("10*cos 2 3"                     , "-4.1615 -9.8999"                     );
 test("{10*sin!5}"                     , "{10*sin@!5}"                         );
 test("10*sin!5"                       , "0 8.4147 9.093 1.4112 -7.568"        );
-test("5^2"                            , "0 1 3 4"                             );
-test("5^1 3 4"                        , "0 2"                                 );
-test("1^1"                            , ",0"                                  );
 test("2#()"                           , "(()\n ())"                           );
 test("3#\"\""                         , "(()\n ()\n ())"                      );
 test("-4#()"                          , "(()\n ()\n ()\n ())"                 );
@@ -555,6 +550,12 @@ test("3/1 0 3"                        , "12"                                  );
 test("@[1 2 3;1;5]"                   , "1 5 3"                               );
 test("@[1 2 3;(,0;,1);5]"             , "5 5 3"                               );
 
+test("1 2 3 4 1 3^1"                  , "2 3 4 1 3"                           );
+test("1 2 3 4 1 3^2 3"                , "1 4 1 3"                             );
+test("5^2"                            , "0 1 3 4"                             );
+test("5^1 3 4"                        , "0 2"                                 );
+test("1^1"                            , ",0"                                  );
+
 //test("+(1 2 3;4)", "(1 4;2 4;3 4)");
 //test("+(1;4 5 6)", "(1 4;1 5;1 6)");
 
@@ -568,7 +569,6 @@ test("@[1 2 3;(,0;,1);5]"             , "5 5 3"                               );
 
 // - flip spreads an atomic element as if it were an appropriately ranked list:
 //  +0,+0,(1 2;3 4)    (0 0 0;0 1 2;0 3 4)
-// - except only removes the first instance of each right argument
 // - scan monad doesn't include the first argument?
 // - eachpair however *does* include the first term
 // - I don't think error trap exists

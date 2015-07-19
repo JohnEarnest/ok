@@ -138,10 +138,8 @@ function dfmt(x, y) {
 }
 
 function except(x, y) {
-	if (x.t != 3) { x = iota(x); } if (y.t != 3) { y = k(3, [y]); }
-	return k(3, l(x).v.filter(function(z) {
-		return !y.v.some(function(w) { return match(z, w).v; })
-	}));
+	x = c(x.t != 3 ? iota(x) : x); y = y.t != 3 ? k(3, [y]) : y;
+	kmap(y, function(v) { x.v.splice(find(x, v).v, 1); }); return x;
 }
 
 function drop(x, y) {
