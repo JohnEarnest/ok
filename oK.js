@@ -323,8 +323,7 @@ function scan(dyad, x, env) {
 }
 
 function scand(dyad, x, y, env) {
-	if (len(y) < 1) { return x; } var r=[x];
-	for(var z=0;z<len(y);z++) { x = applyd(dyad, x, y.v[z], env); r.push(x); } return k(3,r);
+	return kmap(y, function(v) { return x = applyd(dyad, x, v, env); });
 }
 
 function scanfixed(monad, x, env) {
