@@ -69,11 +69,6 @@ function a(x) { if (x.t > 2) { throw new Error("domain error."); } return x; }
 function p(x) {
 	n(x); if (x.v < 0 || x.v%1 != 0) { throw new Error("positive int expected."); } return x.v;
 }
-function loa(x) { return l(x).v.every(function(y) { return y.t != 3; }); }
-function m(x) {
-	l(x); if (x.v.every(function(y) { return y.t == 3 && len(y) == len(x.v[0]); })) { return; }
-	throw new Error("matrix expected.");
-}
 
 ////////////////////////////////////
 //
@@ -187,8 +182,9 @@ function rnd(x, y, env) {
 }
 
 function flip(x) {
-	if (loa(x)) { return x; } m(x); return krange(len(x.v[0]), function(z) {
-		return krange(len(x), function(t) { return x.v[t].v[z]; });
+	x=eachright(k(8,"#"), over(k(8,"|"), each(k(8,"#"), x)), x);
+	return krange(len(x.v[0]), function(z){
+		return krange(len(x), function(t){ return x.v[t].v[z]; });
 	});
 }
 
