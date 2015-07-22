@@ -31,6 +31,7 @@ var k0 = k(0, 0);
 var k1 = k(0, 1);
 var EC = [["\\","\\\\"],["\"","\\\""],["\n","\\n"],["\t","\\t"]];
 var kt = [ks("f"), ks("c"), ks("n"), ks("l"), ks("a"), ks("u"), NIL, NIL, NIL, NIL, NIL, NIL, NIL];
+var SP = k(1, " ".charCodeAt(0));
 
 function k(t, v)         { return { 't':t, 'v':v }; }
 function md(x, y)        { if (y.t != 3) { y=take(k(0,len(x)),y); } return { t:4, k:x, v:y }; }
@@ -42,6 +43,8 @@ function asVerb(x, y, z) { return { t:8, v:x, l:y, r:z }; }
 function kmod(x, y)      { return x-y*Math.floor(x/y); }
 function len(x)          { l(x); return x.v.length; }
 function krange(x, f)    { var r=[]; for(var z=0;z<x;z++) { r.push(f(z)); } return k(3,r); }
+function r2(f)           { return function(x,y) { return f(y,x); }; }
+function bind(f,x)       { return f.bind(null, x); }
 
 function c(x) { return (x.t==3) ? k(x.t, x.v.slice(0)) : (x.t==4) ? md(c(x.k), c(x.v)) : x; }
 function stok(x) { return kl(krange(x.length, function(z) { return k(1,x.charCodeAt(z)); }).v); }
@@ -115,21 +118,17 @@ function keval(x, env) {
 
 function dfmt(x, y) {
 	if (x.t == 2) {
-		if (x.v == "`b") { return kb(y.v); }
-		if (x.v == "`h") { return k(0, y.v & 0xFFFF); }
+		if (y.t == 3) { return kmap(l(y), bind(dfmt,x)); }
+		if (x.v == "`b") { return k(0, y.v & 0x1); }
 		if (x.v == "`i") { return k(0, y.v | 0); }
 		if (x.v == "`f") { return k(0, y.v); }
 		if (x.v == "`c") { return k(1, y.v); }
 	}
-	var r = kfmt(y); var c = Math.abs(x.v);
-	if (x.v < 0) { // pad right
-		while(len(r) > c) { r.v.pop(); }
-		while(len(r) < c) { r.v.push(k(1, " ".charCodeAt(0))); }
-	}
-	else { // pad left
-		while(len(r) > c) { r.v.shift(); }
-		while(len(r) < c) { r.v.unshift(k(1, " ".charCodeAt(0))); }
-	} return r;
+	if (x.t == 3 && y.t != 3) { return kmap(x, bind(r2(dfmt),y)); }
+	if (x.t == 3)             { return kzip(x, y, dfmt); }
+	if (y.t == 1) { y=k(3,[y]); }
+	if (!s(y)) { return kmap(l(y), bind(dfmt,x)); }
+	var r=c(y); while(len(r) < Math.abs(x.v)) { x.v>0 ? r.v.push(SP) : r.v.unshift(SP); } return r;
 }
 
 function except(x, y) {
@@ -404,7 +403,7 @@ var verbs = {
 	"^" : [isnull,    am(isnull), except,     except,     except,     except,     null,    null  ],
 	"#" : [count,     count,      take,       reshape,    take,       reshape,    null,    null  ],
 	"_" : [am(floor), am(floor),  drop,       null,       drop,       cut,        null,    null  ],
-	"$" : [kfmt,      am(kfmt),   dfmt,       ad(dfmt),   ad(dfmt),   ad(dfmt),   null,    null  ],
+	"$" : [kfmt,      am(kfmt),   dfmt,       dfmt,       dfmt,       dfmt,       null,    null  ],
 	"?" : [null,      unique,     rnd,        find,       rnd,        ar(find),   query3,  query4],
 	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,     keval,      call,       call,       call,       call,       dmend3,  dmend4],
