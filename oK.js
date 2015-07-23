@@ -909,7 +909,8 @@ function format(k, indent) {
 		return "("+k.v.map(format).join(";")+")" ;
 	}
 	if (k.t == 4) {
-		if (len(k.k)<1 || k.k.v[0].t != 2) { return format(k.k) + "!" + format(k.v); }
+		if (len(k.k)<1 || k.k.v[0].t != 2)
+		{ var t=format(k.k); if (len(k.k)==1) { t="("+t+")"; } return t+"!"+format(k.v); }
 		return "["+kzip(k.k,k.v,function(x,y){return x.v.slice(1)+":"+format(y);}).v.join(";")+"]";
 	}
 	if (k.t == 5) {
