@@ -176,7 +176,6 @@ function cut(x, y) {
 
 function rnd(x, y, env) {
 	if (y.t == 3) { return ar(atl)(y, rnd(x, k(0, len(y)))); }
-	if (x.t == 5 || x.t == 8 || x.t == 9) { return invm(x, y, env); }
 	p(y); return kmap(iota(x), function(x){ return k(0,Math.floor(Math.random()*y.v)); });
 }
 
@@ -246,16 +245,6 @@ function pack(x, y) {
 	var p=take(k(0,-len(y)), cat(reverse(scan(k(8, "*"), x)),k1));
 	return over(k(8, "+"), ad(times)(p, y));
 }
-
-function inverse(f, x0, x1, n, env) {
-	var f0, f1 = applym(f, k(0,x0), env).v; for(var z=0;z<20;z++) {
-		f0 = f1; f1 = applym(f, k(0,x1), env).v;
-		var x = x1-((f1-n)*(x1-x0))/(f1-f0); x0 = x1; x1 = x;
-		if (Math.abs(x1-x0)<0.000001) { return k(0,x1); }
-	} throw new Error("limit error.");
-}
-function invm(f, x, env)    { n(x);       return inverse(f, 0.9999, 0.9998, x.v, env); }
-function invd(f, x, y, env) { n(x); n(y); return inverse(f, y.v, 0.9999*y.v, x.v, env); }
 
 ////////////////////////////////////
 //
@@ -403,9 +392,9 @@ var verbs = {
 	"#" : [count,     count,      take,       reshape,    take,       reshape,    null,    null  ],
 	"_" : [am(floor), am(floor),  drop,       null,       drop,       cut,        null,    null  ],
 	"$" : [kfmt,      am(kfmt),   dfmt,       dfmt,       dfmt,       dfmt,       null,    null  ],
-	"?" : [null,      unique,     rnd,        find,       rnd,        ar(find),   query3,  query4],
+	"?" : [null,      unique,     rnd,        find,       rnd,        ar(find),   query4,  query4],
 	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
-	"." : [keval,     keval,      call,       call,       call,       call,       dmend3,  dmend4],
+	"." : [keval,     keval,      call,       call,       call,       call,       dmend4,  dmend4],
 	"'" : [null,      null,       null,       bin,        null,       ar(bin),    null,    null  ],
 	"/" : [null,      null,       null,       null,       pack,       pack,       null,    null  ],
 	"\\": [null,      null,       null,       unpack,     split,      null,       null,    null  ],
@@ -590,14 +579,6 @@ function run(node, env) {
 	return node;
 }
 
-function dmend3(args, env) {
-	if (args[0].t != 3) { return trap(args, env); } return dmend4(args, env);
-}
-function query3(args, env) {
-	if (args[0].t == 3) { return query4(args, env); }
-	var y=run(args[2], env); var x=run(args[1], env); var f=run(args[0], env);
-	return invd(f, x, y, env);
-}
 function query4(args, env) { return mend(args, env, query, query); }
 function amend4(args, env) { return mend(args, env, amendm, amendd); }
 function dmend4(args, env) { return mend(args, env, dmend, dmend); }
@@ -611,11 +592,6 @@ function mend(args, env, monadic, dyadic) {
 	var f = run(args[2], env);
 	(y?dyadic:monadic)(d, i, y, f, env);
 	if (ds.t!=2) { return d; } env.put(ds.v.slice[1], true, d); return ds;
-}
-
-function trap(args, env) {
-	try { var a=run(args[1],env); var f=run(args[0],env); return k(3,[k0, call(f, a)]); }
-	catch(error) { return k(3, [k1, stok(error.message)]); }
 }
 
 function amendm(d, i, y, monad, env) {

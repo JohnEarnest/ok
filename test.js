@@ -393,12 +393,6 @@ test("a:-[;8];a 12"                   , "4"                                   );
 test("a:-;a[7;1]"                     , "6"                                   );
 test("#'1 2"                          , "(#[1;];#[2;])"                       ); // *
 fail("8)"                             , "unexpected character ')'"            );
-test("{.[%; (3;4); :]}"               , "{.[(%);3 4;{[x;y]y}]}"               );
-test(".[%; (3;4); :]"                 , "0 0.75"                              ); // *
-test(".[=; 0; :]"                     , '(1\n "invalid arguments to =")'      ); // *
-test("{(x*x)+(-x)+(-1)} ? 0"          , "1.618"                               ); // *
-test("f:{(x*x)-(5*x)+2};f f?23.7"     , "23.7"                                ); // *
-test("f:{(x*x)+(-x)+(-1)};?[f;0;.25]" , "-0.618"                              ); // *
 test("#:[1 2 3]"                      , "3"                                   ); // !
 test("{x+y}[;5]'1 2 3"                , "6 7 8"                               );
 test("(t;t:5)"                        , "5 5"                                 );
@@ -429,7 +423,6 @@ test("*()"                            , "`"                                   );
 test('|"a"'                           , '"a"'                                 );
 test("|2"                             , "2"                                   );
 test("{5+2}.()"                       , "7"                                   ); // *
-test(".[{5+2};();:]"                  , "0 7"                                 ); // !
 test("a1:5;b2:37;a1+b2"               , "42"                                  );
 test("{x,y}'0 1"                      , "({[x;y]x,y}[0;];{[x;y]x,y}[1;])"     ); // *
 test("({x,y}'0 1).\\:3"               , "(0 3\n 1 3)"                         ); // *
@@ -570,9 +563,7 @@ test("(1,)',5"                        , ",1 5"                                );
 
 // NOTES/TODO:
 
-// - eachpair however *does* include the first term
-// - I don't think error trap exists
-// - and function inverse might not either
+// - eachpair *does* include the first term
 // - . doesn't seem to be dot-apply anymore
 // - indexing with a float or out of range number produces a nil/0N
 
