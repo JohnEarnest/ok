@@ -32,6 +32,7 @@ var k1 = k(0, 1);
 var EC = [["\\","\\\\"],["\"","\\\""],["\n","\\n"],["\t","\\t"]];
 var kt = [ks("f"), ks("c"), ks("n"), ks("l"), ks("a"), ks("u"), NIL, NIL, NIL, NIL, NIL, NIL, NIL];
 var SP = k(1, " ".charCodeAt(0));
+var NA = k(0, NaN);
 
 function k(t, v)         { return { 't':t, 'v':v }; }
 function md(x, y)        { if (y.t != 3) { y=take(k(0,len(x)),y); } return { t:4, k:x, v:y }; }
@@ -69,6 +70,7 @@ function n(x) { if (x.t==0||x.t==1) { return x; } return checktype(x, 0); }
 function l(x) { return checktype(x, 3); }
 function d(x) { return checktype(x, 4); }
 function a(x) { if (x.t > 2) { throw new Error("domain error."); } return x; }
+function na(x) { return (x.v != undefined) & isNaN(x.v); }
 function p(x) {
 	n(x); if (x.v < 0 || x.v%1 != 0) { throw new Error("positive int expected."); } return x.v;
 }
@@ -84,8 +86,8 @@ function minus (x, y) { return k(0, n(x).v - n(y).v); }
 function times (x, y) { return k(0, n(x).v * n(y).v); }
 function divide(x, y) { return k(0, n(x).v / n(y).v); }
 function mod   (x, y) { return k(0, n(x).v>0 ? kmod(n(y).v, x.v) : Math.floor(n(y).v / -x.v)); }
-function max   (x, y) { return k(0, Math.max(n(x).v, n(y).v)); }
-function min   (x, y) { return k(0, Math.min(n(x).v, n(y).v)); }
+function max   (x, y) { return na(x)?y:na(y)?x:k(0, Math.max(n(x).v, n(y).v)); }
+function min   (x, y) { return                 k(0, Math.min(n(x).v, n(y).v)); }
 function less  (x, y) { return kb(a(x).v < a(y).v); }
 function more  (x, y) { return kb(a(x).v > a(y).v); }
 function equal (x, y) { return kb(x.v == y.v); }
@@ -502,9 +504,8 @@ function atd(x, y, env) {
 function atl(x, y, env) {
 	if (x.t == 4) { return dget(x, y); }
 	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
-	if (y.t != 0 || y.v < 0 || y.v >= len(x) || y.v%1 != 0) {
-		throw new Error("index error: "+format(y));
-	} return x.v[y.v];
+	if (y.t != 0 || y.v < 0 || y.v >= len(x) || y.v%1 != 0) { return NA; }
+	return x.v[y.v];
 }
 
 function atdepth(x, y, i, env) {
@@ -630,7 +631,7 @@ function query(t, c, a, b, env) {
 //
 ////////////////////////////////////
 
-var NUMBER  = /^((-?0w)|(-?\d*\.?\d+))/;
+var NUMBER  = /^((-?0w)|(0N)|(-?\d*\.?\d+))/;
 var BOOL    = /^[01]+b/;
 var NAME    = /^([A-Za-z][A-Za-z0-9]*)/;
 var SYMBOL  = /^(`[A-Za-z]*)/;
@@ -758,7 +759,7 @@ function parseNoun() {
 	}
 	if (at(NUMBER)) {
 		var r=[]; while(at(NUMBER)) {
-			var n=expect(NUMBER); r.push(k(0, n=="0w"?1/0:n=="-0w"?-1/0:parseFloat(n)));
+			var n=expect(NUMBER); r.push(k(0, n=="0w"?1/0:n=="-0w"?-1/0:n=="0N"?NA:parseFloat(n)));
 		} return applyindexright(kl(r));
 	}
 	if (at(SYMBOL)) {
@@ -869,8 +870,8 @@ function format(k, indent) {
 	if (k instanceof Array) { return k.map(format).join(";"); }
 	if (k.sticky) { var s=k.sticky; k.sticky=null; var r=format(k); k.sticky=s; return "("+r+")"; }
 	if (k.t == 0) {
-		if (k.v == 1/0) { return "0w"; } if (k.v == -1/0) { return "-0w"; }
-		return ""+(k.v % 1 === 0 ? k.v : Math.round(k.v * 10000) / 10000);
+		return k.v==1/0?"0w":k.v==-1/0?"-0w":na(k)?"0N":
+		""+(k.v % 1 === 0 ? k.v : Math.round(k.v * 10000) / 10000);
 	}
 	if (k.t == 1) { return '"'+(ktos(k, true))+'"'; }
 	if (k.t == 2) { return k.v; }

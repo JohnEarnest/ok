@@ -267,7 +267,6 @@ fail("`a+2"                           , "number expected, found symbol."      );
 fail("&-30"                           , "positive int expected."              );
 fail("2 -3 4_1 3 4"                   , "positive int expected."              );
 fail("a:b"                            , "the name 'b' has not been defined."  );
-fail("a:1 2;a[45]"                    , "index error: 45"                     );
 fail("a:1;a[2]"                       , "function or list expected."          );
 fail("f:{x+y};f[1;2;3]"               , "valence error."                      );
 fail("@[1;2]"                         , "dictionary expected, found number."  );
@@ -305,8 +304,6 @@ test(".[(1 2 3;4 5 6);1;(0,)]"        , "(1 2 3\n 0 4 5 6)"                   );
 test(".[(1 2 3;4 5 6);1 2;(0,)]"      , "(1 2 3\n (4\n  5\n  0 6))"           );
 test(".[(1 2 3;4 5 6);(0 1;1);(0,)]"  , "((1\n  0 2\n  3)\n (4\n  0 5\n  6))" );
 test(".[(1 2 3;4 5 6);(;0);(0,)]"     , "((0 1\n  2\n  3)\n (0 4\n  5\n  6))" );
-fail("1 2 3 @ 1.7"                    , "index error: 1.7"                    ); // *
-fail("1 2 3[0.9]"                     , "index error: 0.9"                    ); // *
 fail("a:1 2 3;a[1.4]:5;a"             , "positive int expected."              );
 test("$!5"                            , '(,"0"\n ,"1"\n ,"2"\n ,"3"\n ,"4")'  );
 test('"&"\\"foo=42&bar=69"'           , '("foo=42"\n "bar=69")'               );
@@ -555,6 +552,19 @@ test("`i$45 99.4"                     , "45 99"                               );
 test("-:',5"                          , ",-5"                                 );
 test("(1,)',5"                        , ",1 5"                                );
 
+test("0N"                             , "0N"                                  );
+test("5 0N 17"                        , "5 0N 17"                             );
+test("3|0N"                           , "3"                                   );
+test("3 0N 0N&0N 2 0N"                , "0N 0N 0N"                            );
+test("a:1 2;a[45]"                    , "0N"                                  );
+test("a:1 2;a[-7]"                    , "0N"                                  );
+test("1 2 3 @ 1.7"                    , "0N"                                  );
+test("1 2 3[0.9]"                     , "0N"                                  );
+test("5 8 2[0N]"                      , "0N"                                  );
+test("1 0N=0N 0N"                     , "0 1"                                 );
+
+//test("1 0N=(1 2 3[-7];1 2 3[5])"      , "0 1"                                 );
+
 //test("@[2 4 2;0;2*!10]", "4 4 2");
 //test("@[2 4 2;1;2*!10]", "2 8 2");
 //test("@[2 4 2;2;2*!10]", "2 4 4");
@@ -564,8 +574,6 @@ test("(1,)',5"                        , ",1 5"                                );
 // NOTES/TODO:
 
 // - eachpair *does* include the first term
-// - . doesn't seem to be dot-apply anymore
-// - indexing with a float or out of range number produces a nil/0N
 
 // 1\3 1 2 2 4 1 5 1     {(1_r,,y)-x*r:|y(_%)\|x}
 
