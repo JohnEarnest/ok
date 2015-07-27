@@ -1,7 +1,7 @@
 
 / Simple run-length encoder and decoder
 
-rle: {r:(&~0,=':x)_x;+(#:'r;*:'r)}
+rle: {{(#x;*x)}'(&~=':x)_x}
 rld: ,/#/'
 
 / Examples:

@@ -274,7 +274,11 @@ function eachleft(dyad, list, right, env) {
 	return kmap(list, function(x) { return applyd(dyad, x, right, env); });
 }
 
-function eachprior(dyad, x, env) { return eachpc(dyad, first(x), drop(k1, x)); }
+function eachprior(dyad, x, env) {
+	var specials = {"+":k0, "*":k1, "-":k0, "&":first(x)};
+	return eachpc(dyad, (dyad.v in specials) ? specials[dyad.v] : NA, x);
+}
+
 function eachpc(dyad, x, y, env) {
 	return kmap(y, function(v) { var t=x; x=v; return applyd(dyad, v, t, env); });
 }
