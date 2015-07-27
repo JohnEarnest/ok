@@ -107,6 +107,7 @@ function floor    (x) { return k(0, Math.floor(n(x).v)); }
 function type     (x) { return kt[x.t]; }
 function kfmt     (x) { var r=stok(format(x)); if (r.t!=3) { r=k(3,[r]); } return r; }
 function iota     (x) { return x.t == 4 ? keys(x) : krange(p(x), function(x) { return k(0,x); }); }
+function real     (x) { return krange(n(x).v, function() { return k(0, Math.random()); }); }
 
 function cat(x, y) {
 	if (x.t==4&&y.t==4) { x=c(x); kmap(y.k, function(v) { dset(x,v,dget(y,v)); }); return x; };
@@ -397,7 +398,7 @@ var verbs = {
 	"#" : [count,     count,      take,       reshape,    take,       reshape,    null,    null  ],
 	"_" : [am(floor), am(floor),  drop,       null,       drop,       cut,        null,    null  ],
 	"$" : [kfmt,      am(kfmt),   dfmt,       dfmt,       dfmt,       dfmt,       null,    null  ],
-	"?" : [null,      unique,     rnd,        find,       rnd,        ar(find),   query4,  query4],
+	"?" : [real,      unique,     rnd,        find,       rnd,        ar(find),   query4,  query4],
 	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,     keval,      call,       call,       call,       call,       dmend4,  dmend4],
 	"'" : [null,      null,       null,       bin,        null,       ar(bin),    null,    null  ],
