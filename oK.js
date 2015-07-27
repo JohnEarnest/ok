@@ -97,8 +97,8 @@ function negate   (x) { return k(0, -n(x).v); }
 function first    (x) { return (x.t == 4) ? first(x.v) : (x.t != 3) ? x : len(x) ? x.v[0] : NIL; }
 function sqrt     (x) { return k(0, Math.sqrt(n(x).v)); }
 function keys     (x) { return c(d(x).k); }
-function reverse  (x) { return k(3,l(x).v.slice(0).reverse()); }
-function desc     (x) { return reverse(asc(x)); }
+function rev      (x) { return x.t==4?md(rev(x.k),rev(x.v)):x.t==3?k(3,c(l(x)).v.reverse()):x; }
+function desc     (x) { return rev(asc(x)); }
 function not      (x) { return equal(n(x), k0); }
 function enlist   (x) { return k(3, [x]); }
 function isnull   (x) { return max(match(x, NIL),match(x,k(11))); }
@@ -233,7 +233,7 @@ function odometer(x) {
 }
 
 function unpack(x, y) {
-	var t=k(0,n(y).v); var p=cat(reverse(scan(k(8, "*"), x)),k1);
+	var t=k(0,n(y).v); var p=cat(rev(scan(k(8, "*"), x)),k1);
 	var r=[]; for(var z=0;z<len(p);z++) {
 		var q=floor(divide(t, p.v[z])); if (r.length!=0||q.v!=0) { r.push(q); }
 		t=floor(mod(p.v[z], t));
@@ -243,7 +243,7 @@ function unpack(x, y) {
 function pack(x, y) {
 	if (x.t == 1) { return join(x, y); }
 	if (x.t == 0) { x = take(k(0, len(y)), x); }
-	var p=take(k(0,-len(y)), cat(reverse(scan(k(8, "*"), x)),k1));
+	var p=take(k(0,-len(y)), cat(rev(scan(k(8, "*"), x)),k1));
 	return over(k(8, "+"), ad(times)(p, y));
 }
 
@@ -387,7 +387,7 @@ var verbs = {
 	"%" : [sqrt,      am(sqrt),   ad(divide), ad(divide), ad(divide), ad(divide), null,    null  ],
 	"!" : [iota,      odometer,   mod,        md,         ar(mod),    md,         null,    null  ],
 	"&" : [where,     where,      ad(min),    ad(min),    ad(min),    ad(min),    null,    null  ],
-	"|" : [ident,     reverse,    ad(max),    ad(max),    ad(max),    ad(max),    null,    null  ],
+	"|" : [rev,       rev,        ad(max),    ad(max),    ad(max),    ad(max),    null,    null  ],
 	"<" : [null,      asc,        ad(less),   ad(less),   ad(less),   ad(less),   null,    null  ],
 	">" : [null,      desc,       ad(more),   ad(more),   ad(more),   ad(more),   null,    null  ],
 	"=" : [null,      group,      ad(equal),  ad(equal),  ad(equal),  ad(equal),  null,    null  ],
