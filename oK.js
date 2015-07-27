@@ -50,7 +50,7 @@ function bind(f,x)       { return f.bind(null, x); }
 function c(x) { return (x.t==3) ? k(x.t, x.v.slice(0)) : (x.t==4) ? md(c(x.k), c(x.v)) : x; }
 function stok(x) { return kl(krange(x.length, function(z) { return k(1,x.charCodeAt(z)); }).v); }
 function ktos(x, esc) {
-	if (x.t != 3) { x = k(3, [x]); }
+	if (x.t != 3) { x = enlist(x); }
 	var r = x.v.map(function(k) { return String.fromCharCode(k.v); }).join("");
 	if (esc) { for(var z=0;z<EC.length;z++) { r=r.split(EC[z][0]).join(EC[z][1]); }} return r;
 }
@@ -97,7 +97,6 @@ function negate   (x) { return k(0, -n(x).v); }
 function first    (x) { return (x.t == 4) ? first(x.v) : (x.t != 3) ? x : len(x) ? x.v[0] : NIL; }
 function sqrt     (x) { return k(0, Math.sqrt(n(x).v)); }
 function keys     (x) { return c(d(x).k); }
-function zero     (x) { return kmap(iota(x), function(x) { return k(0,0); }); }
 function reverse  (x) { return k(3,l(x).v.slice(0).reverse()); }
 function desc     (x) { return reverse(asc(x)); }
 function not      (x) { return equal(n(x), k0); }
@@ -134,7 +133,7 @@ function dfmt(x, y) {
 }
 
 function except(x, y) {
-	x = c(x.t != 3 ? iota(x) : x); y = y.t != 3 ? k(3, [y]) : y;
+	x = c(x.t != 3 ? iota(x) : x); y = y.t != 3 ? enlist(y) : y;
 	kmap(y, function(v) { x.v.splice(find(x, v).v, 1); }); return x;
 }
 
@@ -145,13 +144,13 @@ function drop(x, y) {
 
 function take(x, y) {
 	if (y.t == 4) { return md(take(x, y.k), take(x, y.v)); }
-	if (y.t != 3 || len(y) == 0) { y = k(3, [y]); }
+	if (y.t != 3 || len(y) == 0) { y = enlist(y); }
 	var s=n(x).v<0?kmod(x.v, len(y)):0;
 	return krange(Math.abs(x.v), function(x) { return y.v[kmod(x+s, len(y))]; });
 }
 
 function reshape(x, y) {
-	if (y.t != 3) { y = k(3, [y]); } count = 0; function rshr(x, y, index) {
+	if (y.t != 3) { y = enlist(y); } count = 0; function rshr(x, y, index) {
 		return krange(x.v[index].v, function(z) {
 			return index==len(x)-1 ? y.v[kmod(count++, len(y))] : rshr(x, y, index+1);
 		});
@@ -197,7 +196,7 @@ function asc(x) {
 }
 
 function where(x) {
-	var r=[]; for(var z=0;z<len(x);z++) {
+	if (x.t != 3) { x=enlist(x); } var r=[]; for(var z=0;z<len(x);z++) {
 		for(var t=0;t<p(x.v[z]);t++) { r.push(k(0, z)); }
 	} return k(3,r);
 }
@@ -387,7 +386,7 @@ var verbs = {
 	"*" : [first,     first,      ad(times),  ad(times),  ad(times),  ad(times),  null,    null  ],
 	"%" : [sqrt,      am(sqrt),   ad(divide), ad(divide), ad(divide), ad(divide), null,    null  ],
 	"!" : [iota,      odometer,   mod,        md,         ar(mod),    md,         null,    null  ],
-	"&" : [zero,      where,      ad(min),    ad(min),    ad(min),    ad(min),    null,    null  ],
+	"&" : [where,     where,      ad(min),    ad(min),    ad(min),    ad(min),    null,    null  ],
 	"|" : [ident,     reverse,    ad(max),    ad(max),    ad(max),    ad(max),    null,    null  ],
 	"<" : [null,      asc,        ad(less),   ad(less),   ad(less),   ad(less),   null,    null  ],
 	">" : [null,      desc,       ad(more),   ad(more),   ad(more),   ad(more),   null,    null  ],
@@ -530,7 +529,7 @@ function call(x, y, env) {
 	if (x.t == 3 && y.t == 3) { return atdepth(x, y, 0, env); }
 	if (x.t == 8) { return applyverb(x, y.t == 3 ? y.v : [x], env); }
 	if (x.t != 5) { throw new Error("function or list expected."); }
-	if (y.t != 3) { y = k(3, [y]); }
+	if (y.t != 3) { y = enlist(y); }
 	var environment = new Environment(x.env); var curry = x.curry?x.curry.concat([]):[];
 	if (x.args.length != 0 || len(y) != 1 || !isnull(y.v[0]).v) {
 		var all=true; var i=0; for(var z=0;z<x.args.length;z++) {
