@@ -47,7 +47,7 @@ function krange(x, f)    { var r=[]; for(var z=0;z<x;z++) { r.push(f(z)); } retu
 function r2(f)           { return function(x,y) { return f(y,x); }; }
 function bind(f,x)       { return f.bind(null, x); }
 
-function dget(x, y)    { var i=find(x.k, y); return (i.v==len(x.k)) ? k(3,[]) : atl(x.v, i); }
+function dget(x, y)    { var i=find(x.k, y); return (i.v==len(x.k)) ? NA : atl(x.v, i); }
 function dset(x, y, z) { var i=find(x.k, y).v; if(i==len(x.k)) { x.k.v.push(y); } x.v.v[i]=z; }
 function c(x) { return (x.t==3) ? k(x.t, x.v.slice(0)) : (x.t==4) ? md(c(x.k), c(x.v)) : x; }
 function stok(x) { return kl(krange(x.length, function(z) { return k(1,x.charCodeAt(z)); }).v); }
