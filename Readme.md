@@ -1,7 +1,7 @@
 oK
 ==
 
-oK is a toy interpreter for a dialect of the [K programming language](http://en.wikipedia.org/wiki/K_(programming_language)) which aims to be an implementation of [K5](http://kparc.com), the still-evolving bleeding edge version of the language. Expect oK to be buggy, incomplete and occasionally flat-out wrong, but slowly improving over time. Read the [oK Manual](https://github.com/JohnEarnest/ok/blob/master/Manual.md) for an overview of oK's operators and syntax.
+oK is a toy interpreter for a dialect of the [K programming language](http://en.wikipedia.org/wiki/K_(programming_language)) which aims to be an implementation of [K5](http://kparc.com), the still-evolving bleeding edge version of the language. Expect oK to be buggy, incomplete and occasionally flat-out wrong, but slowly improving over time. Read the [oK Manual](https://github.com/JohnEarnest/ok/blob/gh-pages/Manual.md) for an overview of oK's operators and syntax.
 
 If you are interested in learning more about K, consider downloading the free version of [kdb](http://kx.com/software-download.php) from Kx Systems, the fine makers of K. Alternatively, [Kona](https://github.com/kevinlawler/kona) is an open-source reimplementation of K3/K4.
 
