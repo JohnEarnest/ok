@@ -63,7 +63,7 @@ See below for a complete reference to verb behaviors.
 Adverbs
 -------
 
-K has 6 primitive adverbs, some of which consist of two characters: `'`, `/`,`\\`, `/:`, `\\:` and `':`. Adverbs take a verb as a left argument and apply it to a right or right and left noun argument in some special way. Some adverbs have several different behaviors based on the types of their arguments.
+K has 6 primitive adverbs, some of which consist of two characters: `'`, `/`,`\`, `/:`, `\:` and `':`. Adverbs take a verb as a left argument and apply it to a right or right and left noun argument in some special way. Some adverbs have several different behaviors based on the types of their arguments.
 
 For the purposes of the adverb and verb references, the following conventions will be used:
 
@@ -365,7 +365,8 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		  1 3 2 5 1 2 3^1 3 5
 		2 1 2 3
 		</code></pre>
-		<tt>n^a<tt> or <tt>n^l<tt> is equivalent to <tt>(!n)^l</tt>:
+		
+		<tt>n^a</tt> or <tt>n^l</tt> is equivalent to <tt>(!n)^l</tt>:
 		<pre><code>
 		 10^1 3 7
 		0 2 4 5 6 8 9
