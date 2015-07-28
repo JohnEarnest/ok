@@ -13,7 +13,7 @@ r: {y@(#y)!x+!#y}; / rotate list y by x
 |"backwards"                                                 /  4. reverse a string
 &/{(x<58)&x>47}`i$"697"                                      /  5. string contains only digits?
 {(w@*x;#x)}'t@&(1<#)'t:.=:w:"Programming"                    /  6. find duplicates and their count
-{(t;(#x)-t:+/x)}@{6>"aeiouy"?x}'"verbage"                    /  7. count vowels and consonants
+{(t;(#x)-t:+/x)}@^"aeiouy"?"verbage"                         /  7. count vowels and consonants
 {+/x=y}["skimmed";"m"]                                       /  8. count occurrences of a character
 ."231"                                                       /  9. convert numeric string to int
 {(#z)_,/(z,)'y\x}["x y  z";" ";"%20"]                        / 10. replace character with a string

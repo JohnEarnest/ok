@@ -47,6 +47,8 @@ function krange(x, f)    { var r=[]; for(var z=0;z<x;z++) { r.push(f(z)); } retu
 function r2(f)           { return function(x,y) { return f(y,x); }; }
 function bind(f,x)       { return f.bind(null, x); }
 
+function dget(x, y)    { var i=find(x.k, y); return (i.v==len(x.k)) ? k(3,[]) : atl(x.v, i); }
+function dset(x, y, z) { var i=find(x.k, y).v; if(i==len(x.k)) { x.k.v.push(y); } x.v.v[i]=z; }
 function c(x) { return (x.t==3) ? k(x.t, x.v.slice(0)) : (x.t==4) ? md(c(x.k), c(x.v)) : x; }
 function stok(x) { return kl(krange(x.length, function(z) { return k(1,x.charCodeAt(z)); }).v); }
 function ktos(x, esc) {
@@ -167,6 +169,12 @@ function match(x, y) {
 
 function find(x, y) {
 	for(var z=0;z<len(x);z++) { if(match(x.v[z],y).v) { return k(0,z); } } return k(0,len(x));
+}
+function pfind(x, y) {
+	for(var z=0;z<len(x);z++) { if(match(x.v[z],y).v) { return k(0,z); } } return NA;
+}
+function pisnull(x) {
+	return kb(match(x, NIL).v || match(x, k(11)).v || na(x));
 }
 
 function cut(x, y) {
@@ -394,11 +402,11 @@ var verbs = {
 	"=" : [null,      group,      ad(equal),  ad(equal),  ad(equal),  ad(equal),  null,    null  ],
 	"~" : [am(not),   am(not),    match,      match,      match,      match,      null,    null  ],
 	"," : [enlist,    enlist,     cat,        cat,        cat,        cat,        null,    null  ],
-	"^" : [isnull,    am(isnull), except,     except,     except,     except,     null,    null  ],
+	"^" : [pisnull,   am(pisnull),except,     except,     except,     except,     null,    null  ],
 	"#" : [count,     count,      take,       reshape,    take,       reshape,    null,    null  ],
 	"_" : [am(floor), am(floor),  drop,       null,       drop,       cut,        null,    null  ],
 	"$" : [kfmt,      am(kfmt),   dfmt,       dfmt,       dfmt,       dfmt,       null,    null  ],
-	"?" : [real,      unique,     rnd,        find,       rnd,        ar(find),   query4,  query4],
+	"?" : [real,      unique,     rnd,        pfind,      rnd,        ar(pfind),  query4,  query4],
 	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,     keval,      call,       call,       call,       call,       dmend4,  dmend4],
 	"'" : [null,      null,       null,       bin,        null,       ar(bin),    null,    null  ],
@@ -518,9 +526,6 @@ function atdepth(x, y, i, env) {
 	if (y.v[i].t != 3) { return atdepth(ar(atl)(x, y.v[i], env), y, i+1, env); }
 	return kmap(y.v[i], function(t) { return atdepth(ar(atl)(x, t, env), y, i+1, env); });
 }
-
-function dget(x, y)    { var i=find(x.k, y); return (i.v==len(x.k)) ? k(3,[]) : atl(x.v, i); }
-function dset(x, y, z) { var i=find(x.k, y).v; if(i==len(x.k)) { x.k.v.push(y); } x.v.v[i]=z; }
 
 function call(x, y, env) {
 	if (x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : dget(x, y); }
