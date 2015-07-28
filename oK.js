@@ -30,7 +30,7 @@ var NIL = ks("");
 var k0 = k(0, 0);
 var k1 = k(0, 1);
 var EC = [["\\","\\\\"],["\"","\\\""],["\n","\\n"],["\t","\\t"]];
-var kt = [ks("f"), ks("c"), ks("n"), ks("l"), ks("a"), ks("u"), NIL, NIL, NIL, NIL, NIL, NIL, NIL];
+var kt = [-9, -10, -11, 0, 99, 102, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN];
 var SP = k(1, " ".charCodeAt(0));
 var NA = k(0, NaN);
 
@@ -104,7 +104,7 @@ function enlist   (x) { return k(3, [x]); }
 function isnull   (x) { return max(match(x, NIL),match(x,k(11))); }
 function count    (x) { return k(0, x.t == 4 ? len(x.v) : x.t == 3 ? len(x) : 1); }
 function floor    (x) { return k(0, Math.floor(n(x).v)); }
-function type     (x) { return kt[x.t]; }
+function type     (x) { return k(0, kt[x.t]); }
 function kfmt     (x) { var r=stok(format(x)); if (r.t!=3) { r=k(3,[r]); } return r; }
 function iota     (x) { return x.t == 4 ? keys(x) : krange(p(x), function(x) { return k(0,x); }); }
 function real     (x) { return krange(n(x).v, function() { return k(0, Math.random()); }); }
