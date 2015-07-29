@@ -7,14 +7,14 @@ Filtering
 ---------
 You've built a list of values and you want to extract a subset of them that have some property based on a predicate monad `P`. Use `where` (`&`) and then index into the original list to gather the subset:
 
-	P: {~~x!3}    / not multiples of 3
+	P: {~~3!x}    / not multiples of 3
 	{x@&P'x}@!20  / filter out matches
 	
 If your predicate consists of atomic primitives, you can avoid the `each` (`'`). If your input list is a 0-indexed enumeration, you can avoid the need to index the original list. Thus, the above example could be simplified as follows:
 
 	{&P x}@!20    / get rid of unnecessary indexing and each
-	{&~~x!3}!20   / inline predicate
-	&~~![;3]!20   / curry fixed argument of dyadic ! and eliminate lambda
+	{&~~3!x}@!20  / inline predicate
+	&~~![3]!20    / curry fixed argument of dyadic ! and eliminate lambda
 
 The use of `where` to solve this kind of problem is an extremely important concept.
 
@@ -22,15 +22,15 @@ Case Selection
 --------------
 K offers an equivalent to "if" statements in the form of the 3 or more argument version of `$`, sometimes called `cond` for its semantic similarity to the Lisp statement:
 
-	{$[x!2; x%2; 1+3*x]}
+	{$[2!x; x%2; 1+3*x]}
 
 This statement checks conditions one after another and falls through to the final case if none of the predicates succeeds. This behavior is useful in many situations. However, if you want to avoid using "cond", you can often replace it by constructing a list and indexing into it, provided each case has no side effects:
 
-	{(x%2; 1+3*x)x!2}
+	{(1+3*x; x%2)2!x}
 	
 This is nicely general and if you augment the list by indexing it to replicate elements you can express complex logic based on a lookup table:
 
-	{(A;B;C)[1 0 0 1 2 1 0]x}
+	{(`A;`B;`C)[1 0 0 1 2 1 0]x}
 
 Zipping
 -------
@@ -38,21 +38,25 @@ You have two lists and you want to map a function `D` over pairings of the eleme
 
 	V1: ("A  ";"B  ";"C  ")
 	V2: 2 1 3
-	D:  {y!x}               / rotate the list x by y positions
+	D:  {x@(#x)!y+!#x}      / rotate the list x by y positions
 	D.'+(V1;V2)             / flip and apply
+
+When you only need to pair up two elements, each-dyad is simpler:
+
+	V1 D'V2
 
 Always consider whether `flip` can make it easier to calculate "with the grain" of your data. If `V1` and `V2` are of different lengths we can insert `take` (`#`) to replicate elements or `drop` (`_`) to remove elements from lists.
 
 Alternatively, it might be easy to construct our desired lists in place provided an index:
 
-	V1: {x!2}          / alternating parity
+	V1: {2!x}          / alternating parity
 	V2: {65+x}         / ascii alphabet characters
 	D:  {`c$y+x*32}    / make an upper- or lowercase character
 	{D[V1 x;V2 x]}'!26
 
 Of course, sometimes we can do the whole operation in parallel and combine the construction of the sequences:
 
-	  `c${65+x+32*x!2}@!26
+	  `c${65+x+32*2!x}@!26
 	"AbCdEfGhIjKlMnOpQrStUvWxYz"
 
 Cartesian Product
@@ -108,20 +112,12 @@ Combining a Cartesian Product with a Filter (as described above) is a straightfo
 Since this type of operation is so common, there's a primitive which which will handle many such cases- monadic `!` applied to a list, sometimes called "odometer":
 
 	  !3 2
-	(0 0
-	 0 1
-	 1 0
-	 1 1
-	 2 0
-	 2 1)
+	(0 0 1 1 2 2
+	 0 1 0 1 0 1)
 	 
-	("ABC"@)'!3 2
-	("AA"
-	 "AB"
-	 "BA"
-	 "BB"
-	 "CA"
-	 "CB")
+	  "ABC"@!3 2
+	("AABBCC"
+	 "ABABAB")
  
 Iterative Algorithms
 --------------------
