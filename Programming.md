@@ -14,7 +14,7 @@ If your predicate consists of atomic primitives, you can avoid the `each` (`'`).
 
 	{&P x}@!20    / get rid of unnecessary indexing and each
 	{&~~3!x}@!20  / inline predicate
-	&~~![3]!20    / curry fixed argument of dyadic ! and eliminate lambda
+	&~~3!!20      / eliminate lambda
 
 The use of `where` to solve this kind of problem is an extremely important concept.
 
