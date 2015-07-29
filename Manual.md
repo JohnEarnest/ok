@@ -91,116 +91,88 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<a name="flip"/>
 		<tt>+l</tt> is <b>flip</b>. Takes the transpose of matrices.<br>
 		Atoms are spread to match the dimension of other columns.
-		<pre><code>
-		  +(1 2;3 4)
-		(1 3
-		 2 4)
-		  +(5;3 4)
-		(5 3
-		 5 4)
-		</code></pre>
+<pre><code>  +(1 2;3 4)
+(1 3
+ 2 4)
+  +(5;3 4)
+(5 3
+ 5 4)</code></pre>
 	</td>
 	<td>
 		<tt>n+n</tt> is <b>plus</b>. Fully atomic.
-		<pre><code>
-		  3+4 5 6
-		7 8 9
-		  "ab"+5
-		102 103
-		</pre></code>
+<pre><code>  3+4 5 6
+7 8 9
+  "ab"+5
+102 103</pre></code>
 	</td>
 </tr>
 <tr>
 	<td>
 		<a name="negate"/>
 		<tt>-n</tt> is <b>negate</b>. Flips the sign of numbers. Right atomic.
-		<pre><code>
-		  -(4 -10 8)
-		-4 10 -8
-		  -"b"
-		-98
-		</code></pre>
+<pre><code>  -(4 -10 8)
+-4 10 -8
+  -"b"
+-98</code></pre>
 	</td>
 	<td>
 		<tt>n-n</tt> is <b>minus</b>. Fully atomic.
-		<pre><code>
-		  23 9-5 10
-		18 -1
-		</code></pre>
+<pre><code>  23 9-5 10
+18 -1</code></pre>
 	</td>
 </tr>
 <tr>
 	<td>
 		<a name="first"/>
 		<tt>*l</tt> is <b>first</b>. Extracts the first element of a list.
-		<pre><code>
-		  *5 19 8
-		5
-		</code></pre>
+<pre><code>  *5 19 8
+5</code></pre>
 		<tt>*d</tt> extracts the first <i>value</i> from a dictionary.
-		<pre><code>
-		  *[a:23;b:34]
-		23
-		</code></pre>
+<pre><code>  *[a:23;b:34]
+23</code></pre>
 	</td>
 	<td>
 		<tt>n*n</tt> is <b>times</b>. Fully atomic.
-		<pre><code>
-		  5 0 -3*2 2 1
-		10 0 -3
-		</code></pre>
+<pre><code>  5 0 -3*2 2 1
+10 0 -3</code></pre>
 	</td>
 </tr>
 <tr>
 	<td>
 		<a name="sqrt"/>
 		<tt>%n</tt> is <b>square root</b>. Right atomic.
-		<pre><code>
-		  %25 7 100
-		5 2.6458 10
-		</code></pre>
+<pre><code>  %25 7 100
+5 2.6458 10</code></pre>
 	</td>
 	<td>
 		<tt>n%n</tt> is <b>divide</b>. Fully atomic.
-		<pre><code>
-		  2 20 9%.5 10 2
-		4 2 4.5
-		</code></pre>
+<pre><code>  2 20 9%.5 10 2
+4 2 4.5</code></pre>
 	</td>
 </tr>
 <tr>
 	<td>
 		<a name="int"/>
 		<tt>!n</tt> is <b>int</b>. Generate a range from 0 up to but excluding N.
-		<pre><code>
-		  !5
-		0 1 2 3 4
-		</code></pre>
+<pre><code>  !5
+0 1 2 3 4</code></pre>
 		<tt>!l</tt> is <b>odometer</b>. Generate ranged permutations.
-		<pre><code>
-		  !2 3
-		(0 0 0 1 1 1
-		 0 1 2 0 1 2)
-		</code></pre>
+<pre><code>  !2 3
+(0 0 0 1 1 1
+ 0 1 2 0 1 2)</code></pre>
 		<tt>!d</tt> is <b>keys</b>. List of keys from dictionary.
-		<pre><code>
-		  ![a:3;b:4]
-		`a`b
-		</code></pre>
+<pre><code>  ![a:3;b:4]
+`a`b</code></pre>
 	</td>
 	<td>
 		<tt>n!n</tt> is <b>mod</b>. Take y modulo x. Right atomic.
-		<pre><code>
-		  3!34 2 8
-		1 2 2
-		</code></pre>
+<pre><code>  3!34 2 8
+1 2 2</code></pre>
 		<tt>l!l</tt> is <b>map</b>. Make dictionary from x keys and y value(s). Right atomic.
-		<pre><code>
-		  `a`b!3 4
-		[a:3;b:4]
-		  4 5!6 7
-		4 5!6 7
-		</code></pre>
+<pre><code>  `a`b!3 4
+[a:3;b:4]
+  4 5!6 7
+4 5!6 7</code></pre>
 	</td>
 </tr>
 <tr>
@@ -208,41 +180,31 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<a name="where"/>
 		<tt>&l</tt> is <b>where</b>. Make N copies of sequential indices of elements.<br>
 		For a boolean list this gathers indices of nonzero elements.
-		<pre><code>
-		  &2 3 1
-		0 0 1 1 1 2
-		  &1 0 0 1 0 1
-		0 3 5
-		</code></pre>
+<pre><code>  &2 3 1
+0 0 1 1 1 2
+  &1 0 0 1 0 1
+0 3 5</code></pre>
 	</td>
 	<td>
 		<tt>n&n</tt> is <b>min</b>. Fully atomic. For booleans, effectively logical <b>and</b>.
-		<pre><code>
-		  3 5 7&0 6 9
-		0 5 7
-		</code></pre>
+<pre><code>  3 5 7&0 6 9
+0 5 7</code></pre>
 	</td>
 </tr>
 <tr>
 	<td>
 		<a name="reverse"/>
 		<tt>|l</tt> is <b>reverse</b>.
-		<pre><code>
-		  |"ABDEF"
-		"FEDBA"
-		</code></pre>
+<pre><code>  |"ABDEF"
+"FEDBA"</code></pre>
 		<tt>|d</tt> reverses both keys and values in a dictionary.
-		<pre><code>
-		  |[a:3;b:4]
-		[b:4;a:3]
-		</code></pre>
+<pre><code>  |[a:3;b:4]
+[b:4;a:3]</code></pre>
 	</td>
 	<td>
 		<tt>n|n</tt> is <b>max</b>. Fully atomic. For booleans, effectively logical <b>or</b>.
-		<pre><code>
-		  3 5 7|0 6 9
-		3 6 9
-		</code></pre>
+<pre><code>  3 5 7|0 6 9
+3 6 9</code></pre>
 	</td>
 </tr>
 <tr>
@@ -250,17 +212,13 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<a name="asc"/>
 		<tt>&lt;l</tt> is <b>asc</b>, also known as "grade up".<br>
 		Generate a permutation vector which would sort argument into ascending order.
-		<pre><code>
-		  <5 8 2 7
-		2 0 3 1
-		</code></pre>
+<pre><code>  <5 8 2 7
+2 0 3 1</code></pre>
 	</td>
 	<td>
 		<tt>n&lt;n</tt> is <b>less</b>. Fully atomic.
-		<pre><code>
-		  2 3 5<1 0 6
-		0 0 1
-		</code></pre>
+<pre><code>  2 3 5<1 0 6
+0 0 1</code></pre>
 	</td>
 </tr>
 <tr>
@@ -268,85 +226,65 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<a name="desc"/>
 		<tt>&gt;l</tt> is <b>desc</b>, also known as "grade down".<br>
 		Generate a permutation vector which would sort argument into descending order.
-		<pre><code>
-		  <5 8 2 7
-		1 3 0 2
-		</code></pre>
+<pre><code>  <5 8 2 7
+1 3 0 2</code></pre>
 	</td>
 	<td>
 		<tt>n&gt;n</tt> is <b>more</b>. Fully atomic.
-		<pre><code>
-		  2 3 5>1 0 6
-		1 1 0
-		</code></pre>
+<pre><code>  2 3 5>1 0 6
+1 1 0</code></pre>
 	</td>
 </tr>
 <tr>
 	<td>
 		<a name="group"/>
 		<tt>=l</tt> is <b>group</b>. Generate a dictionary from items to the indices where they were found.
-		<pre><code>
-		  =`c`a`b`b`a`c`a
-		[c:0 5;a:1 4 6;b:2 3]
-		</code></pre>
+<pre><code>  =`c`a`b`b`a`c`a
+[c:0 5;a:1 4 6;b:2 3]</code></pre>
 	</td>
 	<td>
 		<tt>a=a</tt> is <b>equal</b>. Fully atomic.
-		<pre><code>
-		  3 4 6=6
-		0 0 1
-		</code></pre>
+<pre><code>  3 4 6=6
+0 0 1</code></pre>
 	</td>
 </tr>
 <tr>
 	<td>
 		<a name="not"/>
 		<tt>~n</tt> is <b>not</b>. Nonzero numbers become 0 and 0 becomes 1. Right atomic.
-		<pre><code>
-		  ~(0 1;3 7 -1)
-		(1 0
-		 0 0 0)
-		</code></pre>
+<pre><code>  ~(0 1;3 7 -1)
+(1 0
+ 0 0 0)</code></pre>
 		<tt>~d</tt> applies to the values of dictionaries.
-		<pre><code>
-		   ~[a:2 0;b:1]
-		[a:0 1;b:0]
-		</code></pre>
+<pre><code>   ~[a:2 0;b:1]
+[a:0 1;b:0]</code></pre>
 	</td>
 	<td>
 		<tt>a~a</tt> is <b>match</b>. Returns 1 if x and y are recursively identical.
-		<pre><code>
-		  (`a;2 3 4)~(`a;2 3)
-		0
-		  (`a;2 3 4)~(`a;2 3 4)
-		1
-		</code></pre>
+<pre><code>  (`a;2 3 4)~(`a;2 3)
+0
+  (`a;2 3 4)~(`a;2 3 4)
+1</code></pre>
 	</td>
 </tr>
 <tr>
 	<td>
 		<a name="enlist"/>
 		<tt>,a</tt> is <b>enlist</b>. Place item in a 1-length list.
-		<pre><code>
-		  ,1 2 3
-		,1 2 3
-		</code></pre>
+<pre><code>  ,1 2 3
+,1 2 3</code></pre>
 	</td>
 	<td>
 		<tt>a,a</tt> is <b>concat</b>. Join together lists or atoms to produce a list.
-		<pre><code>
-		  1,2 3
-		1 2 3
-		  2,3
-		2 3
-		  1,()
-		,1
-		</code></pre>
+<pre><code>  1,2 3
+1 2 3
+  2,3
+2 3
+  1,()
+,1</code></pre>
 		Concatenating dictionaries favors values of y:
-		<pre><code>
-		  [a:1;b:3],[b:5;c:7]
-		[a:1;b:5;c:7]
-		</code></pre>
+<pre><code>  [a:1;b:3],[b:5;c:7]
+[a:1;b:5;c:7]</code></pre>
 	</td>
 </tr>
 
@@ -354,23 +292,17 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 	<td>
 		<a name="null"/>
 		<tt>^a</tt> is <b>null</b>. Is this item a null? Right atomic.
-		<pre><code>
-		  ^(5;`;0N)
-		0 1 1
-		</code></pre>
+<pre><code>  ^(5;`;0N)
+0 1 1</code></pre>
 	</td>
 	<td>
 		<tt>l^a</tt> or <tt>l^l</tt> is <b>except</b>. Remove the first instance of each of y from x.
-		<pre><code>
-		  1 3 2 5 1 2 3^1 3 5
-		2 1 2 3
-		</code></pre>
+<pre><code>  1 3 2 5 1 2 3^1 3 5
+2 1 2 3</code></pre>
 		
 		<tt>n^a</tt> or <tt>n^l</tt> is equivalent to <tt>(!n)^l</tt>:
-		<pre><code>
-		 10^1 3 7
-		0 2 4 5 6 8 9
-		</code></pre>
+<pre><code> 10^1 3 7
+0 2 4 5 6 8 9</code></pre>
 	</td>
 </tr>
 
@@ -378,107 +310,89 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 	<td>
 		<a name="count"/>
 		<tt>#l</tt> is <b>count</b>. Atoms have count 1.
-		<pre><code>
-		  #4 7 10
-		3
-		  #[a:3;b:17]
-		17 17 17
-		  #"c"
-		1
-		</code></pre>
+<pre><code>  #4 7 10
+3
+  #[a:3;b:17]
+17 17 17
+  #"c"
+1</code></pre>
 	</td>
 	<td>
 		<tt>n#l</tt> or <tt>n#a</tt> is <b>take</b>. Truncate or repeat y to produce a list of length x.<br>
 		A negative x takes from the end of y.
-		<pre><code>
-		  2#"ABC"
-		"AB"
-		  6#"ABC"
-		"ABCABC"
-		  -2#"ABC"
-		"BC"
-		</code></pre>
+<pre><code>  2#"ABC"
+"AB"
+  6#"ABC"
+"ABCABC"
+  -2#"ABC"
+"BC"</code></pre>
 
 		<tt>l#l</tt> or <tt>l#a</tt> is <b>reshape</b>.<br>
 		Works like take, but creates an arbitrary dimensioned result based on x.<br>
-		<pre><code>
-		  3 2#1 2 3
-		(1 2
-		 3 1
-		 2 3)
-		  3 2 2#1 2 3
-		((1 2
-		  3 1)
-		 (2 3
-		  1 2)
-		 (3 1
-		  2 3))
-		</code></pre>
+<pre><code>  3 2#1 2 3
+(1 2
+ 3 1
+ 2 3)
+  3 2 2#1 2 3
+((1 2
+  3 1)
+ (2 3
+  1 2)
+ (3 1
+  2 3))</code></pre>
 	</td>
 </tr>
 <tr>
 	<td>
 		<a name="floor"/>
 		<tt>_n</tt> is <b>floor</b>. Right atomic.
-		<pre><code>
-		  _2.3 7.6 9 -2.3
-		2 7 9 -3
-		</code></pre>
+<pre><code>  _2.3 7.6 9 -2.3
+2 7 9 -3</code></pre>
 	</td>
 	<td>
 		<tt>n_l</tt> is <b>drop</b>. Remove x elements from the start of y.<br>
 		A negative x drops from the end of y.
-		<pre><code>
-		  3_"ABCDE"
-		"DE"
-		  -3_"ABCDE"
-		"AB"
-		</code></pre>
+<pre><code>  3_"ABCDE"
+"DE"
+  -3_"ABCDE"
+"AB"</code></pre>
 		<tt>l_l</tt> is <b>cut</b>. Splits y at the indices given in x.<br>
 		The indices must be ascending.
-		<pre><code>
-		  0 4_"feedface"
-		("feed";"face")
-		  1 2 4_"feedface"
-		(,"e";"ed";"face")
-		</code></pre>
+<pre><code>  0 4_"feedface"
+("feed";"face")
+  1 2 4_"feedface"
+(,"e";"ed";"face")</code></pre>
 	</td>
 </tr>
 <tr>
 	<td>
 		<a name="string"/>
 		<tt>$a</tt> is <b>string</b>. Convert atoms into strings. Right atomic.
-		<pre><code>
-		  $120 4
-		("120";,"4")
-		  $`beef
-		"beef"
-		</code></pre>
+<pre><code>  $120 4
+("120";,"4")
+  $`beef
+"beef"</code></pre>
 	</td>
 	<td>
 		<tt>n$a</tt> is <b>pad</b>. Add spaces to strings to make them x characters long.<br>
 		A negative value pads from the left. Mostly fully atomic, strings are treated specially.
-		<pre><code>
-		  5$"beef"
-		"beef "
-		  -7$"beef"
-		"   beef"
-		2 3 4$("a";"b";"c")
-		("a "
-		 "b  "
-		 "c   ")
-		</code></pre>
+<pre><code>  5$"beef"
+"beef "
+  -7$"beef"
+"   beef"
+2 3 4$("a";"b";"c")
+("a "
+ "b  "
+ "c   ")</code></pre>
 
 		<tt>a$a</tt> is <b>cast</b>. Convert values to a different type based on a symbol.<br>
 		Fully atomic.
-		<pre><code>
-		  `i$"Hello."
-		72 101 108 108 111 46
-		  `c$72 101 108 108 111 46
-		"Hello."
-		  `f`i`b$31
-		31 31 1
-		</code></pre>
+<pre><code>  `i$"Hello."
+72 101 108 108 111 46
+  `c$72 101 108 108 111 46
+"Hello."
+  `f`i`b$31
+31 31 1</code></pre>
 		A short list of conversion symbols:
 		<ul>
 			<li><tt>`c</tt>: convert to character</li>
@@ -491,40 +405,30 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 	<td>
 		<a name="distinct"/>
 		<tt>?l</tt> is <b>distinct</b>. Produce a list of the unique elements in a list.
-		<pre><code>
-		  ?(`a`b;3;`a`b;7;3)
-		(`a`b
-		 3
-		 7)
-		</code></pre>
+<pre><code>  ?(`a`b;3;`a`b;7;3)
+(`a`b
+ 3
+ 7)</code></pre>
 
 		<tt>?n</tt> produces a list of x random floats from 0 up to but excluding 1.
-		<pre><code>
-		  ?6
-		0.197 0.8382 0.1811 0.9084 0.6113 0.1958
-		</code></pre>
+<pre><code>  ?6
+0.197 0.8382 0.1811 0.9084 0.6113 0.1958</code></pre>
 	</td>
 	<td>
 		<tt>l?a</tt> is <b>find</b>. Determine the index of y in x. Returns 0N if not found.</br>
 		Right atomic.
-		<pre><code>
-		  "XYZ"?"XYXZB"
-		0 1 0 2 0N
-		</code></pre>
+<pre><code>  "XYZ"?"XYXZB"
+0 1 0 2 0N</code></pre>
 
 		<tt>n?n</tt> is <b>random</b>. Produce x random integers from 0 up to but excluding y.
-		<pre><code>
-		  5?10
-		0 3 3 7 7
-		  5?10
-		3 5 2 7 9
-		</code></pre>
+<pre><code>  5?10
+0 3 3 7 7
+  5?10
+3 5 2 7 9</code></pre>
 
 		<tt>n?l</tt> picks random elements from y.
-		<pre><code>
-		  8?"ABC"
-		"ACBBCBCB"
-		</code></pre>
+<pre><code>  8?"ABC"
+"ACBBCBCB"</code></pre>
 	</td>
 </tr>
 <tr>
@@ -532,52 +436,42 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<a name="type"/>
 		<tt>@a</tt> or <tt>@l</tt> is <b>type</b>. Returns a magic number indicating the type of the noun.<br>
 		General lists are 0, listy things are positive and non-listy things are negative.
-		<pre><code>
-		  @`a
-		-11
-		  @"d"
-		-10
-		  @()
-		0
-		</code></pre>
+<pre><code>  @`a
+-11
+  @"d"
+-10
+  @()
+0</code></pre>
 	</td>
 	<td>
 		<tt>x@y</tt> is <b>at</b>. Index a list or dictionary x, apply a single argument to a function x.
-		<pre><code>
-		  3 7 8@0 1 1
-		3 7 7
-		  [a:4;b:7]@`a
-		4
-		  {x*x}@5
-		25
-		</code></pre>
+<pre><code>  3 7 8@0 1 1
+3 7 7
+  [a:4;b:7]@`a
+4
+  {x*x}@5
+25</code></pre>
 
 		Invalid indices will produce 0N:
-		<pre><code>
-		  [a:4;b:7]@`q
-		0N
-		  3 7 8@4
-		0N
-		</code></pre>
+<pre><code>  [a:4;b:7]@`q
+0N
+  3 7 8@4
+0N</code></pre>
 	</td>
 </tr>
 <tr>
 	<td>
 		<a name="val"/>
 		<tt>.l</tt> is <b>value</b>. Evaluate K expressions from strings.
-		<pre><code>
-		  ."1+2"
-		3
-		</code></pre>
+<pre><code>  ."1+2"
+3</code></pre>
 	</td>
 	<td>
 		<tt>l.a</tt> or <tt>l.l</tt> is <b>dot-apply</b>. Index at depth or apply a list of arguments to a function.
-		<pre><code>
-		  (2 3;4 5).(1 0)
-		4
-		  {x,2*y}.(3 5)
-		3 10
-		</code></pre>
+<pre><code>  (2 3;4 5).(1 0)
+4
+  {x,2*y}.(3 5)
+3 10</code></pre>
 	</td>
 </tr>
 <tr>
@@ -588,12 +482,10 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 	<td>
 		<tt>l'a</tt> is <b>bin</b>. Perform a binary search in y for x. Right atomic.<br>
 		x must already be sorted.
-		<pre><code>
-		  0 2 4 6 8 10'5
-		2
-		  0 2 4 6 8 10'-10 0 4 5 6 20
-		-1 0 2 2 3 5
-		</code></pre>
+<pre><code>  0 2 4 6 8 10'5
+2
+  0 2 4 6 8 10'-10 0 4 5 6 20
+-1 0 2 2 3 5</code></pre>
 	</td>
 </tr>
 <tr>
@@ -603,17 +495,13 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 	</td>
 	<td>
 		<tt>a/l</tt> is <b>join</b>. Place the character x between strings y.
-		<pre><code>
-		  "|"/("a";"bc";"def")
-		"a|bc|def"
-		</code></pre>
+<pre><code>  "|"/("a";"bc";"def")
+"a|bc|def"</code></pre>
 	<tt>l/l</tt> is <b>encode</b>. Combine digits y in a base x into a single value.
-	<pre><code>
-	  2 2 2/1 0 1
-	5
-	  10 10 10/3 4 5
-	345
-	</code></pre>
+<pre><code>  2 2 2/1 0 1
+5
+  10 10 10/3 4 5
+345</code></pre>
 	</td>
 </tr>
 <tr>
@@ -623,19 +511,15 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 	</td>
 	<td>
 		<tt>a\l</tt> is <b>split</b>. Break the string y apart at instances of character x.
-		<pre><code>
-		  ","\"cat,dog,banana"
-		("cat"
-		 "dog"
-		 "banana")
-		</code></pre>
+<pre><code>  ","\"cat,dog,banana"
+("cat"
+ "dog"
+ "banana")</code></pre>
 		<tt>l\n</tt> is <b>decode</b>. Split a number y into a given base x.
-		<pre><code>
-		  2 2 2\5
-		1 0 1
-		  10 10 10\345
-		3 4 5
-		</code></pre>
+<pre><code>  2 2 2\5
+1 0 1
+  10 10 10\345
+3 4 5</code></pre>
 	</td>
 </tr>
 </table>
@@ -648,97 +532,112 @@ Adverb Reference
 <a name="each"/>
 `m'l` is <b>each</b>. Apply the monad to each x, producing a new list. If x is an atom, this is equivalent to `m@a`.
 
-		  {2*x}'5 7 2
-		10 14 4
+	  {2*x}'5 7 2
+	10 14 4
 
 `x d'y` is <b>each dyad</b>. Pair up values from x and y and apply them to the dyad, producing a new list. If x or y is an atom, spread it to the elements of the other sequence.
 
-		  2 7 9{x,2*y}'1 3 4
-		(2 2
-		 7 6
-		 9 8)
-		  (5),'1 3 4
-		(5 1
-		 5 3
-		 5 4)
+	  2 7 9{x,2*y}'1 3 4
+	(2 2
+	 7 6
+	 9 8)
+	  (5),'1 3 4
+	(5 1
+	 5 3
+	 5 4)
 
 <a name="eachprior"/>
 `d':l` is <b>eachprior</b>. Apply the dyad to each element of the list (left argument) and the element preceding that element in the list (right argument), producing a new list. Consistent with list indexing, the first element of the list will thus be paired up with 0N. Some primitive verbs result in a different special-cased initial value: `+`, `*`, `-` and `&` are provided with 0, 1, 0 or the first element of the sequence, respectively.
 
-		  =':3 3 4 4 5
-		0 1 0 1 0
-		  -':1 3 5 2 9
-		1 2 2 -3 7
-		  ,':2 3 4
-		(2 0N
-		 3 2
-		 4 3)
+	  =':3 3 4 4 5
+	0 1 0 1 0
+	  -':1 3 5 2 9
+	1 2 2 -3 7
+	  ,':2 3 4
+	(2 0N
+	 3 2
+	 4 3)
 
 `a d':l` lets you specify an explicit initial value for eachprior:
 
-		  99,':2 3 4
-		(2 99
-		 3 2
-		 4 3)
+	  99,':2 3 4
+	(2 99
+	 3 2
+	 4 3)
 
 <a name="eachright"/>
 `x d/:l` is <b>eachright</b>. Apply the dyad to the entire left argument and each right argument, producing a new list.
 
-		  2 3,/:4 5 6
-		(2 3 4
-		 2 3 5
-		 2 3 6)
+	  2 3,/:4 5 6
+	(2 3 4
+	 2 3 5
+	 2 3 6)
 
 <a name="eachleft"/>
 `l d\:x` is <b>eachleft</b>. Apply the dyad to each left argument and the entire right argument, producing a new list.
 
-		  2 3,\:4 5 6
-		(2 4 5 6
-		 3 4 5 6)
+	  2 3,\:4 5 6
+	(2 4 5 6
+	 3 4 5 6)
 
 <a name="over"/>
 `d/l` is <b>over</b>, also known as *foldl*. Apply the dyad to pairs of values in x from left to right and carrying each result forward, reducing the list to a single value. Some primitive verbs result in a different special-cased value when applied to an empty list: `+`, `*`, `|` and `&` result in 0, 1, negative infinity or positive infinity, respectively.
 
-		  +/4 5 2
-		11
-		  |/()
-		-0w
+	  +/4 5 2
+	11
+	  |/()
+	-0w
 
 `x d/l` lets you specify an initial value for over:
 
-		  4+/5 2
-		11
+	  4+/5 2
+	11
 
 `m/x` is <b>fixedpoint</b>. Repeatedly apply the monad to x until it stops changing or repeats its initial value. The scan form of this adverb is often useful for getting a better understanding of what is happening.
 
-		  {_x%2}/32
-		0
+	  {_x%2}/32
+	0
+
+`n m/y` is <b>for</b>. Apply the monad to y, x times.
+
+	  5{,x}/7
+	,,,,,7
 
 `m m/x` is <b>while</b>. Repeatedly apply the monad to x as long as the left monad applied to the result is true.
 
-		  {x<100}{x*2}/1
-		128
+	  {x<100}{x*2}/1
+	128
 
 <a name="scan"/>
 `d\l` is <b>scan</b>. Scan and its variants all behave identically to over, except they accumulate a list of intermediate results rather than just returning the final result. Apply the dyad to pairs of values in x from left to right and carrying each result forward.
 
-		  +\4 5 6
-		4 9 15
+	  +\4 5 6
+	4 9 15
 
 `x d\l` lets you specify an initial value for scan. Note that this value is not included in the results:
 
-		  2*\3 2 9
-		6 12 108
+	  2*\3 2 9
+	6 12 108
 
 `m\x` is <b>scan-fixedpoint</b>. Repeatedly apply the monad to x until it stops changing or repeats its initial value and accumulate a list of intermediate results.
 
-		  {_x%2}\32
-		32 16 8 4 2 1 0
-		  {3!1+x}\2
-		2 0 1
+	  {_x%2}\32
+	32 16 8 4 2 1 0
+	  {3!1+x}\2
+	2 0 1
+
+`n m/y` is <b>scan-for</b>. Apply the monad to y, x times and accumulate a list of intermediate results.
+
+	  5{,x}\7
+	(7
+	 ,7
+	 ,,7
+	 ,,,7
+	 ,,,,7
+	 ,,,,,7)
 
 `m m\x` is <b>scan-while</b>. Repeatedly apply the monad to x as long as the left monad applied to the result is true and accumulate a list of intermediate results.
 
-		  {x<100}{x*2}\1
-		1 2 4 8 16 32 64 128
+	  {x<100}{x*2}\1
+	1 2 4 8 16 32 64 128
 
