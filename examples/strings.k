@@ -9,7 +9,7 @@ r: {y@(#y)!x+!#y}; / rotate list y by x
 
 {?x^?x}"applause"                                            /  1. find duplicated characters
 {(x@<x)~(y@<y)}["teapot";"toptea"]                           /  2. are two strings anagrams?
-{x@*t@&(2>#)'t:.=x}"oorning"                                 /  3. first unique character
+{*t^x^t:?x}"oorning"                                         /  3. first unique character
 |"backwards"                                                 /  4. reverse a string
 &/{(x<58)&x>47}`i$"697"                                      /  5. string contains only digits?
 {+(!t;1+#:'. t:=x^?x)}"Programmming"                         /  6. find duplicates and their count
@@ -24,7 +24,7 @@ r: {y@(#y)!x+!#y}; / rotate list y by x
 {[a;s]t:#:'a;t~0 0{x+y~'a@'x&t-1}/s}[("ab";"def");"dabef"]   / 15. is s an interleave of two others?
 {|/(y~(#y)#)'r[1]\x}["hneay";"ne"]                           / 16. string contains a substring?
 {x@**{x@>#:'x}.:=x}"abdbbac"                                 / 17. most frequently occurring char
-"peeled"^"e"                                                 / 18. remove instances of a character
+{x@&~x=y}["peeled";"e"]                                      / 18. remove instances of a character
 {[w]s@*|&{x~|x}'s:,/i#'\:r[;w]'i:!#w}"issrawar"              / 19. longest palindrome substring
 {x@<#:'x}("am";"i";"you";"they")                             / 20. sort list of strings by length
 
