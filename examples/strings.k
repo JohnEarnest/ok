@@ -7,14 +7,14 @@ r: {y@(#y)!x+!#y}; / rotate list y by x
 
 (
 
-{x@&(1<#)'.=:x}"applause"                                    /  1. find duplicated characters
+{?x^?x}"applause"                                            /  1. find duplicated characters
 {(x@<x)~(y@<y)}["teapot";"toptea"]                           /  2. are two strings anagrams?
 {x@*t@&(2>#)'t:.=x}"oorning"                                 /  3. first unique character
 |"backwards"                                                 /  4. reverse a string
 &/{(x<58)&x>47}`i$"697"                                      /  5. string contains only digits?
-{(w@*x;#x)}'t@&(1<#)'t:.=:w:"Programming"                    /  6. find duplicates and their count
-{(t;(#x)-t:+/x)}@^"aeiouy"?"verbage"                         /  7. count vowels and consonants
-{+/x=y}["skimmed";"m"]                                       /  8. count occurrences of a character
+{+(!t;1+#:'. t:=x^?x)}"Programmming"                         /  6. find duplicates and their count
+{+/'(x;~x)}@^"aeiouy"?"verbage"                              /  7. count vowels and consonants
++/=["skimmed";"m"]                                           /  8. count occurrences of a character
 ."231"                                                       /  9. convert numeric string to int
 {(#z)_,/(z,)'y\x}["x y  z";" ";"%20"]                        / 10. replace character with a string
 (p:{$[2>#x;x;,/{x,/:p[y]}.'(0 1_)'r[1]\x]})["xyz"]           / 11. permutations of a string
