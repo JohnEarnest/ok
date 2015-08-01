@@ -137,7 +137,7 @@ function dfmt(x, y) {
 
 function except(x, y) {
 	x = c(x.t != 3 ? iota(x) : x); y = y.t != 3 ? enlist(y) : y;
-	kmap(y, function(v) { x.v.splice(find(x, v).v, 1); }); return x;
+	kmap(y, function(v) { var i=pfind(x, v); if (!na(i)) { x.v.splice(i.v, 1); }}); return x;
 }
 
 function drop(x, y) {
@@ -171,7 +171,7 @@ function find(x, y) {
 	for(var z=0;z<len(x);z++) { if(match(x.v[z],y).v) { return k(0,z); } } return k(0,len(x));
 }
 function pfind(x, y) {
-	for(var z=0;z<len(x);z++) { if(match(x.v[z],y).v) { return k(0,z); } } return NA;
+	for(var z=0;z<len(x);z++) { if(equal(x.v[z],y).v) { return k(0,z); } } return NA;
 }
 function pisnull(x) {
 	return kb(match(x, NIL).v || match(x, k(11)).v || na(x));
