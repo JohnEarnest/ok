@@ -242,6 +242,24 @@ function processInput(e) {
 	return false;
 }
 
+function printEnv(filter, label) {
+	var found = {};
+	var len = 0;
+	for(var key in env.d) {
+		if (!filter(env.d[key])) { continue; }
+		len = Math.max(key.length, len);
+		found[key] = env.d[key];
+	}
+	for(var name in found) {
+		var n = name; for(var x=(len+1 - n.length); x>0; x--) { n += "&nbsp;"; }
+		printRepl(n + ": " + format(found[name]));
+	}
+	if (len == 0) {
+		printRepl("no "+label+" defined.");
+	}
+	printRepl("");
+}
+
 function processLine() {
 	if (prompt.value == "\\\\") { partial = ""; return; }
 	if (prompt.value == "\\e") {
@@ -266,6 +284,14 @@ function processLine() {
 	if (prompt.value == "\\c") {
 		scroll.innerHTML = "";
 		panel.scrollTop = panel.scrollHeight;
+		return;
+	}
+	if (prompt.value == "\\f") {
+		printEnv(function(v) { return v.t >= 5 && v.t != 13; }, "functions");
+		return;
+	}
+	if (prompt.value == "\\v") {
+		printEnv(function(v) { return v.t < 5; }, "variables");
 		return;
 	}
 	if (prompt.value == "kOS") { printRepl("one system/all devices"); return; }
