@@ -56,10 +56,7 @@ function ktos(x, esc) {
 	var r = x.v.map(function(k) { return String.fromCharCode(k.v); }).join("");
 	if (esc) { for(var z=0;z<EC.length;z++) { r=r.split(EC[z][0]).join(EC[z][1]); }} return r;
 }
-function kmap(x, f) {
-	if (x.t != 3) { return f(x); }
-	var r=[]; for(var z=0;z<len(x);z++) { r.push(f(x.v[z],z)); } return k(3,r);
-}
+function kmap(x, f) { var r=[]; for(var z=0;z<len(x);z++) { r.push(f(x.v[z],z)); } return k(3,r); }
 function kzip(x, y, f) {
 	if (len(x) != len(y)) { throw new Error("length error."); }
 	return kmap(x, function(z, i) { return f(z, y.v[i]); });
@@ -263,7 +260,6 @@ function pack(x, y) {
 ////////////////////////////////////
 
 function each(monad, x, env) {
-	if (x.t != 3) { return applym(monad, x, env); }
 	return kmap(x, function(x) { return applym(monad, x, env); });
 }
 
