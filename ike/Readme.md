@@ -49,8 +49,10 @@ iKe pre-defines and updates several K variables for your convenience:
 iKe also provides a number of pre-defined palettes. Since transparency is useful, the last color of each palette is fully transparent:
 
 - `cga`: CGA palette 1 (4 colors + transparency)
+- `hot`: hot dog stand (4 colors + transparency)
 - `lcd`: Similar to the pea-soup LCD display of the GameBoy (4 colors + transparency)
 - `solarized`: The [solarized](http://ethanschoonover.com/solarized) palette. (16 colors + transparency)
 - `dawnbringer`: [dawnbringer's](http://pixeljoint.com/forum/forum_posts.asp?TID=12795) pixel art palette. (16 colors + transparency)
+- `windows`: Windows 3.1 palette (16 colors + transparency)
 
 ![palettes](https://raw.githubusercontent.com/JohnEarnest/ok/gh-pages/ike/img/swatches.png)

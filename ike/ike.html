@@ -145,11 +145,19 @@ dawnbringer = tok([
 	"#597dce","#d27d2c","#8595a1","#6daa2c","#d2aa99","#6dc2ca","#dad45e","#deeed6",
 	"rgba(0,0,0,0)"
 ]);
+windows = tok([
+	"#FFFFFF","#C0C0C0","#808080","#000000","#FF0000","#00FF00","#FFFF00","#0000FF",
+	"#FF00FF","#00FFFF","#800000","#008000","#808000","#000080","#800080","#008080",
+	"rgba(0,0,0,0)"
+]);
 lcd = tok([
 	"#0F380F","#306230","#8BAC0F","#9BBC0F","rgba(0,0,0,0)"
 ]);
 cga = tok([
 	"#000000","#FFFFFF","#00FFFF","#FF00FF","rgba(0,0,0,0)"
+]);
+hot = tok([
+	"#000000","#FFFFFF","#FF0000","#FFFF00","rgba(0,0,0,0)"
 ]);
 
 var PER_FRAME = 1000/30;
@@ -212,10 +220,12 @@ function callk2(n, x, y) {
 function setvars() {
 	setvar("w"  , num(160));
 	setvar("h"  , num(160));
+	setvar("windows",     windows);
 	setvar("solarized",   solarized);
 	setvar("dawnbringer", dawnbringer);
-	setvar("lcd",         lcd);s
+	setvar("lcd",         lcd);
 	setvar("cga",         cga);
+	setvar("hot",         hot);
 	setvar("dir", k(3, [num(lx), num(ux)]));
 	var kv = []; var e = Object.keys(keys); for(var z=0;z<e.length;z++) {
 		kv.push(num(parseInt(e[z])));
