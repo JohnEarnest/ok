@@ -46,7 +46,7 @@ iKe pre-defines and updates several K variables for your convenience:
 - `dir`: a 2d vector with the (x;y) offset of the cursor keys currently held (read only)
 - `keys`: a vector of the keycodes currently held (read only)
 
-iKe also provides a number of pre-defined palettes. Since transparency is useful, the last color of each palette is fully transparent:
+iKe provides a number of pre-defined palettes. Since transparency is useful, the last color of each palette is fully transparent:
 
 - `cga`: CGA palette 1 (4 colors + transparency)
 - `hot`: hot dog stand (4 colors + transparency)
@@ -56,3 +56,12 @@ iKe also provides a number of pre-defined palettes. Since transparency is useful
 - `windows`: Windows 3.1 palette (16 colors + transparency)
 
 ![palettes](https://raw.githubusercontent.com/JohnEarnest/ok/gh-pages/ike/img/swatches.png)
+
+iKe also provides a built-in 8x8 character set called `text`:
+
+	t: ~,/'+text@`i$"Hello, World!"
+	draw: {,(0 0;`cga;`t)}
+
+The character set is aligned with 7-bit ASCII and control characters are replaced with some useful graphic characters including symbols and box drawing characters:
+
+![font](https://raw.githubusercontent.com/JohnEarnest/ok/gh-pages/ike/img/font.png)

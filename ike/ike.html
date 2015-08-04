@@ -132,6 +132,7 @@ button:focus {
 </div>
 <script src="../oK.js"></script>
 <script src="../convert.js"></script>
+<script src="text.js"></script>
 <script>
 
 // builtin palettes
@@ -226,6 +227,7 @@ function setvars() {
 	setvar("lcd",         lcd);
 	setvar("cga",         cga);
 	setvar("hot",         hot);
+	setvar("text", pixelfont);
 	setvar("dir", k(3, [num(lx), num(ux)]));
 	var kv = []; var e = Object.keys(keys); for(var z=0;z<e.length;z++) {
 		kv.push(num(parseInt(e[z])));
