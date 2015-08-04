@@ -171,6 +171,7 @@ var env    = baseEnv();
 var lx     = 0;
 var ux     = 0;
 var keys   = {};
+var frame  = 0;
 
 function saveBuffer() {
 	localStorage.setItem("ikebuffer", editor.value);
@@ -221,6 +222,7 @@ function callk2(n, x, y) {
 function setvars() {
 	setvar("w"  , num(160));
 	setvar("h"  , num(160));
+	setvar("f"  , num(frame));
 	setvar("windows",     windows);
 	setvar("solarized",   solarized);
 	setvar("dawnbringer", dawnbringer);
@@ -237,6 +239,7 @@ function setvars() {
 
 function play() {
 	var b = document.getElementById("playbutton");
+	frame = 0;
 	b.src = "img/stop.png";
 	b.title = "Stop";
 	b.onclick = stop;
@@ -315,6 +318,7 @@ function update() {
 }
 
 function paint() {
+	frame++;
 	var g = canvas.getContext("2d");
 	g.fillStyle = "#000000";
 	g.fillRect(0, 0, 160*SCALE, 160*SCALE);
