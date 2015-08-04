@@ -134,6 +134,24 @@ button:focus {
 <script src="../convert.js"></script>
 <script>
 
+// builtin palettes
+solarized = tok([
+	"#002b36","#073642","#586e75","#657b83","#839496","#93a1a1","#eee8d5","#fdf6e3",
+	"#b58900","#cb4b16","#dc322f","#d33682","#6c71c4","#268bd2","#2aa198","#859900",
+	"rgba(0,0,0,0)"
+]);
+dawnbringer = tok([
+	"#140c1c","#442434","#30346d","#4e4a4e","#854c30","#346524","#d04648","#757161",
+	"#597dce","#d27d2c","#8595a1","#6daa2c","#d2aa99","#6dc2ca","#dad45e","#deeed6",
+	"rgba(0,0,0,0)"
+]);
+lcd = tok([
+	"#0F380F","#306230","#8BAC0F","#9BBC0F","rgba(0,0,0,0)"
+]);
+cga = tok([
+	"#000000","#FFFFFF","#00FFFF","#FF00FF","rgba(0,0,0,0)"
+]);
+
 var PER_FRAME = 1000/30;
 var SCALE     = 2;
 
@@ -194,6 +212,10 @@ function callk2(n, x, y) {
 function setvars() {
 	setvar("w"  , num(160));
 	setvar("h"  , num(160));
+	setvar("solarized",   solarized);
+	setvar("dawnbringer", dawnbringer);
+	setvar("lcd",         lcd);s
+	setvar("cga",         cga);
 	setvar("dir", k(3, [num(lx), num(ux)]));
 	var kv = []; var e = Object.keys(keys); for(var z=0;z<e.length;z++) {
 		kv.push(num(parseInt(e[z])));
