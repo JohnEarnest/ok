@@ -24,6 +24,12 @@ Tuples will be drawn in the order they appear. For improved flexibility, any fie
 
 Observe how in the first example the box is drawn at a different position every time, but in the second example it is drawn in a consistent position as `2?w` is only evaluated once and then stored.
 
+If the "position" element of any drawing tuple is a matrix instead of a vector, the bitmap will be drawn several times at each (x;y) pair:
+
+	draw: {,((5 5;30 5;18 20);`lcd;text@6)}
+
+This makes it very easy to draw many identical objects simulatenously.
+
 Input Events
 ------------
 For dynamic behavior, iKe will call a number of K functions (provided they have been defined) whenever certain events occur:
