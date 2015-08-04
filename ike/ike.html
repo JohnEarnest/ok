@@ -408,6 +408,10 @@ canvas.onmouseup = function(e) {
 canvas.onmousemove = function(e) {
 	if(running) { callk2("mm", Math.floor(e.offsetX/SCALE), Math.floor(e.offsetY/SCALE)); }
 }
+var fullcanvas = document.getElementById("fullcanvas");
+fullcanvas.onmousedown = canvas.onmousedown;
+fullcanvas.onmouseup   = canvas.onmouseup;
+fullcanvas.onmousemove = canvas.onmousemove;
 
 canvas.getContext("2d").fillStyle = "#000000";
 canvas.getContext("2d").fillRect(0, 0, 320, 320);
