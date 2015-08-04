@@ -1,0 +1,384 @@
+<html>
+<head><title>iKe: powered by oK</title></head>
+<style>
+body {
+	background-color: gray;
+	font-smooth: never;
+	-webkit-font-smoothing : none;
+	font-family: "Monaco", monospace;
+	font-size: 9pt;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+}
+div.textwrap {
+	display: inline-block;
+	width: 50%;
+	height: 100%;
+}
+textarea {
+	display: inline-block;
+	background-color: lightyellow;
+	font-smooth: never;
+	-webkit-font-smoothing : none;
+	font-family: "Monaco", monospace;
+	font-size: 9pt;
+	width: 100%;
+	height: 100%;
+	border: none;
+	border-right: 1px solid gray;
+	-moz-tab-size:4;
+	-o-tab-size:4;
+	tab-size:4;
+}
+#status {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	width: 50%;
+	height: 20px;
+	background-color: black;
+	color: white;
+	overflow: hidden;
+}
+div.main {
+	height: 90%;
+	width:  90%;
+	background-color: orange;
+	position: absolute;
+	left: 5%;
+	top: 5%;
+}
+div.canvasbox {
+	display: inline-block;
+	width: 50%;
+	height: 100%;
+	background-color: darkgray;
+}
+canvas {
+	width: 320px;
+	height: 320px;
+	position: absolute;
+	top: 50%;
+	left: 75%;
+	margin: -160px 0 0 -160px;
+}
+div.control {
+	width: 40px;
+	height: 40px;
+	top: 10px;
+	right: 10px;
+	position: absolute;
+	background-color: black;
+	color: white;
+	cursor: pointer;
+	border: 1px solid black;
+}
+div.control:hover{
+	background-color: gray;
+}
+div.control:active{
+	background-color: darkgray;
+}
+div.full {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+}
+canvas.full {
+	width: 480px;
+	height: 480px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -240px 0 0 -240px;
+	background-color: orange;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
+</style>
+
+<body>
+<div class="main">
+	<div class="textwrap">
+		<textarea id="editor">editor</textarea>
+		<div id="status"></div>
+	</div><div class="canvasbox">
+		<div class="control" style="right: 110px;">
+			<img src="img/play.png" title="Run" id="playbutton" onclick="play();"></img>
+		</div>
+		<div class="control" style="right: 60px;" >
+			<img src="img/share.png" title="Share" onclick="share();"></img>
+		</div>
+		<div class="control">
+			<img src="img/full.png" title="Fullscreen" onclick="fullscreen();"></img>
+		</div>
+		<canvas width="320" height="320" id="canvas"></canvas>
+	</canvasbox>
+</div>
+<div class="full" id="fulldiv" style="display: none;">
+	<div class="control">
+		<img src="img/close.png" title="Exit Fullscreen" onclick="closefullscreen();"></img>
+	</div>
+	<canvas class="full" width="480" height="480" id="fullcanvas"></canvas>
+</div>
+<script src="../oK.js"></script>
+<script src="../convert.js"></script>
+<script>
+
+var PER_FRAME = 1000/30;
+var SCALE     = 2;
+
+var running = false;
+var editor = document.getElementById("editor");
+var canvas = document.getElementById("canvas");
+var env    = baseEnv();
+var lx     = 0;
+var ux     = 0;
+var keys   = {};
+
+function saveBuffer() {
+	localStorage.setItem("ikebuffer", editor.value);
+}
+function loadBuffer() {
+	var editbuffer = localStorage.getItem("ikebuffer");
+	if (!editbuffer) {
+		editbuffer = "/ contents of this editor is automatically saved in local storage.";
+	}
+	editor.value = editbuffer;
+}
+loadBuffer();
+
+function showStatus(text) {
+	if (text.length > 80) { text = text.substring(0, 80) + "..."; }
+	var status = document.getElementById("status");
+	status.innerHTML = text;
+	status.style.backgroundColor = "black";
+}
+function showError(text) {
+	if (text.length > 80) { text = text.substring(0, 80) + "..."; }
+	var status = document.getElementById("status");
+	status.innerHTML = text;
+	status.style.backgroundColor = "darkred";
+}
+
+function num(v)       { return { t: 0, v: v }; }
+function sym(v)       { return { t: 2, v: v }; }
+function setvar(n, v) { env.put(n, true, v); }
+function getvar(k)    { if (k.t != 2) { return k; } return env.lookup(k.v.slice(1), true); }
+
+function callk(n) {
+	try { return run(env.lookup(n, true).v, env); }
+	catch(e) { if (n == "draw") { showError(e.message); } }
+}
+function callk1(n, x) {
+	setvars();
+	try { var v = env.lookup(n, true);
+		try { call(v, k(3, [num(x)])); } catch(e) { console.log(e.message); }
+	} catch(e) {}
+}
+function callk2(n, x, y) {
+	setvars();
+	try { var v = env.lookup(n, true);
+		try { call(v, k(3, [num(x), num(y)])); } catch(e) { console.log(e.message); }
+	} catch(e) {}
+}
+function setvars() {
+	setvar("w"  , num(160));
+	setvar("h"  , num(160));
+	setvar("dir", k(3, [num(lx), num(ux)]));
+	var kv = []; var e = Object.keys(keys); for(var z=0;z<e.length;z++) {
+		kv.push(num(parseInt(e[z])));
+	}
+	setvar("keys", k(3, kv));
+}
+
+function play() {
+	var b = document.getElementById("playbutton");
+	b.src = "img/stop.png";
+	b.title = "Stop";
+	b.onclick = stop;
+	var code = editor.value;
+	try {
+		env = baseEnv();
+		setvars();
+		showStatus(format(run(parse(code), env)).replace(/\n/g,";"));
+		if (!running) {
+			setTimeout(paint, PER_FRAME);
+			setTimeout(update, PER_FRAME);
+			running = true;
+		}
+	}
+	catch(e) {
+		showError(e.message);
+		running = false;
+	}
+}
+function stop() {
+	var b = document.getElementById("playbutton");
+	b.src = "img/play.png";
+	b.title = "Play";
+	b.onclick = play;
+	running = false;	
+}
+function fullscreen() {
+	canvas = document.getElementById("fullcanvas");
+	SCALE = 3;
+	document.getElementById("fulldiv").style.display = "block";
+	play();
+	if (!running) { closefullscreen(); stop(); }
+}
+function closefullscreen() {
+	canvas = document.getElementById("canvas");
+	SCALE = 2;
+	document.getElementById("fulldiv").style.display = "none";
+	stop();
+}
+function share() {
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', 'https://api.github.com/gists');
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState !== 4) { return; }
+		var result = JSON.parse(xhr.responseText);
+		if (xhr.status == 200 || xhr.status == 201) {
+			window.location.href = window.location.href.replace(/(ike.html|\?gist=.*)*$/, 'ike.html?gist=' + result.id);
+		}
+	}
+	xhr.send(JSON.stringify({
+		"description" : "iKE sketch",
+		"public" : true,
+		"files": { "prog.k" : { "content": editor.value } }
+	}));
+}
+function loadshared() {
+	var xhr = new XMLHttpRequest();
+	var gistId = location.search.match(/gist=(\w+)/);
+	if (!gistId) { return; }
+	xhr.open('GET', 'https://api.github.com/gists/' + gistId[1]);
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status !== 201)) {
+			var result = JSON.parse(xhr.responseText);
+			editor.value = result.files["prog.k"].content;
+			fullscreen();
+		}
+	}
+	xhr.send();
+}
+loadshared();
+
+function update() {
+	setvars();
+	var r = callk("tick");
+	if (running) { setTimeout(update, PER_FRAME); }
+}
+
+function paint() {
+	var g = canvas.getContext("2d");
+	g.fillStyle = "#000000";
+	g.fillRect(0, 0, 160*SCALE, 160*SCALE);
+
+	setvars();
+	var r = callk("draw");
+	if (!r) { return; }
+	if (r.t != 3 || len(r) < 1) { return; }
+	for(var z=0; z < len(r); z++) {
+		var c = r.v[z];
+		if (c.t != 3) { continue; }
+		paintEach(g, c.v);
+	}
+	if (running) { setTimeout(paint, PER_FRAME); }
+}
+
+function paintEach(g, v) {
+	// (position; palette; bitmap)
+	if (v.length < 3) { return; }
+	// position:
+	var pos = getvar(v[0]); if (pos.t != 3 || len(pos) < 2) { return; }
+	var px = pos.v[0]; if (px.t != 0) { return; } px = px.v;
+	var py = pos.v[1]; if (py.t != 0) { return; } py = py.v;
+	// palette:
+	var pal = getvar(v[1]); if (pal.t != 3) { return; }
+	var colors = tojs(pal);
+	// sprite:
+	var img = getvar(v[2]); if (img.t != 3) { return; }
+	for(var y = 0; y < len(img); y++) {
+		if (img.v[y].t != 3) { continue; }
+		for(var x = 0; x < len(img.v[y]); x++) {
+			var index = img.v[y].v[x]; if (index.t != 0 && index.t != 1) { return; }
+			index = index.v;
+			g.fillStyle = colors[index];
+			g.fillRect((px+x) * SCALE, (py+y) * SCALE, SCALE, SCALE);
+		}
+	}
+}
+
+editor.onkeydown = function(event) {
+	if (event.keyCode == 13 && event.shiftKey) {
+		saveBuffer();
+		if (editor.selectionStart == editor.selectionEnd) {
+			play();
+		}
+		else {
+			setvars();
+			var code = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+			try { showStatus(format(run(parse(code), env)).replace(/\n/g,";")); }
+			catch(e) { showError(e.message); }
+		}
+		return false;
+	}
+	if (event.keyCode == 67 && event.ctrlKey) {
+		stop();
+		return false;
+	}
+	if (event.keyCode == 9) {
+		var text  = this.value;
+		var start = this.selectionStart;
+		var end   = this.selectionEnd;
+		this.value = text.substring(0, start) + '\t' + text.substring(end);
+		this.selectionStart = this.selectionEnd = start + 1;
+		saveBuffer();
+		return false;
+	}
+	saveBuffer();
+};
+
+window.onkeyup = function(e) {
+	delete keys[e.keyCode];
+	if (e.keyCode == 37 || e.keyCode == 39) { lx = 0; }
+	if (e.keyCode == 38 || e.keyCode == 40) { ux = 0; }
+	if(running) { callk1("ku", e.keyCode); }
+}
+window.onkeydown = function(e) {
+	keys[e.keyCode] = true;
+	if(!running) { return; }
+	if (e.keyCode == 37) { lx = -1; callk1("lx",-1); }
+	if (e.keyCode == 39) { lx =  1; callk1("lx",1); }
+	if (e.keyCode == 38) { ux = -1; callk1("ux",-1); }
+	if (e.keyCode == 40) { ux =  1; callk1("ux",1); }
+	callk1("kd", e.keyCode);
+}
+canvas.onmousedown = function(e) {
+	if(running) { callk2("md", Math.floor(e.offsetX/SCALE), Math.floor(e.offsetY/SCALE)); }
+}
+canvas.onmouseup = function(e) {
+	if(running) { callk2("mu", Math.floor(e.offsetX/SCALE), Math.floor(e.offsetY/SCALE)); }
+}
+canvas.onmousemove = function(e) {
+	if(running) { callk2("mm", Math.floor(e.offsetX/SCALE), Math.floor(e.offsetY/SCALE)); }
+}
+
+canvas.getContext("2d").fillStyle = "#000000";
+canvas.getContext("2d").fillRect(0, 0, 320, 320);
+showStatus("oK v"+version);
+
+</script>
+</body>
+</html>
