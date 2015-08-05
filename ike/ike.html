@@ -247,7 +247,11 @@ function play() {
 	try {
 		env = baseEnv();
 		setvars();
-		showStatus(format(run(parse(code), env)).replace(/\n/g,";"));
+		var r = run(parse(code), env);
+		paintValue(r);
+		showStatus(format(r).replace(/\n/g,";"));
+
+		if (!("draw" in env.d)) { stop(); return; }
 		if (!running) {
 			setTimeout(paint, PER_FRAME);
 			setTimeout(update, PER_FRAME);
@@ -319,12 +323,19 @@ function update() {
 
 function paint() {
 	frame++;
+	if ("draw" in env.d && env.d["draw"].t != 5) {
+		paintValue(env.d["draw"]);
+	}
+	else {
+		paintValue(callk("draw"));
+	}
+}
+
+function paintValue(r) {
 	var g = canvas.getContext("2d");
 	g.fillStyle = "#000000";
 	g.fillRect(0, 0, 160*SCALE, 160*SCALE);
 
-	setvars();
-	var r = callk("draw");
 	if (!r) { return; }
 	if (r.t != 3 || len(r) < 1) { return; }
 	for(var z=0; z < len(r); z++) {
