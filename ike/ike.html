@@ -97,7 +97,6 @@ canvas.full {
 	margin: -240px 0 0 -240px;
 	background-color: orange;
 }
-
 input:focus,
 select:focus,
 textarea:focus,
@@ -122,6 +121,11 @@ button:focus {
 			<img src="img/full.png" title="Fullscreen" onclick="fullscreen();"></img>
 		</div>
 		<canvas width="320" height="320" id="canvas"></canvas>
+		<div id="bigdatawrap" style="display: none; height: 100%; width: 100%; overflow: hidden;">
+			<div style="display: table-cell; vertical-align: middle;">
+			   <pre id="bigdata" style="text-align: center;"></pre>
+			</div>
+		</div>
 	</canvasbox>
 </div>
 <div class="full" id="fulldiv" style="display: none;">
@@ -197,6 +201,23 @@ function showError(text) {
 	status.innerHTML = text;
 	status.style.backgroundColor = "darkred";
 }
+function showData(text) {
+	// all the lines must be padded to the same width,
+	// or else center-aligning the text in the pre tag won't look right:
+	var lines = text.split("\n");
+	var max = 0;
+	for(var z=0; z<lines.length;z++) { max = Math.max(max, lines[z].length); }
+	for(var z=0; z<lines.length;z++) { while(lines[z].length<max) { lines[z]+=" "; } }
+	text = lines.join("\n");
+
+	document.getElementById("canvas").style.display = "none";
+	document.getElementById("bigdatawrap").style.display = "table";
+	document.getElementById("bigdata").innerHTML = text;
+}
+function hideData() {
+	document.getElementById("canvas").style.display = "block";
+	document.getElementById("bigdatawrap").style.display = "none";
+}
 
 function num(v)       { return { t: 0, v: v }; }
 function sym(v)       { return { t: 2, v: v }; }
@@ -238,6 +259,7 @@ function setvars() {
 }
 
 function play() {
+	hideData();
 	var b = document.getElementById("playbutton");
 	frame = 0;
 	b.src = "img/stop.png";
@@ -408,7 +430,11 @@ editor.onkeydown = function(event) {
 		else {
 			setvars();
 			var code = editor.value.substring(editor.selectionStart, editor.selectionEnd);
-			try { showStatus(format(run(parse(code), env)).replace(/\n/g,";")); }
+			try {
+				var r = format(run(parse(code), env));
+				if (running) { showStatus(r.replace(/\n/g,";")); }
+				else { showData(r); showStatus("eval "+code); }
+			}
 			catch(e) { showError(e.message); }
 		}
 		return false;
