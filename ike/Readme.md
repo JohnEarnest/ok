@@ -30,6 +30,8 @@ If the "position" element of any drawing tuple is a matrix instead of a vector, 
 
 This makes it very easy to draw many identical objects simulatenously.
 
+If the "bitmap" element of any drawing tuple is a number or a vector, it will be drawn as a single pixel or a horizontal strip of pixels, respectively. Drawing single pixels in this way is generally quite inefficient, but drawing horizontal strips in combination with a vector of positions can produce some interesting "rasterbar" effects.
+
 Input Events
 ------------
 For dynamic behavior, iKe will call a number of K functions (provided they have been defined) whenever certain events occur:
