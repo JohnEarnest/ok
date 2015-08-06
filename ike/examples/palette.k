@@ -1,7 +1,7 @@
 / built-in palette demo:
 
-sml: ,/'+(!4)*\:16 32#1
-lrg: ,/'+(!16)*\:16 8#1
+sml:  +(16#)'&4#32
+lrg:  +(16#)'&16#8
 draw: {((0   0;`cga        ;`sml)
         (0  20;`hot        ;`sml)
         (0  40;`lcd        ;`sml)

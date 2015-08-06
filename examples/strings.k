@@ -25,7 +25,7 @@ r: {y@(#y)!x+!#y}; / rotate list y by x
 {|/(y~(#y)#)'r[1]\x}["hneay";"ne"]                           / 16. string contains a substring?
 {x@**{x@>#:'x}.:=x}"abdbbac"                                 / 17. most frequently occurring char
 {x@&~x=y}["peeled";"e"]                                      / 18. remove instances of a character
-{[w]s@*|&{x~|x}'s:,/i#'\:r[;w]'i:!#w}"issrawar"              / 19. longest palindrome substring
+t@*&{x~|x}'t@:>#:'t:,/(-1_)\'(1_)\"issrawar"                 / 19. longest palindrome substring
 {x@<#:'x}("am";"i";"you";"they")                             / 20. sort list of strings by length
 
 )

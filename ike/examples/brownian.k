@@ -6,4 +6,4 @@ pos:  ,0 0
 
 md:   {pos,::,(x;y)}
 tick: {pos::w!pos+(#pos;2)#(2*#pos)?-1 0 1}
-draw: {,`pos`cga`guy}
+draw: ,`pos`cga`guy
