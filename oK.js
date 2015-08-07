@@ -150,7 +150,7 @@ function take(x, y) {
 }
 
 function reshape(x, y) {
-	if (y.t != 3) { y = enlist(y); } count = 0; function rshr(x, y, index) {
+	if (y.t != 3) { y = enlist(y); } var count = 0; function rshr(x, y, index) {
 		return krange(x.v[index].v, function(z) {
 			return index==len(x)-1 ? y.v[kmod(count++, len(y))] : rshr(x, y, index+1);
 		});
@@ -241,16 +241,13 @@ function odometer(x) {
 function unpack(x, y) {
 	var t=k(0,n(y).v); var p=cat(rev(scan(k(8, "*"), x)),k1);
 	var r=[]; for(var z=0;z<len(p);z++) {
-		var q=floor(divide(t, p.v[z])); if (r.length!=0||q.v!=0) { r.push(q); }
+		var q=floor(divide(t, p.v[z])); if (z != 0) { r.push(q); }
 		t=floor(mod(p.v[z], t));
 	} return k(3,r);
 }
 
 function pack(x, y) {
-	if (x.t == 1) { return join(x, y); }
-	if (x.t == 0) { x = take(k(0, len(y)), x); }
-	var p=take(k(0,-len(y)), cat(rev(scan(k(8, "*"), x)),k1));
-	return over(k(8, "+"), ad(times)(p, y));
+	if (x.t == 1) { return join(x, y); } return call(packimpl, k(3, [x, y]));
 }
 
 ////////////////////////////////////
@@ -914,14 +911,7 @@ function format(k, indent) {
 	if (k.t == 13) { return "(native)"; }
 }
 
-// export the public interface:
-function setIO(symbol, slot, func) {
-	if (!(symbol in verbs)) { verbs[symbol]=[null,null,null,null,null,null]; }
-	verbs[symbol][slot] = func;
-}
-var tracer = function(verb, a, v, b, env, r) { return r; }
-function setTrace(t) { tracer = t; }
-
+// js natives and k natives:
 var natives = {"log":0,"exp":0,"cos":0,"sin":0};
 function baseEnv() {
 	var env = new Environment(null);
@@ -931,6 +921,15 @@ function baseEnv() {
 	env.put("sin", true, k(13, am(function(x) { return k(0, Math.sin(n(x).v)) })));
 	return env;
 }
+var packimpl = parse("{+/y*|*\\1,|1_(#y)#x}")[0];
+
+// export the public interface:
+function setIO(symbol, slot, func) {
+	if (!(symbol in verbs)) { verbs[symbol]=[null,null,null,null,null,null]; }
+	verbs[symbol][slot] = func;
+}
+var tracer = function(verb, a, v, b, env, r) { return r; }
+function setTrace(t) { tracer = t; }
 
 this.version = "0.1";
 this.parse = parse;
