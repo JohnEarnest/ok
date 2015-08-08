@@ -238,17 +238,8 @@ function odometer(x) {
 	} return flip(r);
 }
 
-function unpack(x, y) {
-	var t=k(0,n(y).v); var p=cat(rev(scan(k(8, "*"), x)),k1);
-	var r=[]; for(var z=0;z<len(p);z++) {
-		var q=floor(divide(t, p.v[z])); if (z != 0) { r.push(q); }
-		t=floor(mod(p.v[z], t));
-	} return k(3,r);
-}
-
-function pack(x, y) {
-	if (x.t == 1) { return join(x, y); } return call(packimpl, k(3, [x, y]));
-}
+function unpack(x, y) { return call(unpackimpl, k(3, [x, y])); }
+function pack(x, y)   { if (x.t == 1) { return join(x, y); } return call(packimpl, k(3, [x, y])); }
 
 ////////////////////////////////////
 //
@@ -378,6 +369,10 @@ function applym(verb, x, env) {
 
 function applyd(verb, x, y, env) {
 	if (verb.t == 5) { return call(verb, k(3,[x,y]), env); }
+	if (verb.sticky && verb.sticky != verb) {
+		var s=verb.sticky; s.l=x; s.r=y; verb.sticky=null;
+		var r=run(verb, env); verb.sticky=s; s.r=null; s.l=null; return r;
+	}
 	return applyverb(verb, [x, y], env);
 }
 
@@ -443,7 +438,10 @@ function valence(node) {
 	if (node.t == 9)     { return 1; }
 	if (node.t != 8)     { return 0; }
 	if (node.forcemonad) { return 1; }
-	if (node.sticky)     { return 1; }
+	if (node.sticky)     {
+		if (node.sticky.t == 9)                      { return 1; }
+		if (node.sticky.forcemonad || node.sticky.l) { return 1; }
+	}
 	return 2;
 }
 
@@ -921,7 +919,8 @@ function baseEnv() {
 	env.put("sin", true, k(13, am(function(x) { return k(0, Math.sin(n(x).v)) })));
 	return env;
 }
-var packimpl = parse("{+/y*|*\\1,|1_(#y)#x}")[0];
+var packimpl   = parse("{+/y*|*\\1,|1_(#y)#x}")[0];
+var unpackimpl = parse("{(1_r,,y)-x*r:|y(_%)\\|x}")[0];
 
 // export the public interface:
 function setIO(symbol, slot, func) {
