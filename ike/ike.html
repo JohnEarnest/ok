@@ -176,6 +176,7 @@ var lx     = 0;
 var ux     = 0;
 var keys   = {};
 var frame  = 0;
+var click  = false;
 
 function saveBuffer() {
 	localStorage.setItem("ikebuffer", editor.value);
@@ -471,13 +472,18 @@ window.onkeydown = function(e) {
 	callk1("kd", e.keyCode);
 }
 canvas.onmousedown = function(e) {
+	click = true;
 	if(running) { callk2("md", Math.floor(e.offsetX/SCALE), Math.floor(e.offsetY/SCALE)); }
 }
 canvas.onmouseup = function(e) {
+	click = false;
 	if(running) { callk2("mu", Math.floor(e.offsetX/SCALE), Math.floor(e.offsetY/SCALE)); }
 }
 canvas.onmousemove = function(e) {
-	if(running) { callk2("mm", Math.floor(e.offsetX/SCALE), Math.floor(e.offsetY/SCALE)); }
+	if(!running) { return; }
+	callk2("mm", Math.floor(e.offsetX/SCALE), Math.floor(e.offsetY/SCALE));
+	if (!click) { return; }
+	callk2("mg", Math.floor(e.offsetX/SCALE), Math.floor(e.offsetY/SCALE));
 }
 var fullcanvas = document.getElementById("fullcanvas");
 fullcanvas.onmousedown = canvas.onmousedown;

@@ -44,6 +44,7 @@ For dynamic behavior, iKe will call a number of K functions (provided they have 
 - `md`: mouse down. provides mouse x and y in pixels as arguments.
 - `mu`: mouse up. provides mouse x and y in pixels as arguments.
 - `mm`: mouse moved. provides mouse x and y in pixels as arguments.
+- `mg`: mouse dragged. provides mouse x and y in pixels as arguments.
 
 Variables
 ---------
