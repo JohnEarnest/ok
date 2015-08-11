@@ -865,7 +865,7 @@ function parse(str) {
 ////////////////////////////////////
 
 function format(k, indent) {
-	if (k == null) { return ""; }
+	if (Number.isInteger(indent)) { indent = ""; } if (k == null) { return ""; }
 	function indented(k) { return format(k, indent+" "); };
 	if (k instanceof Array) { return k.map(format).join(";"); }
 	if (k.sticky) { var s=k.sticky; k.sticky=null; var r=format(k); k.sticky=s; return "("+r+")"; }
