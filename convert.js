@@ -28,7 +28,7 @@ function tok(v) {
 		var r = { t:4, k:{ t:3, v:[] }, v:{ t:3, v:[] }};
 		var k = Object.keys(v);
 		for(var z=0;z<k.length;z++) {
-			r.k.v.push( { t:2, v:"`"+k[z] } );
+			r.k.v.push( { t:2, v:k[z] } );
 			r.v.v.push( tok(v[k[z]]) );
 		}
 		return r;

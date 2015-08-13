@@ -221,9 +221,8 @@ function hideData() {
 }
 
 function num(v)       { return { t: 0, v: v }; }
-function sym(v)       { return { t: 2, v: v }; }
 function setvar(n, v) { env.put(n, true, v); }
-function getvar(k)    { if (k.t != 2) { return k; } return env.lookup(k.v.slice(1), true); }
+function getvar(k)    { if (k.t != 2) { return k; } return env.lookup(k.v, true); }
 
 function callk(n) {
 	try { return run(env.lookup(n, true).v, env); }

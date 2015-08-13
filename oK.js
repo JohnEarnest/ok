@@ -39,7 +39,7 @@ function md(x, y)        { if (y.t != 3) { y=take(k(0,len(x)),y); } return { t:4
 function kl(vl)          { return vl.length==1 ? vl[0] : k(3,vl); }
 function kb(x)           { return x ? k1 : k0; }
 function s(x)            { return x.t == 3 && x.v.every(function(c) { return c.t == 1; }); }
-function ks(x)           { return k(2, "`"+x); }
+function ks(x)           { return k(2, x); }
 function asVerb(x, y, z) { return { t:8, v:x, l:y, r:z }; }
 function kmod(x, y)      { return x-y*Math.floor(x/y); }
 function len(x)          { l(x); return x.v.length; }
@@ -114,16 +114,16 @@ function cat(x, y) {
 }
 
 function keval(x, env) {
-	return x.t == 4 ? c(x.v) : x.t == 2 ? env.lookup(x.v.slice(1), true) : run(parse(ktos(x)), env);
+	return x.t == 4 ? c(x.v) : x.t == 2 ? env.lookup(x.v, true) : run(parse(ktos(x)), env);
 }
 
 function dfmt(x, y) {
 	if (x.t == 2) {
 		if (y.t == 3) { return kmap(l(y), bind(dfmt,x)); }
-		if (x.v == "`b") { return k(0, y.v & 0x1); }
-		if (x.v == "`i") { return k(0, y.v | 0); }
-		if (x.v == "`f") { return k(0, y.v); }
-		if (x.v == "`c") { return k(1, y.v); }
+		if (x.v == "b") { return k(0, y.v & 0x1); }
+		if (x.v == "i") { return k(0, y.v | 0); }
+		if (x.v == "f") { return k(0, y.v); }
+		if (x.v == "c") { return k(1, y.v); }
 	}
 	if (x.t == 3 && y.t != 3) { return kmap(x, bind(r2(dfmt),y)); }
 	if (x.t == 3)             { return kzip(x, y, dfmt); }
@@ -497,7 +497,7 @@ function Environment(pred) {
 
 function atd(x, y, env) {
 	if (x.t == 13) { return x.v(y); }
-	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
+	if (x.t == 2) { x = env.lookup(x.v, true); }
 	if (x.t == 3) { return atl(x, y, env); }
 	if (x.t == 5) { return call(x, k(3,[y]), env); }
 	if (x.t == 8 || x.t == 9) { return applym(x, y, env); }
@@ -506,7 +506,7 @@ function atd(x, y, env) {
 
 function atl(x, y, env) {
 	if (x.t == 4) { return dget(x, y); }
-	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
+	if (x.t == 2) { x = env.lookup(x.v, true); }
 	if (y.t != 0 || y.v < 0 || y.v >= len(x) || y.v%1 != 0) { return NA; }
 	return x.v[y.v];
 }
@@ -520,7 +520,7 @@ function atdepth(x, y, i, env) {
 
 function call(x, y, env) {
 	if (x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : dget(x, y); }
-	if (x.t == 2) { x = env.lookup(x.v.slice(1), true); }
+	if (x.t == 2) { x = env.lookup(x.v, true); }
 	if (y.t == 0) { return atd(x, y, env); }
 	if (y.t == 3 && len(y) == 0) { return (x.t==5&&x.args.length==0) ? run(x.v, env) : x; }
 	if (x.t == 3 && y.t == 3) { return atdepth(x, y, 0, env); }
@@ -587,7 +587,7 @@ function dmend4(args, env) { return mend(args, env, dmend, dmend); }
 function mend(args, env, monadic, dyadic) {
 	if (args.length != 3 && args.length != 4) { throw new Error("valence error."); }
 	var ds = run(args[0], env);
-	var d = (ds.t == 2 ? env.lookup(ds.v.slice(1),true) : ds); d;
+	var d = (ds.t == 2 ? env.lookup(ds.v,true) : ds); d;
 	var i = run(args[1], env);
 	var y = args[3] ? run(args[3], env) : null;
 	var f = run(args[2], env);
@@ -763,7 +763,7 @@ function parseNoun() {
 		} return applyindexright(kl(r));
 	}
 	if (at(SYMBOL)) {
-		var r=[]; while(at(SYMBOL)) { r.push(k(2, expect(SYMBOL))); }
+		var r=[]; while(at(SYMBOL)) { r.push(k(2, expect(SYMBOL).slice(1))); }
 		return applyindexright(kl(r));
 	}
 	if (at(STRING)) {
@@ -874,7 +874,7 @@ function format(k, indent) {
 		""+(k.v % 1 === 0 ? k.v : Math.round(k.v * 10000) / 10000);
 	}
 	if (k.t == 1) { return '"'+(ktos(k, true))+'"'; }
-	if (k.t == 2) { return k.v; }
+	if (k.t == 2) { return "`"+k.v; }
 	if (k.t == 3) {
 		if (len(k) <  1) { return "()"; }
 		if (len(k) == 1) { return ","+format(k.v[0]); }
@@ -888,7 +888,7 @@ function format(k, indent) {
 	if (k.t == 4) {
 		if (len(k.k)<1 || k.k.v[0].t != 2)
 		{ var t=format(k.k); if (len(k.k)==1) { t="("+t+")"; } return t+"!"+format(k.v); }
-		return "["+kzip(k.k,k.v,function(x,y){return x.v.slice(1)+":"+format(y);}).v.join(";")+"]";
+		return "["+kzip(k.k,k.v,function(x,y){return x.v+":"+format(y);}).v.join(";")+"]";
 	}
 	if (k.t == 5) {
 		var r = ""; if (k.curry) {
