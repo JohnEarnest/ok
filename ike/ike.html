@@ -330,6 +330,7 @@ function loadresources(finished) {
 	for(var z=0; z<images.length; z++) {
 		var image = new Image();
 		image.onload = readimg.bind(null, image, images[z], finished);
+		image.crossOrigin = "anonymous";
 		image.src = images[z].url;
 	}
 	for(var z=0; z<images.length; z++) {
