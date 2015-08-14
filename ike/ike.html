@@ -140,30 +140,40 @@ button:focus {
 <script>
 
 // builtin palettes
-solarized = tok([
+var solarized = tok([
 	"#002b36","#073642","#586e75","#657b83","#839496","#93a1a1","#eee8d5","#fdf6e3",
 	"#b58900","#cb4b16","#dc322f","#d33682","#6c71c4","#268bd2","#2aa198","#859900",
 	"rgba(0,0,0,0)"
 ]);
-dawnbringer = tok([
+var dawnbringer = tok([
 	"#140c1c","#442434","#30346d","#4e4a4e","#854c30","#346524","#d04648","#757161",
 	"#597dce","#d27d2c","#8595a1","#6daa2c","#d2aa99","#6dc2ca","#dad45e","#deeed6",
 	"rgba(0,0,0,0)"
 ]);
-windows = tok([
+var windows = tok([
 	"#FFFFFF","#C0C0C0","#808080","#000000","#FF0000","#00FF00","#FFFF00","#0000FF",
 	"#FF00FF","#00FFFF","#800000","#008000","#808000","#000080","#800080","#008080",
 	"rgba(0,0,0,0)"
 ]);
-lcd = tok([
+var lcd = tok([
 	"#0F380F","#306230","#8BAC0F","#9BBC0F","rgba(0,0,0,0)"
 ]);
-cga = tok([
+var cga = tok([
 	"#000000","#FFFFFF","#00FFFF","#FF00FF","rgba(0,0,0,0)"
 ]);
-hot = tok([
+var hot = tok([
 	"#000000","#FFFFFF","#FF0000","#FFFF00","rgba(0,0,0,0)"
 ]);
+
+var images = [];
+var rgbaPalettes = {
+	solarized:   readpal(tojs(solarized)),
+	dawnbringer: readpal(tojs(dawnbringer)),
+	windows:     readpal(tojs(windows)),
+	lcd:         readpal(tojs(lcd)),
+	cga:         readpal(tojs(cga)),
+	hot:         readpal(tojs(hot)),
+};
 
 var PER_FRAME = 1000/30;
 var SCALE     = 2;
@@ -258,6 +268,76 @@ function setvars() {
 	setvar("keys", k(3, kv));
 }
 
+function parsedirectives(text) {
+	text = text.split("\n");
+	var format = /^\/i ([a-zA-Z]+);([a-zA-Z]+);([^\n]+)$/;
+	var ret = [];
+	for(var z=0; z<text.length; z++) {
+		var str = text[z].trim();
+		var found = format.exec(str);
+		if (!found) { continue; }
+		ret.push({name:found[1], pal:found[2], url:found[3]});
+	}
+	return ret;
+}
+
+function readpal(pal) {
+	var g = document.createElement("canvas").getContext("2d");
+	for(var z=0; z<pal.length; z++) { g.fillStyle = pal[z]; g.fillRect(z, 0, 1, 1); }
+	var d = g.getImageData(0, 0, pal.length, 1);
+	var r = []; for(var z=0; z<pal.length; z++) {
+		r.push([d.data[z*4  ], d.data[z*4+1], d.data[z*4+2], d.data[z*4+3]]);
+	}
+	return r;
+}
+
+function bestcolor(data, index, pal) {
+	var bi = 0;
+	var bd = Number.POSITIVE_INFINITY;
+	for(var z=0; z<pal.length; z++) {
+		var dr = pal[z][0]-data[index  ];
+		var dg = pal[z][1]-data[index+1];
+		var db = pal[z][2]-data[index+2];
+		var da = pal[z][3]-data[index+3];
+		var dist = (dr*dr)+(dg*dg)+(db*db)+(da*da);
+		if (dist < bd) { bd = dist; bi = z; }
+	}
+	return bi;
+}
+
+function readimg(i, record, finished) {
+	var g = document.createElement("canvas").getContext("2d");
+	g.drawImage(i, 0, 0);
+	var d = g.getImageData(0, 0, i.width, i.height);
+	var r = [];
+	for(var y=0; y<i.height; y++) {
+		var row = [];
+		for(var x=0; x<i.width; x++) {
+			var index = (x+(y*i.width))*4;
+			row.push(bestcolor(d.data, index, rgbaPalettes[record.pal]));
+		}
+		r.push(row);
+	}
+	record.data = tok(r);
+	setvar(record.name, record.data);
+
+	for(var z=0; z<images.length; z++) { if (!images[z].data) { return; } }
+	finished();
+}
+
+function loadresources(finished) {
+	images = parsedirectives(editor.value);
+	for(var z=0; z<images.length; z++) {
+		var image = new Image();
+		image.onload = readimg.bind(null, image, images[z], finished);
+		image.src = images[z].url;
+	}
+	for(var z=0; z<images.length; z++) {
+		if (images[z].complete) { images[z].onload(); } // image may be cached
+	}
+	if (images.length == 0) { finished(); }
+}
+
 function play() {
 	hideData();
 	var b = document.getElementById("playbutton");
@@ -265,25 +345,30 @@ function play() {
 	b.src = "img/stop.png";
 	b.title = "Stop";
 	b.onclick = stop;
-	var code = editor.value;
-	try {
-		env = baseEnv();
-		setvars();
-		var r = run(parse(code), env);
-		paintValue(r);
-		showStatus(format(r).replace(/\n/g,";"));
-
-		if (!("draw" in env.d)) { stop(); return; }
-		if (!running) {
-			setTimeout(paint, PER_FRAME);
-			setTimeout(update, PER_FRAME);
-			running = true;
+	env = baseEnv();
+	loadresources(function() {
+		var code = editor.value;
+		try {
+			setvars();
+			var r = run(parse(code), env);
+			paintValue(r);
+			showStatus(format(r).replace(/\n/g,";"));
+	
+			if (!("draw" in env.d)) { stop(); return; }
+			if (!running) {
+				setTimeout(paint, PER_FRAME);
+				setTimeout(update, PER_FRAME);
+				running = true;
+			}
 		}
-	}
-	catch(e) {
-		showError(e.message);
-		running = false;
-	}
+		catch(e) {
+			showError(e.message);
+			running = false;
+			if (canvas == document.getElementById("fullcanvas")) {
+				closefullscreen();
+			}
+		}
+	});
 }
 function stop() {
 	var b = document.getElementById("playbutton");
@@ -297,7 +382,6 @@ function fullscreen() {
 	SCALE = 3;
 	document.getElementById("fulldiv").style.display = "block";
 	play();
-	if (!running) { closefullscreen(); stop(); }
 }
 function closefullscreen() {
 	canvas = document.getElementById("canvas");

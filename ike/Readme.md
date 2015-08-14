@@ -78,3 +78,14 @@ iKe also provides a built-in 8x8 character set called `text`:
 The character set is aligned with 7-bit ASCII and control characters are replaced with some useful graphic characters including symbols and box drawing characters:
 
 ![font](https://raw.githubusercontent.com/JohnEarnest/ok/gh-pages/ike/img/font.png)
+
+External Resources
+------------------
+Sometimes you may wish to include large resources in a sketch without creating a bulky matrix literal. iKe has a facility for loading images from a specified URL. Create a comment at the beginning of a line which starts with "/i" to load an image. After "/i", specify the name you wish to give the image, a semicolon, the name of a built-in palette, a semicolon and then the URL where the image may be found.
+
+When your program is run, these special comments will be processed and the resources will be unpacked into K's environment. iKe makes a best-effort (least sum-of-squares per-channel difference) attempt at converting colors in the image into the specified palette when it is loaded.
+
+    /i blu;solarized;http://i.imgur.com/IVfDjMj.png
+    draw: ,(0 0;`solarized;`blu)
+
+Note that image loading _only_ works with built-in palettes- image loading happens before any of your K code has a chance to execute!
