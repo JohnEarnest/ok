@@ -58,6 +58,8 @@ iKe pre-defines and updates several K variables for your convenience:
 - `f`: counts up once for each drawn frame (read only)
 - `dir`: a 2d vector with the (x;y) offset of the cursor keys currently held (read only)
 - `keys`: a vector of the keycodes currently held (read only)
+- `mx`: the horizontal position of the mouse in pixels (read only)
+- `my`: the vertical position of the mouse in pixels (read only)
 
 iKe provides a number of pre-defined palettes. Since transparency is useful, the last color of each palette is fully transparent:
 

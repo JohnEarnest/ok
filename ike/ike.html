@@ -184,6 +184,8 @@ var canvas = document.getElementById("canvas");
 var env    = baseEnv();
 var lx     = 0;
 var ux     = 0;
+var mx     = 0;
+var my     = 0;
 var keys   = {};
 var frame  = 0;
 var click  = false;
@@ -254,6 +256,8 @@ function setvars() {
 	setvar("w"  , num(160));
 	setvar("h"  , num(160));
 	setvar("f"  , num(frame));
+	setvar("mx" , num(mx));
+	setvar("my" , num(my));
 	setvar("windows",     windows);
 	setvar("solarized",   solarized);
 	setvar("dawnbringer", dawnbringer);
@@ -572,9 +576,11 @@ canvas.onmouseup = function(e) {
 }
 canvas.onmousemove = function(e) {
 	if(!running) { return; }
-	callk2("mm", Math.floor(e.offsetX/SCALE), Math.floor(e.offsetY/SCALE));
+	mx = Math.floor(e.offsetX/SCALE)
+	my = Math.floor(e.offsetY/SCALE)
+	callk2("mm", mx, my);
 	if (!click) { return; }
-	callk2("mg", Math.floor(e.offsetX/SCALE), Math.floor(e.offsetY/SCALE));
+	callk2("mg", mx, my);
 }
 var fullcanvas = document.getElementById("fullcanvas");
 fullcanvas.onmousedown = canvas.onmousedown;
