@@ -634,7 +634,7 @@ function query(t, c, a, b, env) {
 var NUMBER  = /^((-?0w)|(0N)|(-?\d*\.?\d+))/;
 var BOOL    = /^[01]+b/;
 var NAME    = /^([A-Za-z][A-Za-z0-9]*)/;
-var SYMBOL  = /^(`[A-Za-z]*)/;
+var SYMBOL  = /^(`[A-Za-z]+[A-Za-z0-9]*|`)/;
 var STRING  = /^"((\\n)|(\\t)|(\\")|(\\\\)|[^"])*"/;
 var VERB    = /^(\+|-|\*|%|!|&|\||<|>|=|~|,|\^|#|_|\$|\?|@|\.)/;
 var ASSIGN  = /^(\+|-|\*|%|!|&|\||<|>|=|~|,|\^|#|_|\$|\?|@|\.):/;
