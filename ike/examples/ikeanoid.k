@@ -17,4 +17,4 @@ cb:: |/0 0,cc@&ba&co                         / ball collides with bricks
 ts:: _((p@0)-mx)%10                          / topspin
 
 tick: {p+::v; v*::1 -1@cw|cb|cp; v+::|cp*ts; ba*::~co}
-draw: {((bp@&ba;`cga;`br);((mx-32;150);`cga;`pl);(p-3 3;`cga;`bl))}
+draw: {((p-3 3;`cga;`bl);(bp@&ba;`cga;`br);((mx-32;150);`cga;`pl))}
