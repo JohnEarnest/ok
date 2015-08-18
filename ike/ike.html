@@ -435,7 +435,7 @@ function update() {
 function paint() {
 	frame++;
 	if ("draw" in env.d && env.d["draw"].t != 5) {
-		paintValue(env.d["draw"]);
+		paintValue(env.lookup("draw", true));
 	}
 	else {
 		paintValue(callk("draw"));
