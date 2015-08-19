@@ -528,7 +528,7 @@ editor.onkeydown = function(event) {
 		}
 		return false;
 	}
-	if (event.keyCode == 67 && event.ctrlKey) {
+	if (event.keyCode == 27) { // escape
 		stop();
 		return false;
 	}
@@ -553,6 +553,9 @@ window.onkeyup = function(e) {
 window.onkeydown = function(e) {
 	keys[e.keyCode] = true;
 	if(!running) { return; }
+	if (e.keyCode == 27 && canvas == document.getElementById("fullcanvas")) { // escape
+		closefullscreen(); return;
+	}
 	if (e.keyCode == 37) { lx = -1; callk1("lx",-1); }
 	if (e.keyCode == 39) { lx =  1; callk1("lx",1); }
 	if (e.keyCode == 38) { ux = -1; callk1("ux",-1); }
