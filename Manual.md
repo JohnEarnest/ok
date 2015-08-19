@@ -340,6 +340,14 @@ As a general note, verbs which operate on numbers will coerce characters to thei
   1 2)
  (3 1
   2 3))</code></pre>
+
+		If the leading or trailing element of the rank vector is <tt>0N</tt>, reshape treats that dimension as maximal:<br>
+<pre><code>  0N 3#!6
+(0 1 2
+ 3 4 5)
+  2 0N#!8
+(0 1 2 3
+ 4 5 6 7)</code></pre>
 	</td>
 </tr>
 <tr>

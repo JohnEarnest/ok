@@ -150,6 +150,24 @@ function take(x, y) {
 }
 
 function reshape(x, y) {
+	if (na(first(x))) { // with a leading 0N, group from innermost to outermost
+		for(var z=len(x)-1;z>0;z--) {
+			var w=[]; for(var a=0; a<len(y); a += x.v[z].v) {
+				var t=[]; w.push(k(3, t));
+				for(var b=0; b<x.v[z].v && a+b<len(y); b++) { t.push(y.v[a+b]); }
+			} y.v = w;
+		} return y;
+	}
+	else if (na(first(rev(x)))) { // with a trailing 0N, act like normal but don't repeat elements.
+		var p=1; for(var z=0;z<len(x)-1;z++) { p*=x.v[z].v; }
+		x.v[len(x)-1].v = Math.floor(len(y)/p);
+		if (y.t != 3) { y = enlist(y); } var count = 0; var rshr = function(x, y, index) {
+			if (count + x.v[index].v + 1 == len(y)) { x.v[index].v++; }
+			var r=[]; for(var z=0; z<x.v[index].v && count<len(y); z++) {
+				r.push(index==len(x)-1 ? y.v[count++] : rshr(x, y, index+1));
+			} return k(3, r);
+		}; return rshr(x, y, 0);
+	}
 	if (y.t != 3) { y = enlist(y); } var count = 0; function rshr(x, y, index) {
 		return krange(x.v[index].v, function(z) {
 			return index==len(x)-1 ? y.v[kmod(count++, len(y))] : rshr(x, y, index+1);
@@ -634,7 +652,7 @@ function query(t, c, a, b, env) {
 var NUMBER  = /^((-?0w)|(0N)|(-?\d*\.?\d+))/;
 var BOOL    = /^[01]+b/;
 var NAME    = /^([A-Za-z][A-Za-z0-9]*)/;
-var SYMBOL  = /^(`[A-Za-z]+[A-Za-z0-9]*|`)/;
+var SYMBOL  = /^(`[A-Za-z][A-Za-z0-9]*|`)/;
 var STRING  = /^"((\\n)|(\\t)|(\\")|(\\\\)|[^"])*"/;
 var VERB    = /^(\+|-|\*|%|!|&|\||<|>|=|~|,|\^|#|_|\$|\?|@|\.)/;
 var ASSIGN  = /^(\+|-|\*|%|!|&|\||<|>|=|~|,|\^|#|_|\$|\?|@|\.):/;
