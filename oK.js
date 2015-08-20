@@ -151,7 +151,7 @@ function take(x, y) {
 
 function reshape(x, y) {
 	if (na(first(x))) { // with a leading 0N, group from innermost to outermost
-		for(var z=len(x)-1;z>0;z--) {
+		y = c(y); for(var z=len(x)-1;z>0;z--) {
 			var w=[]; for(var a=0; a<len(y); a += x.v[z].v) {
 				var t=[]; w.push(k(3, t));
 				for(var b=0; b<x.v[z].v && a+b<len(y); b++) { t.push(y.v[a+b]); }
@@ -160,7 +160,7 @@ function reshape(x, y) {
 	}
 	else if (na(first(rev(x)))) { // with a trailing 0N, act like normal but don't repeat elements.
 		var p=1; for(var z=0;z<len(x)-1;z++) { p*=x.v[z].v; }
-		x.v[len(x)-1].v = Math.floor(len(y)/p);
+		x = c(x); x.v[len(x)-1].v = Math.floor(len(y)/p);
 		if (y.t != 3) { y = enlist(y); } var count = 0; var rshr = function(x, y, index) {
 			if (count + x.v[index].v + 1 == len(y)) { x.v[index].v++; }
 			var r=[]; for(var z=0; z<x.v[index].v && count<len(y); z++) {
