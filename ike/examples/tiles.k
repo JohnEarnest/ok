@@ -14,6 +14,6 @@ grid: {x,|x}'{x,|x} grid
 back: 2*,/'+,/'+(text@3 2)@grid
 guy:  2*text@6
 
-pos:  1 1
-tick: {pos+:dir*grid.|pos+dir}
-draw: {((0 0;`solarized;`back);(8*pos;`hot;`guy))}
+pos:   1 1
+tick:  {pos+:dir*grid.|pos+dir}
+draw:: ((0 0;solarized;back);(8*pos;hot;guy))

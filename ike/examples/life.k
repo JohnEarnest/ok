@@ -15,5 +15,5 @@ tiles: ( 8 8#0
          1 1 2 2 2 2 2 3
          0 1 1 1 1 1 1 0))
 
-tick: {grid::next grid}
-draw: {,(0 0;`lcd;,/'+,/'+tiles@grid)}
+tick:  {grid::next grid}
+draw:: ,(0 0;lcd;,/'+,/'+tiles@grid)
