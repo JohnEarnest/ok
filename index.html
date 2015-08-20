@@ -356,10 +356,16 @@ function printRepl(x) {
 }
 
 function print(x, y) {
-	// for now, ignore the left output symbol.
-	if (typeof tojs(y) == 'string') { printRepl(escapeHTML(tojs(y))); }
-	else { printRepl(format(y)); }
-	return y;
+	// todo: use x to select a file descriptor
+	try {
+		var t = tojs(y);
+		if (typeof t == "string") { printRepl(escapeHTML(t)); return y; }
+		if (Array.isArray(t) && t.every(function(v) { return typeof v == "string"; })) {
+			t.map(function(v) { printRepl(escapeHTML(v)); }); return y;
+		}
+	}
+	catch(e) {}
+	throw new Error("0: can only display strings or lists of strings.");
 }
 
 function readAjax(x) {

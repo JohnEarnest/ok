@@ -28,9 +28,15 @@ function read(x) {
 }
 function write(x, y) {
 	// todo: use x to select a file descriptor
-	if (typeof conv.tojs(y) == 'string') { process.stdout.write(conv.tojs(y)); }
-	else { process.stdout.write(format(y)); }
-	return y;
+	try {
+		var t = conv.tojs(y);
+		if (typeof t == "string") { process.stdout.write(t); return y; }
+		if (Array.isArray(t) && t.every(function(v) { return typeof v == "string"; })) {
+			t.map(function(v) { process.stdout.write(v+"\n"); }); return y;
+		}
+	}
+	catch(e) {}
+	throw new Error("0: can only display strings or lists of strings.");
 }
 ok.setIO("0:", 2, write);
 ok.setIO("0:", 4, write);
