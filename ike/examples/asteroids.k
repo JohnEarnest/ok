@@ -2,7 +2,7 @@
 wh:(w;h);C:wh%2 / dimensions and centre of universe
 trg:(cos;sin)@\:;sq:{x*x} / helper functions
 Sp:C;Sv:0 0;Sh:0 / spaceship's position, velocity, and heading
-An:1;As:An#1;Av:+trg.0628*An?100 / asteroids: number, sizes, velocities
+An:3;As:An#3;Av:+trg.0628*An?100 / asteroids: number, sizes, velocities
 Ap:C+/:(&/C)*+trg.0628*An?100 / asteroid positions
 Bp:Bv:Bt:() / bullets' positions, velocities, times left (in ticks)
 Br:0 / time until spaceship can fire again (in ticks)
