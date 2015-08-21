@@ -614,7 +614,8 @@ function mend(args, env, monadic, dyadic) {
 }
 
 function amendm(d, i, y, monad, env) {
-	if (monad.t == 0) { monad = { t:5, args:["x"], v:[{ t:0, v:monad.v }] }; }
+	if (monad.t == 3) { monad = { t:5,args:["x"],v:[{t:8,v:'@',l:{t:3,v:monad.v},r:{t:7,v:'x'}}]}; }
+	if (monad.t == 0) { monad = { t:5,args:["x"],v:[{ t:0, v:monad.v }] }; }
 	if (i.t != 3) { d.v[i.v] = applym(monad, atl(d, i, env), env); return; }
 	kmap(i, function(v) { amendm(d, v, y, monad, env); });
 }
