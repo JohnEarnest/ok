@@ -43,4 +43,4 @@ function write(x, y) {
 ok.setIO('0:', 2, write);
 ok.setIO('0:', 4, write);
 ok.setIO('0:', 0, read);
-rl.setPrompt('  '); rl.prompt();
+rl.setPrompt(' '); rl.prompt();
