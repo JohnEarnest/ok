@@ -1,61 +1,46 @@
-"use strict";
+#!/usr/bin/env node
+var ok = require('./oK'); process.stdout.write('oK v' + ok.version + '\n');
+var fs = require('fs');
+var readline = require('readline');
+var conv = require('./convert');
 
-////////////////////////////////////
-//
-//   A basic REPL wrapper for oK.
-//
-////////////////////////////////////
-
-var ok = require("./oK");
-var conv = require("./convert");
-var fs = require("fs");
-var fd = process.stdin.fd;
-var usingDevice = false;
-
-function readchar() {
-	var buff = new Buffer(1);
-	fs.readSync(fd, buff, 0, 1);
-	return String.fromCharCode(buff[0]);
-}
-function readline() {
-	try { fd = fs.openSync('/dev/stdin', 'rs'); usingDevice = true; } catch (e) {}
-	var r=""; while(true) { var c = readchar(); if (c == "\n") { break; } r += c; }
-	if (usingDevice) { fs.closeSync(fd); } return r;
-}
+var env = ok.baseEnv();
+var rl = readline.createInterface({
+	input:  process.stdin,
+	output: process.stdout,
+	completer: function (line) {
+		var m = /[a-z][a-z\d]*$/i.exec(line);
+		var prefix = m ? m[0] : '';
+		var names = [];
+		for (var e = env; e; e = e.p) { // iterate over ancestor environments
+			for (var name in e.d) {
+				if (name.slice(0, prefix.length) === prefix && names.indexOf(name) < 0) {
+					names.push(name);
+				}
+			}
+		}
+		return [names, prefix];
+	}
+});
+rl.on('line', function (line) {
+	if (line === '\\\\') { process.exit(0); }
+	try {
+		line.trim() && process.stdout.write(ok.format(ok.run(ok.parse(line), env)) + '\n');
+	} catch (err) {
+		process.stdout.write(err.message + '\n');
+	}
+	rl.prompt();
+});
+rl.on('close', function () { process.stdout.write('\n'); process.exit(0); });
 function read(x) {
-	// todo: use x to select a file descriptor
-	return ok.parse('"'+readline()+'"')[0];
+	// todo
+	return conv.tok('');
 }
 function write(x, y) {
-	// todo: use x to select a file descriptor
-	try {
-		var t = conv.tojs(y);
-		if (typeof t == "string") { process.stdout.write(t); return y; }
-		if (Array.isArray(t) && t.every(function(v) { return typeof v == "string"; })) {
-			t.map(function(v) { process.stdout.write(v+"\n"); }); return y;
-		}
-	}
-	catch(e) {}
-	throw new Error("0: can only display strings or lists of strings.");
+	// todo
+	return y;
 }
-ok.setIO("0:", 2, write);
-ok.setIO("0:", 4, write);
-ok.setIO("0:", 0, read);
-
-if (process.argv.length == 3) {
-	var program = fs.readFileSync(process.argv[2], { encoding:'utf8' });
-	process.stdout.write(ok.format(ok.run(ok.parse(program), ok.baseEnv())));
-	process.stdout.write("\n");
-	process.exit(0);
-}
-
-process.stdout.write("oK v"+ok.version+"\n\n");
-var env = ok.baseEnv();
-while(true) {
-	process.stdout.write("  ");
-	var input = readline();
-	if (input == "\\\\") { break; }
-	if (input.trim() == "") { continue; }
-	try { process.stdout.write(ok.format(ok.run(ok.parse(input), env)) + "\n"); }
-	catch(err) { process.stdout.write(err.message + "\n"); }
-}
+ok.setIO('0:', 2, write);
+ok.setIO('0:', 4, write);
+ok.setIO('0:', 0, read);
+rl.setPrompt('  '); rl.prompt();
