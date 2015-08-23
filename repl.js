@@ -43,11 +43,15 @@ function read(x) {
 	return conv.tok(fs.statSync(f).isDirectory() ? fs.readdirSync(f) : fs.readFileSync(f, 'utf8').split(/\r?\n/));
 }
 function write(x, y) {
-	var f = path.resolve(process.cwd(), str(x));
 	var s = y.t === 2 ? y.v : conv.tojs(y);
 	if (Array.isArray(s)) { s = s.map(str).join('\n') + '\n'; }
-	if (typeof s !== 'string') { throw Error("ERROR: type"); }
-	fs.writeFileSync(f, s);
+	if (typeof s !== 'string') { throw Error('ERROR: type'); }
+	var f = str(x);
+	if (f) {
+		fs.writeFileSync(path.resolve(process.cwd(), f), s);
+	} else {
+		fs.writeSync(process.stdout.fd, s);
+	}
 	return x;
 }
 for (var i = 0; i < 2; i++) { ok.setIO('0:', i, read ); }
