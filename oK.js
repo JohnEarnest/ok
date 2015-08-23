@@ -856,13 +856,13 @@ function parseEx(node) {
 	if (node == null) { return null; }
 	if (at(ADVERB)) { return parseAdverb(null, node); }
 	if (node.t == 8 && !node.r) { node.r = parseEx(parseNoun()); node.sticky = null; }
-	if (atNoun()) {
+	if (atNoun() && !at(IOVERB)) {
 		var x = parseNoun();
 		if (at(ADVERB)) { return parseAdverb(node, x); }
 		if (node.t in {3:0,5:0,7:0,8:0}) { return asVerb("@", node, parseEx(x)); }
 		x.l = node; x.r = parseEx(parseNoun()); node = x;
 	}
-	if (at(VERB)) {
+	if (at(VERB) || at(IOVERB)) {
 		var x = parseNoun();
 		if (node.v in natives) { return asVerb("@", node, parseEx(x)); }
 		if (x.forcemonad) { node.r = parseEx(x); return node; }
