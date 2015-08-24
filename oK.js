@@ -791,10 +791,10 @@ function parseNoun() {
 		return applyindexright(stok(str));
 	}
 	if (matches(OPEN_B)) {
-		var m=md(k(3,[]), k(3,[])); do {
+		var m=md(k(3,[]), k(3,[])); if (!matches(CLOSE_B)) { do {
 			var key = ks(expect(NAME)); expect(COLON);
 			dset(m, key, matches(COLON) ? dget(m, ks(expect(NAME))) : parseEx(parseNoun()));
-		} while(matches(SEMI)); expect(CLOSE_B); return m;
+		} while(matches(SEMI)); expect(CLOSE_B); } return applyindexright(m);
 	}
 	if (matches(OPEN_C)) {
 		var args=[]; if (matches(OPEN_B)) {
@@ -859,8 +859,7 @@ function parseEx(node) {
 	if (atNoun()) {
 		var x = parseNoun();
 		if (at(ADVERB)) { return parseAdverb(node, x); }
-		if (node.t in {3:0,5:0,7:0,8:0}) { return asVerb("@", node, parseEx(x)); }
-		x.l = node; x.r = parseEx(parseNoun()); node = x;
+		return asVerb("@", node, parseEx(x));
 	}
 	if (at(VERB)) {
 		var x = parseNoun();
