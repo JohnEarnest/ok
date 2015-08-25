@@ -42,7 +42,7 @@ oK provides several numbered IO verbs:
 		 0 7 14 21 28 35 42 49 56 63
 		 0 8 16 24 32 40 48 56 64 72
 		 0 9 18 27 36 45 54 63 72 81)
-In the command-line REPL `0:` reads a file as text.  The right argument can be a symbol or a string specifying the file path.  If the path is to a directory, `0:` returns its listing.
+In the command-line REPL `0:` reads a file as text. The right argument can be a symbol or a string specifying the file path. If the path is to a directory, `0:` returns its listing. If the path is empty and oK is not running interactively, `0:` tries to read text from `stdin` until it encounters a `'\n'`.
 
 - monadic `1:` works just like monadic 0: except it expects the response to be JSON rather than arbitrary text, and it attempts to parse it into a K data structure you can then manipulate:
 
