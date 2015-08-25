@@ -93,7 +93,7 @@ function equal (x, y) { return kb(x.v == y.v); }
 function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
 function ident    (x) { return x; }
 function negate   (x) { return k(0, -n(x).v); }
-function first    (x) { return (x.t == 4) ? first(x.v) : (x.t != 3) ? x : len(x) ? x.v[0] : NIL; }
+function first    (x) { return (x.t == 4) ? first(x.v) : (x.t != 3) ? x : len(x) ? x.v[0]:k(3,[]); }
 function sqrt     (x) { return k(0, Math.sqrt(n(x).v)); }
 function keys     (x) { return c(d(x).k); }
 function rev      (x) { return x.t==4?md(rev(x.k),rev(x.v)):x.t==3?k(3,c(l(x)).v.reverse()):x; }
@@ -243,7 +243,7 @@ function bin(x, y) {
 }
 
 function split(x, y) {
-	var r=[k(3,[])]; for(var z=0;z<len(y);z++) {
+	if (x.t != 1) { return unpack(x, y); } var r=[k(3,[])]; for(var z=0;z<len(y);z++) {
 		if (match(x, y.v[z]).v) { r.push(k(3,[])); } else { r[r.length-1].v.push(y.v[z]); }
 	} return k(3,r);
 }
