@@ -1,10 +1,44 @@
 #!/usr/bin/env node
-var ok = require('./oK'); process.stdout.write('oK v' + ok.version + '\n');
+var ok = require('./oK');
 var fs = require('fs');
 var path = require('path');
 var readline = require('readline');
 var conv = require('./convert');
 
+// register I/O hooks
+function str(x) { // convert a k string or symbol to a js string
+	var s = x.t === 2 ? x.v : conv.tojs(x);
+	if (typeof s !== 'string') { throw Error('ERROR: type'); }
+	return s;
+}
+function read(x) {
+	var f = path.resolve(process.cwd(), str(x));
+	return conv.tok(fs.statSync(f).isDirectory() ? fs.readdirSync(f) : fs.readFileSync(f, 'utf8').split(/\r?\n/));
+}
+function write(x, y) {
+	var s = y.t === 2 ? y.v : conv.tojs(y);
+	if (Array.isArray(s)) { s = s.map(str).join('\n') + '\n'; }
+	if (typeof s !== 'string') { throw Error('ERROR: type'); }
+	var f = str(x);
+	if (f) {
+		fs.writeFileSync(path.resolve(process.cwd(), f), s);
+	} else {
+		fs.writeSync(process.stdout.fd, s);
+	}
+	return x;
+}
+for (var i = 0; i < 2; i++) { ok.setIO('0:', i, read ); }
+for (var i = 2; i < 6; i++) { ok.setIO('0:', i, write); }
+
+// process filename.k as a command-line arg
+if (process.argv.length === 3) {
+	var program = fs.readFileSync(process.argv[2], 'utf8');
+	process.stdout.write(ok.format(ok.run(ok.parse(program), ok.baseEnv())) + '\n');
+	process.exit(0);
+}
+
+// actual REPL
+process.stdout.write('oK v' + ok.version + '\n');
 var env = ok.baseEnv();
 var rl = readline.createInterface({
 	input:  process.stdin,
@@ -33,27 +67,4 @@ rl.on('line', function (line) {
 	rl.prompt();
 });
 rl.on('close', function () { process.stdout.write('\n'); process.exit(0); });
-function str(x) { // convert a k string or symbol to a js string
-	var s = x.t === 2 ? x.v : conv.tojs(x);
-	if (typeof s !== 'string') { throw Error("ERROR: type"); }
-	return s;
-}
-function read(x) {
-	var f = path.resolve(process.cwd(), str(x));
-	return conv.tok(fs.statSync(f).isDirectory() ? fs.readdirSync(f) : fs.readFileSync(f, 'utf8').split(/\r?\n/));
-}
-function write(x, y) {
-	var s = y.t === 2 ? y.v : conv.tojs(y);
-	if (Array.isArray(s)) { s = s.map(str).join('\n') + '\n'; }
-	if (typeof s !== 'string') { throw Error('ERROR: type'); }
-	var f = str(x);
-	if (f) {
-		fs.writeFileSync(path.resolve(process.cwd(), f), s);
-	} else {
-		fs.writeSync(process.stdout.fd, s);
-	}
-	return x;
-}
-for (var i = 0; i < 2; i++) { ok.setIO('0:', i, read ); }
-for (var i = 2; i < 6; i++) { ok.setIO('0:', i, write); }
 rl.setPrompt(' '); rl.prompt();
