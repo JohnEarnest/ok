@@ -23,8 +23,8 @@ The easiest way to run oK is using the [Browser-based REPL](http://johnearnest.g
 
 oK provides several numbered IO verbs:
 
-- dyadic `0:` takes a symbol as its left argument and writes the right argument to that destination as text. Currently the symbol is ignored and output is always sent to the console. Use the empty symbol as a left argument.
-- monadic `0:` takes a string as its right argument and performs a synchronous HTTP request to that URL. The result will be a tuple containing the HTTP status code followed by the response, if any. You can use this in conjunction with pastebins to load code from elsewhere or access RESTful web APIs. Note that most web browsers restrict cross-site HTTP requests from javascript under the [same-origin policy](http://en.wikipedia.org/wiki/Same-origin_policy)- you'll need a server which responds with an Access-Control-Allow-Origin header. GitHub gists will do:
+- dyadic `0:` takes a symbol or string as its left argument and writes the right argument to that destination as text. The right argument can be a symbol, a string, or a list of symbols or strings. In the browser-based REPL the symbol is ignored and output is always sent to the console. In the command-line REPL output is sent to a file as specified by the left argument, or to `stdout` if the left argument is empty.
+- monadic `0:` reads the content of a file or a URL. In the browser-based REPL it takes a string as its right argument and performs a synchronous HTTP request to that URL. The result will be a tuple containing the HTTP status code followed by the response, if any. You can use this in conjunction with pastebins to load code from elsewhere or access RESTful web APIs. Note that most web browsers restrict cross-site HTTP requests from javascript under the [same-origin policy](http://en.wikipedia.org/wiki/Same-origin_policy)- you'll need a server which responds with an Access-Control-Allow-Origin header. GitHub gists will do:
 
 		  url: "https://gist.githubusercontent.com/anonymous/cc0ef05c00940044eb0a/raw/"
 		"https://gist.githubusercontent.com/anonymous/cc0ef05c00940044eb0a/raw/"
@@ -42,6 +42,7 @@ oK provides several numbered IO verbs:
 		 0 7 14 21 28 35 42 49 56 63
 		 0 8 16 24 32 40 48 56 64 72
 		 0 9 18 27 36 45 54 63 72 81)
+In the command-line REPL `0:` reads a file as text.  The right argument can be a symbol or a string specifying the file path.  If the path is to a directory, `0:` returns its listing.
 
 - monadic `1:` works just like monadic 0: except it expects the response to be JSON rather than arbitrary text, and it attempts to parse it into a K data structure you can then manipulate:
 
@@ -85,7 +86,7 @@ You can also try out oK from the included REPL. Note that at the time of writing
 	  "t"=a
 	0 0 0 0 0 1 0 0 1
 
-This REPL is very simplistic compared to the CLI provided in a complete K interpreter and lacks interactive debugging facilities. When you're done, type `\\` to exit. If you supply a filename as an argument to the REPL, it will instead execute that file:
+This REPL is very simplistic compared to the CLI provided in a complete K interpreter and lacks interactive debugging facilities. When you're done, type `\\` or press Ctrl+D to exit. If you supply a filename as an argument to the REPL, it will instead execute that file:
 
 	je@indigo$ node repl.js examples/hangman.k
 	_____ > p
