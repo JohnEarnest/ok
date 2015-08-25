@@ -466,7 +466,7 @@ function valence(node) {
 var adverbs = {
 	//       mv          dv          l-mv         l-dv
 	"':"  : [null,       eachprior,  null,        eachpc   ],
-	"'"   : [each,       eachd,      null,        eachd    ],
+	"'"   : [each,       eachd,      eachd,       eachd    ],
 	"/:"  : [null,       null,       eachright,   eachright],
 	"\\:" : [null,       null,       eachleft,    eachleft ],
 	"/"   : [fixed,      over,       fixedwhile,  overd    ],
