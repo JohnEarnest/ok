@@ -293,7 +293,7 @@ test(".[(1 2 3;4 5 6);(;0);(0,)]"     , "((0 1\n  2\n  3)\n (0 4\n  5\n  6))" );
 fail("a:1 2 3;a[1.4]:5;a"             , "positive int expected."              );
 test("$!5"                            , '(,"0"\n ,"1"\n ,"2"\n ,"3"\n ,"4")'  );
 test('"&"\\"foo=42&bar=69"'           , '("foo=42"\n "bar=69")'               );
-test("1\\3 1 2 2 4 1 5 1"             , "(,3\n 2 2 4\n ,5\n ())"              ); // *
+fail("1\\3 1 2 2 4 1 5 1"             , "list expected, found number."        );
 test("0 2 4 6 8 10'5"                 , "2"                                   );
 test("0 2 4 6 8 10'-10 0 4 5 6 20"    , "-1 0 2 2 3 5"                        );
 test("1 2 3 3 4'2 3"                  , "1 3"                                 );
@@ -384,7 +384,7 @@ test("(1+) 4"                         , "5"                                   );
 test("f:1+;f 4"                       , "5"                                   );
 test("a:2;f:a+;f 7"                   , "9"                                   );
 test("f:(1+2)+;f 3"                   , "6"                                   );
-test("*()"                            , "`"                                   ); // *
+test("*()"                            , "()"                                  );
 test('|"a"'                           , '"a"'                                 );
 test("|2"                             , "2"                                   );
 test("{5+2}.()"                       , "7"                                   ); // *
@@ -407,14 +407,14 @@ test("a:[foo:23];a[`foo]"             , "23"                                  );
 test("a:(3;(4 5));a.(1 0)"            , "4"                                   ); // *
 test("a:[foo:[bar:5]];a.(`foo `bar)"  , "5"                                   ); // *
 test("a:[foo:[bar:5]];a[`foo;`bar]"   , "5"                                   );
-test("a:[f:[m:5;p:9]];a[`f;`m `p]"    , "5 9"                                 ); // !
+test("a:[f:[m:5;p:9]];a[`f;`m`p]"     , "5 9"                                 );
 test("a:[f:33];a[`g]:99"              , "[f:33;g:99]"                         );
 test("a:[f:33];a[`f]+:4"              , "[f:37]"                              );
 test("7 15,'4"                        , "(7 4\n 15 4)"                        );
 test("V:!3;D:{x+y};V D/:\\:V"         , "(0 1 2\n 1 2 3\n 2 3 4)"             );
 test("{t:1; 3 6 9 t}"                 , "{t:1;3 6 9@t}"                       );
-test("{(x*2; 1+3*x)(x!2)}"            , "{[x](x*2;1+3*x)@x!2}"                );
-test("{(x*2; 1+3*x)x!2}"              , "{[x](x*2;1+3*x)@x!2}"                );
+test("{(x*2; 1+3*x)(2!x)}"            , "{[x](x*2;1+3*x)@2!x}"                );
+test("{(x*2; 1+3*x)2!x}"              , "{[x](x*2;1+3*x)@2!x}"                );
 test("{(x*2; 1+3*x)2!x}5"             , "16"                                  );
 test("6 8 20(0)"                      , "6"                                   );
 test('"123"-"0"'                      , "1 2 3"                               );
@@ -590,6 +590,16 @@ test("@[2 4 2;1;2*!10]"               , "2 8 2"                               );
 test("@[2 4 2;2;2*!10]"               , "2 4 4"                               );
 
 test("{a[0 1;0 1]:5}"                 , "{a:.[a;(0 1\n 0 1);{[x;y]y};5]}"     );
+test("[]"                             , "()!()"                               );
+test("[a:0][`a]"                      , "0"                                   );
+test("{`a 0}"                         , "{`a@0}"                              );
+test('{"a"0}'                         , '{"a"@0}'                             );
+test("[a:0]`a"                        , "0"                                   );
+fail("`a 0"                           , "the name 'a' has not been defined."  );
+fail('"a"0'                           , "dictionary expected, found char."    );
+
+test('{""   0: "bb"}'                 , '{()0:"bb"}'                          );
+test('{"aa" 0: "bb"}'                 , '{"aa"0:"bb"}'                        );
 
 //test("a:3 3#0;a[0 1;0 1]:5;a"         , "(5 5 0\n 5 5 0\n 0 0 0)"             );
 //test("a:3 3#0;a[0 1;0 1]:2 2#!4"      , "(0 1 0\n 2 3 0\n 0 0 0)"             );
@@ -601,6 +611,9 @@ test("{a[0 1;0 1]:5}"                 , "{a:.[a;(0 1\n 0 1);{[x;y]y};5]}"     );
 //files();
 
 // NOTES/TODO:
+
+// global assignment doesn't appear to permit compound assignment, as in {c+::5}.
+// k5 doesn't appear to permit spaces in symbol-list literals.
 
 // [a:4]>/:1 4 6 prints in k5 as +[a:100b]
 // (+[a:4 3;b:3 4])@1   ~   [a:3;b:4]

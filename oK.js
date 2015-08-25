@@ -93,7 +93,7 @@ function equal (x, y) { return kb(x.v == y.v); }
 function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
 function ident    (x) { return x; }
 function negate   (x) { return k(0, -n(x).v); }
-function first    (x) { return (x.t == 4) ? first(x.v) : (x.t != 3) ? x : len(x) ? x.v[0] : NIL; }
+function first    (x) { return (x.t == 4) ? first(x.v) : (x.t != 3) ? x : len(x) ? x.v[0]:k(3,[]); }
 function sqrt     (x) { return k(0, Math.sqrt(n(x).v)); }
 function keys     (x) { return c(d(x).k); }
 function rev      (x) { return x.t==4?md(rev(x.k),rev(x.v)):x.t==3?k(3,c(l(x)).v.reverse()):x; }
@@ -243,7 +243,7 @@ function bin(x, y) {
 }
 
 function split(x, y) {
-	var r=[k(3,[])]; for(var z=0;z<len(y);z++) {
+	if (x.t != 1) { return unpack(x, y); } var r=[k(3,[])]; for(var z=0;z<len(y);z++) {
 		if (match(x, y.v[z]).v) { r.push(k(3,[])); } else { r[r.length-1].v.push(y.v[z]); }
 	} return k(3,r);
 }
@@ -791,10 +791,10 @@ function parseNoun() {
 		return applyindexright(stok(str));
 	}
 	if (matches(OPEN_B)) {
-		var m=md(k(3,[]), k(3,[])); do {
+		var m=md(k(3,[]), k(3,[])); if (!matches(CLOSE_B)) { do {
 			var key = ks(expect(NAME)); expect(COLON);
 			dset(m, key, matches(COLON) ? dget(m, ks(expect(NAME))) : parseEx(parseNoun()));
-		} while(matches(SEMI)); expect(CLOSE_B); return m;
+		} while(matches(SEMI)); expect(CLOSE_B); } return applyindexright(m);
 	}
 	if (matches(OPEN_C)) {
 		var args=[]; if (matches(OPEN_B)) {
@@ -856,13 +856,12 @@ function parseEx(node) {
 	if (node == null) { return null; }
 	if (at(ADVERB)) { return parseAdverb(null, node); }
 	if (node.t == 8 && !node.r) { node.r = parseEx(parseNoun()); node.sticky = null; }
-	if (atNoun()) {
+	if (atNoun() && !at(IOVERB)) {
 		var x = parseNoun();
 		if (at(ADVERB)) { return parseAdverb(node, x); }
-		if (node.t in {3:0,5:0,7:0,8:0}) { return asVerb("@", node, parseEx(x)); }
-		x.l = node; x.r = parseEx(parseNoun()); node = x;
+		return asVerb("@", node, parseEx(x));
 	}
-	if (at(VERB)) {
+	if (at(VERB) || at(IOVERB)) {
 		var x = parseNoun();
 		if (node.v in natives) { return asVerb("@", node, parseEx(x)); }
 		if (x.forcemonad) { node.r = parseEx(x); return node; }
