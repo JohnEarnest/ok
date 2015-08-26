@@ -193,10 +193,9 @@ function pisnull(x) {
 }
 
 function cut(x, y) {
-	l(y); var r=[]; for(var z=0;z<len(x);z++) {
-		r.push(k(3, [])); var max = len(x)-1 == z ? len(y) : x.v[z+1].v;
-		for(var i=p(x.v[z]);i<max;i++) { r[z].v.push(y.v[i]); }
-	} return k(3,r);
+	return kzip(x, cat(drop(k1,x),k(0,len(y))), function(a, b) { // {x{x@y+!z-y}[y]'1_x,#y} ?
+		var r=[]; for(var z=p(a);z<p(b);z++) { r.push(y.v[z]); } return k(3,r);
+	});
 }
 
 function rnd(x, y, env) {
