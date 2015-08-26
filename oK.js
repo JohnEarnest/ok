@@ -829,8 +829,8 @@ function parseNoun() {
 			return r;
 		}
 		if (matches(COLON)) {
-			n.global = matches(COLON);
-			n.r = parseEx(parseNoun());
+			n.global = matches(COLON); n.r = parseEx(parseNoun());
+			if (n.r == null) { throw new Error("noun expected following ':'."); }
 			findSticky(n.r); if (n.r == n.r.sticky) { n.r.sticky = null; }
 			return n;
 		}
