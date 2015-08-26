@@ -362,12 +362,6 @@ function ad(dyad) { // create an atomic dyad
 		return kzip(left, right, function(x,y) { return recur(x, y, env); });
 	};
 }
-function al(dyad) { // create a left atomic dyad
-	return function recur(left, right, env) {
-		if (left.t != 3) { return dyad(left, right, env); }
-		return kmap(left, function(x) { return recur(x, right, env); });
-	};
-}
 function ar(dyad) { // create a right atomic dyad
 	return function recur(left, right, env) {
 		if (right.t != 3) { return dyad(left, right, env); }
