@@ -193,10 +193,9 @@ function pisnull(x) {
 }
 
 function cut(x, y) {
-	l(y); var r=[]; for(var z=0;z<len(x);z++) {
-		r.push(k(3, [])); var max = len(x)-1 == z ? len(y) : x.v[z+1].v;
-		for(var i=p(x.v[z]);i<max;i++) { r[z].v.push(y.v[i]); }
-	} return k(3,r);
+	return kzip(x, cat(drop(k1,x),k(0,len(y))), function(a, b) { // {x{x@y+!z-y}[y]'1_x,#y} ?
+		var r=[]; for(var z=p(a);z<p(b);z++) { r.push(y.v[z]); } return k(3,r);
+	});
 }
 
 function rnd(x, y, env) {
@@ -360,12 +359,6 @@ function ad(dyad) { // create an atomic dyad
 		if (left.t  != 3) { return kmap(right, function(x) { return recur(left, x, env); }); }
 		if (right.t != 3) { return kmap(left,  function(x) { return recur(x, right, env); }); }
 		return kzip(left, right, function(x,y) { return recur(x, y, env); });
-	};
-}
-function al(dyad) { // create a left atomic dyad
-	return function recur(left, right, env) {
-		if (left.t != 3) { return dyad(left, right, env); }
-		return kmap(left, function(x) { return recur(x, right, env); });
 	};
 }
 function ar(dyad) { // create a right atomic dyad
@@ -829,8 +822,8 @@ function parseNoun() {
 			return r;
 		}
 		if (matches(COLON)) {
-			n.global = matches(COLON);
-			n.r = parseEx(parseNoun());
+			n.global = matches(COLON); n.r = parseEx(parseNoun());
+			if (n.r == null) { throw new Error("noun expected following ':'."); }
 			findSticky(n.r); if (n.r == n.r.sticky) { n.r.sticky = null; }
 			return n;
 		}
