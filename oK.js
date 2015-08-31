@@ -370,6 +370,7 @@ function ar(dyad) { // create a right atomic dyad
 
 function applym(verb, x, env) {
 	if (verb.t == 5) { return call(verb, k(3,[x]), env); }
+	if (verb.t == 3) { return atl(verb, x, env); }
 	if (verb.t == 9 & verb.r == null) { verb.r=x; var r=run(verb, env); verb.r=null; return r; }
 	if (verb.sticky) {
 		var s=verb.sticky; s.r=x; verb.sticky=null;
@@ -607,7 +608,6 @@ function mend(args, env, monadic, dyadic) {
 }
 
 function amendm(d, i, y, monad, env) {
-	if (monad.t == 3) { monad = { t:5,args:["x"],v:[{t:8,v:'@',l:{t:3,v:monad.v},r:{t:7,v:'x'}}]}; }
 	if (monad.t == 0) { monad = { t:5,args:["x"],v:[{ t:0, v:monad.v }] }; }
 	if (i.t != 3) { d.v[i.v] = applym(monad, atl(d, i, env), env); return; }
 	kmap(i, function(v) { amendm(d, v, y, monad, env); });
