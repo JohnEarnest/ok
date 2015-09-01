@@ -628,6 +628,12 @@ function dmend(d, i, y, f, env) {
 		kmap(i.v[0],function(x) { dmend(atl(d,x,env), rest, y, f, env); });
 	}
 	else if (isnull(i.v[0]).v) { kmap(d,function(x,i) { dmend(atl(d,k(0,i),env),rest,y,f,env); }); }
+	else if (d.v[0].t != 3) {
+		kmap(i, function(v) {
+			v=p(v); if (v>len(d)) { throw new Error("index error."); }
+			d.v[v] = f.t<2 ? f : applym(f, d.v[v], env);
+		});
+	}
 	else { dmend(atl(d, first(i), env), rest, y, f, env); }
 }
 
