@@ -631,7 +631,7 @@ function dmend(d, i, y, f, env) {
 	else if (d.v[0].t != 3) {
 		kmap(i, function(v) {
 			v=p(v); if (v>len(d)) { throw new Error("index error."); }
-			d.v[v] = f.t<2 ? f : applym(f, d.v[v], env);
+			d.v[v] = f.t<2 ? f : y ? applyd(f, d.v[v], y, env) : applym(f, d.v[v], env);
 		});
 	}
 	else { dmend(atl(d, first(i), env), rest, y, f, env); }
