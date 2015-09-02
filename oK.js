@@ -531,6 +531,7 @@ function atdepth(x, y, i, env) {
 }
 
 function call(x, y, env) {
+	if (x.sticky) { return (valence(x.sticky)==1?applym:applyd)(x, y.v[0], y.v[1]); }
 	if (x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : dget(x, y); }
 	if (x.t == 2) { x = env.lookup(x.v, true); }
 	if (y.t == 0) { return atd(x, y, env); }
