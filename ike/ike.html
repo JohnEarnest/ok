@@ -205,13 +205,15 @@ loadBuffer();
 function showStatus(text) {
 	if (text.length > 80) { text = text.substring(0, 80) + "..."; }
 	var status = document.getElementById("status");
-	status.innerHTML = text;
+	status.innerHTML = "";
+	status.appendChild(document.createTextNode(text));
 	status.style.backgroundColor = "black";
 }
 function showError(text) {
 	if (text.length > 80) { text = text.substring(0, 80) + "..."; }
 	var status = document.getElementById("status");
-	status.innerHTML = text;
+	status.innerHTML = "";
+	status.appendChild(document.createTextNode(text));
 	status.style.backgroundColor = "darkred";
 }
 function showData(text) {
@@ -225,7 +227,8 @@ function showData(text) {
 
 	document.getElementById("canvas").style.display = "none";
 	document.getElementById("bigdatawrap").style.display = "table";
-	document.getElementById("bigdata").innerHTML = text;
+	document.getElementById("bigdata").innerHTML = "";
+	document.getElementById("bigdata").appendChild(document.createTextNode(text));
 }
 function hideData() {
 	document.getElementById("canvas").style.display = "block";
