@@ -480,7 +480,9 @@ function paintEach(g, v) {
 	else { return; }
 	// palette:
 	var pal = getvar(v[1]); if (pal.t != 3) { return; }
-	var colors = tojs(pal);
+	if (pal._tojs_cached === undefined)
+		pal._tojs_cached = tojs(pal);
+	var colors = pal._tojs_cached;
 	// sprite:
 	var img = getvar(v[2]);
 	if (img.t == 0) {
