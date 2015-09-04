@@ -49,6 +49,7 @@ function bind(f,x)       { return f.bind(null, x); }
 
 function dget(x, y)    { var i=find(x.k, y); return (i.v==len(x.k)) ? NA : atl(x.v, i); }
 function dset(x, y, z) { var i=find(x.k, y).v; if(i==len(x.k)) { x.k.v.push(y); } x.v.v[i]=z; }
+function lset(x, y, v) { if (len(x) <= p(y)) { throw new Error("index error."); } x.v[y.v]=v; }
 function c(x) { return (x.t==3) ? k(x.t, x.v.slice(0)) : (x.t==4) ? md(c(x.k), c(x.v)) : x; }
 function stok(x) { return kl(krange(x.length, function(z) { return k(1,x.charCodeAt(z)); }).v); }
 function ktos(x, esc) {
@@ -610,15 +611,15 @@ function mend(args, env, monadic, dyadic) {
 
 function amendm(d, i, y, monad, env) {
 	if (monad.t == 0) { monad = { t:5,args:["x"],v:[{ t:0, v:monad.v }] }; }
-	if (i.t != 3) { d.v[i.v] = applym(monad, atl(d, i, env), env); return; }
+	if (i.t != 3) { lset(d, i, applym(monad, atl(d, i, env), env)); return; }
 	kmap(i, function(v) { amendm(d, v, y, monad, env); });
 }
 
 function amendd(d, i, y, dyad, env) {
 	if      (i.t==3&y.t==3) { for(var z=0;z<len(i);z++) { amendd(d,i.v[z],y.v[z],dyad,env); } }
 	else if (i.t==3&y.t!=3) { for(var z=0;z<len(i);z++) { amendd(d,i.v[z],y     ,dyad,env); } }
-	else if (i.t==2) { dset(d, i, applyd(dyad, atl(d, i, env), y, env)); }
-	else { d.v[p(i)] = applyd(dyad, atl(d, i, env), y, env); }
+	else if (i.t==2)        { dset(d, i, applyd(dyad, atl(d, i, env), y, env)); }
+	else                    { lset(d, i, applyd(dyad, atl(d, i, env), y, env)); }
 }
 
 function dmend(d, i, y, f, env) {
@@ -629,12 +630,7 @@ function dmend(d, i, y, f, env) {
 		kmap(i.v[0],function(x) { dmend(atl(d,x,env), rest, y, f, env); });
 	}
 	else if (isnull(i.v[0]).v) { kmap(d,function(x,i) { dmend(atl(d,k(0,i),env),rest,y,f,env); }); }
-	else if (d.v[0].t != 3) {
-		kmap(i, function(v) {
-			v=p(v); if (v>len(d)) { throw new Error("index error."); }
-			d.v[v] = f.t<2 ? f : y ? applyd(f, d.v[v], y, env) : applym(f, d.v[v], env);
-		});
-	}
+	else if (d.v[0].t != 3) { (y?amendd:amendm)(d, i, y, f, env); }
 	else { dmend(atl(d, first(i), env), rest, y, f, env); }
 }
 
