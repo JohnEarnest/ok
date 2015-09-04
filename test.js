@@ -313,8 +313,7 @@ test("c:8; {c:1; .`c}[]"              , "8"                                   );
 test("c:8;{c:2;c+:1}[]; c"            , "8"                                   );
 test("c:8;{c:2;c::1+(.`c)}[]; c"      , "9"                                   ); // *
 test("c:8;{c:2;c+::1}[]; c"           , "9"                                   ); // !
-test("?[1 2 3;1;4]"                   , "1 4 2 3"                             ); // *
-test("?[1 2 3;1;4 5]"                 , "1 4 5 2 3"                           ); // *
+test("?[1 2 3;1 1;4]"                 , "1 4 2 3"                             );
 test('?["test";1 3;"u"]'              , '"tut"'                               );
 test('?["hello world";0 5;"goodbye"]' , '"goodbye world"'                     );
 test("[a:2;b::a]"                     , "[a:2;b:2]"                           );
@@ -624,6 +623,7 @@ test(".[3 3#0;(1 2;0);:;4]"           , "(0 0 0\n 4 0 0\n 4 0 0)"             );
 
 // NOTES/TODO:
 
+// the implementation of triadic ? appears to be {,/(*x;$[99<@z;z x 1;z];*|x:(0,y)_x)}
 // global assignment doesn't appear to permit compound assignment, as in {c+::5}.
 // k5 doesn't appear to permit spaces in symbol-list literals.
 

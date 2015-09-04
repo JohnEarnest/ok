@@ -649,3 +649,15 @@ Adverb Reference
 	  {x<100}{x*2}\1
 	1 2 4 8 16 32 64 128
 
+Special Forms
+-------------
+The verbs `?`, `@` and `.` have special triadic and tetradic overloads in k5 to perform miscellaneous functions. This section will try to explain known overloads on a case-by-case basis.
+
+`?[l;x;v]` is <b>splice</b>. Replace the elements of `l` in the span given by `x` with `v`. `x` must be a length-2 list.
+
+	  ?[1 2 3;1 1;4]
+	1 4 2 3
+	  ?["test";1 3;"u"]
+	"tut"
+	  ?["hello world";0 5;"goodbye"]
+	"goodbye world"
