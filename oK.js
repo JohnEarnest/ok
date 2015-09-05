@@ -30,7 +30,7 @@ var NIL = ks("");
 var k0 = k(0, 0);
 var k1 = k(0, 1);
 var EC = [["\\","\\\\"],["\"","\\\""],["\n","\\n"],["\t","\\t"]];
-var kt = [-9, -10, -11, 0, 99, 102, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN];
+var kt = [-9, -10, -11, 0, 99, 102, NaN, NaN, 107, 105, NaN, NaN, NaN, NaN];
 var SP = k(1, " ".charCodeAt(0));
 var NA = k(0, NaN);
 
@@ -256,8 +256,9 @@ function odometer(x) {
 	} return flip(r);
 }
 
-function unpack(x, y) { return call(unpackimpl, k(3, [x, y])); }
-function pack(x, y)   { if (x.t == 1) { return join(x, y); } return call(packimpl, k(3, [x, y])); }
+function unpack(x, y) { return call(unpackimpl, k(3,[x,y])); }
+function pack  (x, y) { if (x.t == 1) { return join(x, y); } return call(packimpl, k(3,[x,y])); }
+function splice(xyz)  { return call(spliceimpl, k(3,xyz)); }
 
 ////////////////////////////////////
 //
@@ -407,7 +408,7 @@ var verbs = {
 	"#" : [count,     count,      take,       reshape,    take,       reshape,    null,    null  ],
 	"_" : [am(floor), am(floor),  drop,       null,       drop,       cut,        null,    null  ],
 	"$" : [kfmt,      am(kfmt),   dfmt,       dfmt,       dfmt,       dfmt,       null,    null  ],
-	"?" : [real,      unique,     rnd,        pfind,      rnd,        ar(pfind),  query4,  query4],
+	"?" : [real,      unique,     rnd,        pfind,      rnd,        ar(pfind),  splice,  null  ],
 	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,     keval,      call,       call,       call,       call,       dmend4,  dmend4],
 	"'" : [null,      null,       null,       bin,        null,       ar(bin),    null,    null  ],
@@ -594,7 +595,6 @@ function run(node, env) {
 	return node;
 }
 
-function query4(args, env) { return mend(args, env, query, query); }
 function amend4(args, env) { return mend(args, env, amendm, amendd); }
 function dmend4(args, env) { return mend(args, env, dmend, dmend); }
 
@@ -632,12 +632,6 @@ function dmend(d, i, y, f, env) {
 	else if (isnull(i.v[0]).v) { kmap(d,function(x,i) { dmend(atl(d,k(0,i),env),rest,y,f,env); }); }
 	else if (d.v[0].t != 3) { (y?amendd:amendm)(d, i, y, f, env); }
 	else { dmend(atl(d, first(i), env), rest, y, f, env); }
-}
-
-function query(t, c, a, b, env) {
-	l(t); if (a) { throw new Error("not implemented!"); }
-	if (c.t == 3) { var x=c.v[0]; var y=c.v[1]; t.v.splice(p(x), p(y)-x.v); c = x; }
-	if (b.t != 3) { b = k(3,[b]); } var x=p(c); kmap(b, function(v) { t.v.splice(x++,0,v); });
 }
 
 ////////////////////////////////////
@@ -935,6 +929,7 @@ function baseEnv() {
 }
 var packimpl   = parse("{+/y*|*\\1,|1_(#y)#x}")[0];
 var unpackimpl = parse("{(1_r,,y)-x*r:|y(_%)\\|x}")[0];
+var spliceimpl = parse("{,/(*x;$[99<@z;z x 1;z];*|x:(0,y)_x)}")[0];
 
 // export the public interface:
 function setIO(symbol, slot, func) {

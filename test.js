@@ -316,6 +316,9 @@ test("c:8;{c:2;c+::1}[]; c"           , "9"                                   );
 test("?[1 2 3;1 1;4]"                 , "1 4 2 3"                             );
 test('?["test";1 3;"u"]'              , '"tut"'                               );
 test('?["hello world";0 5;"goodbye"]' , '"goodbye world"'                     );
+test("?[2 7 9;1 2;2*]"                , "2 14 9"                              );
+test('?["a look back";2 6;|:]'        , '"a kool back"'                       );
+test("?[1 2 3;1,1;2+2]"               , "1 4 2 3"                             );
 test("[a:2;b::a]"                     , "[a:2;b:2]"                           );
 test("[a:1 9 5;b::a]"                 , "[a:1 9 5;b:1 9 5]"                   );
 test("011b"                           , "0 1 1"                               );
@@ -539,6 +542,8 @@ test("@`foo"                          , "-11"                                 );
 test("@()"                            , "0"                                   );
 test("@ [a:2;b:3]"                    , "99"                                  );
 test("@{x+y}"                         , "102"                                 );
+test("t:+;  @t"                       , "107"                                 );
+test("t:+/; @t"                       , "105"                                 );
 test("d:{$[-1<@x;1+|/d'x;0]};d(1;2 3)", "2"                                   );
 test("23 4 9 18?9"                    , "2"                                   );
 test("9 8 7 6 5 4 3?1"                , "0N"                                  );
@@ -623,7 +628,6 @@ test(".[3 3#0;(1 2;0);:;4]"           , "(0 0 0\n 4 0 0\n 4 0 0)"             );
 
 // NOTES/TODO:
 
-// the implementation of triadic ? appears to be {,/(*x;$[99<@z;z x 1;z];*|x:(0,y)_x)}
 // global assignment doesn't appear to permit compound assignment, as in {c+::5}.
 // k5 doesn't appear to permit spaces in symbol-list literals.
 

@@ -653,7 +653,7 @@ Special Forms
 -------------
 The verbs `?`, `@` and `.` have special triadic and tetradic overloads in k5 to perform miscellaneous functions. This section will try to explain known overloads on a case-by-case basis.
 
-`?[l;x;v]` is <b>splice</b>. Replace the elements of `l` in the span given by `x` with `v`. `x` must be a length-2 list.
+`?[l;x;v]` is <b>splice</b>. Replace the elements of `l` in the interval given by `x` with `v`. `x` must be a length-2 list.
 
 	  ?[1 2 3;1 1;4]
 	1 4 2 3
@@ -661,3 +661,10 @@ The verbs `?`, `@` and `.` have special triadic and tetradic overloads in k5 to 
 	"tut"
 	  ?["hello world";0 5;"goodbye"]
 	"goodbye world"
+
+If `v` is a monadic verb train or function, it is applied to the elements specified by the interval rather than simply replacing them:
+
+	  ?[2 7 9;1 2;2*]
+	2 14 9
+	  ?["a look back";2 6;|:]
+	"a kool back"
