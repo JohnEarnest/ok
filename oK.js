@@ -599,13 +599,8 @@ function amend4(args, env) { return mend(args, env, amendm, amendd); }
 function dmend4(args, env) { return mend(args, env, dmend, dmend); }
 
 function mend(args, env, monadic, dyadic) {
-	if (args.length != 3 && args.length != 4) { throw new Error("valence error."); }
-	var ds = run(args[0], env);
-	var d = (ds.t == 2 ? env.lookup(ds.v,true) : ds); d;
-	var i = run(args[1], env);
-	var y = args[3] ? run(args[3], env) : null;
-	var f = run(args[2], env);
-	(y?dyadic:monadic)(d, i, y, f, env);
+	var ds = args[0], i = args[1], f = args[2], y = args[3];
+	var d = ds.t == 2 ? env.lookup(ds.v,true) : ds; (y?dyadic:monadic)(d, i, y, f, env);
 	if (ds.t!=2) { return d; } env.put(ds.v.slice[1], true, d); return ds;
 }
 
