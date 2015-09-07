@@ -97,6 +97,11 @@ canvas.full {
 	margin: -240px 0 0 -240px;
 	background-color: orange;
 }
+#examples {
+	position: absolute;
+	bottom: 10px;
+	right:  10px;
+}
 input:focus,
 select:focus,
 textarea:focus,
@@ -121,6 +126,9 @@ button:focus {
 			<img src="img/full.png" title="Fullscreen" onclick="fullscreen();"></img>
 		</div>
 		<canvas width="320" height="320" id="canvas"></canvas>
+		<select id="examples">
+			<option>Choose an Example...</option>
+		</select>
 		<div id="bigdatawrap" style="display: none; height: 100%; width: 100%; overflow: hidden;">
 			<div style="display: table-cell; vertical-align: middle;">
 			   <pre id="bigdata" style="text-align: center;"></pre>
@@ -189,6 +197,49 @@ var my     = 0;
 var keys   = {};
 var frame  = 0;
 var click  = false;
+
+var tickTimeout = null;
+var drawTimeout = null;
+
+function loadExample() {
+	stop();
+	var v = document.getElementById("examples").value;
+	if (v == "") { return; }
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", v);
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState != 4 || xhr.status != 200) {
+			return;
+		}
+		var result = JSON.parse(xhr.responseText);
+		var stripped = result["content"].replace(/(?:\r\n|\r|\n)/g, "");
+		var decoded = window.atob(stripped);
+		editor.value = decoded;
+		play();
+	}
+	xhr.send();
+}
+function listExamples() {
+	var xhr = new XMLHttpRequest();
+	var exampledir = "https://api.github.com/repos/JohnEarnest/ok/contents/ike/examples";
+	xhr.open("GET", exampledir);
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState != 4 || xhr.status != 200) {
+			return;
+		}
+		var result = JSON.parse(xhr.responseText);
+		var examples = document.getElementById("examples");
+		for(var index = 0; index < result.length; index++) {
+			var option = document.createElement("option");
+			option.text = result[index]["name"];
+			option.value = result[index]["url"];
+			examples.add(option);
+		}
+		examples.onchange = loadExample;
+	}
+	xhr.send();
+}
+listExamples();
 
 function saveBuffer() {
 	localStorage.setItem("ikebuffer", editor.value);
@@ -364,8 +415,8 @@ function play() {
 	
 			if (!("draw" in env.d)) { stop(); return; }
 			if (!running) {
-				setTimeout(paint, PER_FRAME);
-				setTimeout(update, PER_FRAME);
+				drawTimeout = setTimeout(paint, PER_FRAME);
+				tickTimeout = setTimeout(update, PER_FRAME);
 				running = true;
 			}
 		}
@@ -383,7 +434,9 @@ function stop() {
 	b.src = "img/play.png";
 	b.title = "Play";
 	b.onclick = play;
-	running = false;	
+	running = false;
+	clearTimeout(tickTimeout);
+	clearTimeout(drawTimeout);
 }
 function fullscreen() {
 	canvas = document.getElementById("fullcanvas");
@@ -432,7 +485,8 @@ loadshared();
 function update() {
 	setvars();
 	var r = callk("tick");
-	if (running) { setTimeout(update, PER_FRAME); }
+	if (running) { tickTimeout = setTimeout(update, PER_FRAME); }
+	else { tickTimeout = null; }
 }
 
 function paint() {
@@ -457,7 +511,8 @@ function paintValue(r) {
 		if (c.t != 3) { continue; }
 		paintEach(g, c.v);
 	}
-	if (running) { setTimeout(paint, PER_FRAME); }
+	if (running) { drawTimeout = setTimeout(paint, PER_FRAME); }
+	else { drawTimeout = null; }
 }
 
 function position(pos, x, y) {
