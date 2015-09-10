@@ -450,6 +450,7 @@ function valence(node) {
 		if (!node.curry) { return node.args.length; } var r=node.args.length;
 		for(var z=0;z<node.curry.length;z++) { if (!isnull(node.curry[z]).v) { r--; } } return r;
 	}
+	if (node.t == 9 && node.v == "'") { return valence(node.verb); }
 	if (node.t == 9)     { return 1; }
 	if (node.t != 8)     { return 0; }
 	if (node.forcemonad) { return 1; }
