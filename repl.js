@@ -30,7 +30,7 @@ function read(x) {
 }
 function write(x, y) {
 	var s = y.t === 2 ? y.v : conv.tojs(y);
-	if (Array.isArray(s)) { s = s.map(str).join('\n') + '\n'; }
+	if (Array.isArray(s)) { s = s.join('\n') + '\n'; }
 	if (typeof s !== 'string') { throw Error('ERROR: type'); }
 	var f = str(x);
 	if (f) {
@@ -38,7 +38,7 @@ function write(x, y) {
 	} else {
 		fs.writeSync(process.stdout.fd, s);
 	}
-	return x;
+	return y;
 }
 for (var i = 0; i < 2; i++) { ok.setIO('0:', i, read ); }
 for (var i = 2; i < 6; i++) { ok.setIO('0:', i, write); }
