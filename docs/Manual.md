@@ -488,7 +488,7 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		n/a
 	</td>
 	<td>
-		<tt>l'a</tt> is <b>bin</b>. Perform a binary search in y for x. Right atomic.<br>
+		<tt>l'a</tt> is <b>bin</b>. Perform a binary search for y in x. Right atomic.<br>
 		x must already be sorted.
 <pre><code>  0 2 4 6 8 10'5
 2
