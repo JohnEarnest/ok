@@ -214,6 +214,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		Generate a permutation vector which would sort argument into ascending order.
 <pre><code>  <5 8 2 7
 2 0 3 1</code></pre>
+		<tt>&lt;d</tt> sorts keys by their values:
+<pre><code>  <[a:2;b:5;c:1]
+`c`a`b</code></pre>
 	</td>
 	<td>
 		<tt>n&lt;n</tt> is <b>less</b>. Fully atomic.
@@ -228,6 +231,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		Generate a permutation vector which would sort argument into descending order.
 <pre><code>  <5 8 2 7
 1 3 0 2</code></pre>
+		<tt>&gt;d</tt> sorts keys by their values:
+<pre><code>  >[a:2;b:5;c:1]
+`b`a`c</code></pre>
 	</td>
 	<td>
 		<tt>n&gt;n</tt> is <b>more</b>. Fully atomic.
