@@ -212,6 +212,7 @@ function flip(x) {
 }
 
 function asc(x) {
+	if (x.t == 4) { return ar(atl)(x.k, asc(x.v)); }
 	return k(3, l(x).v.map(function(x,i) { return k(0, i); }).sort(function(a, b) {
 		if (less(x.v[a.v], x.v[b.v]).v) { return -1; }
 		if (more(x.v[a.v], x.v[b.v]).v) { return  1; }
@@ -401,8 +402,8 @@ var verbs = {
 	"!" : [iota,      odometer,   mod,        md,         ar(mod),    md,         null,    null  ],
 	"&" : [where,     where,      ad(min),    ad(min),    ad(min),    ad(min),    null,    null  ],
 	"|" : [rev,       rev,        ad(max),    ad(max),    ad(max),    ad(max),    null,    null  ],
-	"<" : [null,      asc,        ad(less),   ad(less),   ad(less),   ad(less),   null,    null  ],
-	">" : [null,      desc,       ad(more),   ad(more),   ad(more),   ad(more),   null,    null  ],
+	"<" : [asc,       asc,        ad(less),   ad(less),   ad(less),   ad(less),   null,    null  ],
+	">" : [desc,      desc,       ad(more),   ad(more),   ad(more),   ad(more),   null,    null  ],
 	"=" : [null,      group,      ad(equal),  ad(equal),  ad(equal),  ad(equal),  null,    null  ],
 	"~" : [am(not),   am(not),    match,      match,      match,      match,      null,    null  ],
 	"," : [enlist,    enlist,     cat,        cat,        cat,        cat,        null,    null  ],
