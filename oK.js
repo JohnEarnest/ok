@@ -267,6 +267,7 @@ function splice(xyz)  { return call(spliceimpl, k(3,xyz)); }
 ////////////////////////////////////
 
 function each(monad, x, env) {
+	if (x.t == 4) { return md(x.k, each(monad, x.v, env)); }
 	return kmap(x, function(x) { return applym(monad, x, env); });
 }
 
