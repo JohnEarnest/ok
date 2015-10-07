@@ -12,7 +12,7 @@ r: {y@(#y)!x+!#y}; / rotate list y by x
 {*t^x^t:?x}"oorning"                                         /  3. first unique character
 |"backwards"                                                 /  4. reverse a string
 &/~^(48+!10)?"697"                                           /  5. string contains only digits?
-{+(!t;1+#:'. t:=x^?x)}"Programmming"                         /  6. find duplicates and their count
+{1+#:'=x^?x}"Programmming"                                   /  6. find duplicates and their count
 {+/'(x;~x)}@^"aeiouy"?"verbage"                              /  7. count vowels and consonants
 +/=["skimmed";"m"]                                           /  8. count occurrences of a character
 ."231"                                                       /  9. convert numeric string to int
