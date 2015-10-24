@@ -152,3 +152,55 @@ When using the "do...while" forms to implement nontrivial algorithms, it is comm
 You might find that `eval` (`.`) is useful for unpacking this tuple into separate arguments, making the loop body and predicate both shorter and easier to understand, especially if tuple elements are used in many places:
 
 	{{x<y}.x}{{(x*x;y*2)}.x}\(2;100)
+
+Sequential Processing
+---------------------
+Sometimes problems which appear to require sequential processing can be performed in parallel if you provide each iteration with the necessary context. `eachprior` (`':`) handles the most straightforward of these cases. It is often combined with `~` or `-` to find the beginnings of identical runs in a list or find the change between successive elements, respectively:
+
+	  ~~':3 3 4 0 1 1 3 0
+	1 0 1 1 1 0 1 1
+	
+	  -':3 3 4 0 1 1 3 0
+	3 0 1 -4 1 0 2 -3
+
+If you need more context, you can split the list appropriately yourself. To provide sliding windows into a list `x` which each have a length `y`:
+
+	  {+x@(-y-1)_'(!#x)+/:!y}[4 8 9 10 22 3;3]
+	(4 8 9
+	 8 9 10
+	 9 10 22
+	 10 22 3)
+
+If you don't want these windows to overlap, `reshape` with a "greedy" `0N` is the ticket:
+
+	  0N 3#4 8 9 10 22 3 7 0 9
+	(4 8 9
+	 10 22 3
+	 7 0 9)
+	
+	  0N 2#4 8 9 10 22 3 7 0
+	(4 8
+	 9 10
+	 22 3
+	 7 0)
+
+If the iterations are truly sequentially dependent, use dyadic `over`. Consider processing a list of typed characters where each "#" represents a backspace. You can't simply remove every character followed by a "#", as several "#"es may appear consecutively, as in "ab#def##". If we treat the left argument to our dyadic reducing function as a stack we can push elements into with `x,y` and pop elements from with `-1_x`, we can arrive at the following solution:
+
+	  (){$[y="#";-1_x;x,y]}/"ab#def##"
+	"ad"
+
+(Or a slightly shorter equivalent, if we're golfing:)
+
+	  (){(x,y;-1_x)y=35}/"ab#def##"
+
+The way this works is clearer if we show the intermediate results:
+
+	  {x{x,"|",y}'(){$[y="#";-1_x;x,y]}\x}"ab#def##"
+	("a|a"
+	 "b|ab"
+	 "#|a"
+	 "d|ad"
+	 "e|ade"
+	 "f|adef"
+	 "#|ade"
+	 "#|ad")
