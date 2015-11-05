@@ -3,8 +3,6 @@
 / based on the list at http://javarevisited.blogspot.co.uk
 / some are trivial, some demonstrate interesting k5 features.
 
-r: {y@(#y)!x+!#y}; / rotate list y by x
-
 (
 
 {?x^?x}"applause"                                            /  1. find duplicated characters
@@ -22,7 +20,7 @@ r: {y@(#y)!x+!#y}; / rotate list y by x
 {x~|x}"racecar"                                              / 13. is a string a palindrome?
 ?"bananas"                                                   / 14. unique characters in order
 {[a;s]t:#:'a;t~0 0{x+y~'a@'x&t-1}/s}[("ab";"def");"dabef"]   / 15. is s an interleave of two others?
-{|/(y~(#y)#)'r[1]\x}["hneay";"ne"]                           / 16. string contains a substring?
+{|/(y~)',/(1_)\',\x}["hneay";"ne"]                           / 16. string contains a substring?
 *>#:'="abdbbac"                                              / 17. most frequently occurring char
 {,/y\x}["peeled";"e"]                                        / 18. remove instances of a character
 t@*&{x~|x}'t@:>#:'t:,/(-1_)\'(1_)\"issrawar"                 / 19. longest palindrome substring
