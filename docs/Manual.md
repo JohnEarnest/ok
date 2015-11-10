@@ -30,6 +30,11 @@ Nouns
 		  10010b
 		1 0 0 1 0
 
+	Byte lists consist of `0x` followed by an even number of hexadecimal digits. Each byte is interpreted as the equivalent ascii character for prettyprinting purposes.
+
+		0x414243
+		0x6a6b
+
 	Mixed-type lists are enclosed in `()` and each element should be separated by a semicolon:
 
 		(1 2 3;"food";`b)

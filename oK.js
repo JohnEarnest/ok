@@ -640,6 +640,7 @@ function dmend(d, i, y, f, env) {
 ////////////////////////////////////
 
 var NUMBER  = /^((-?0w)|(0N)|(-?\d*\.?\d+))/;
+var HEXLIT  = /^0x([a-zA-Z0-9]+)/;
 var BOOL    = /^[01]+b/;
 var NAME    = /^([A-Za-z][A-Za-z0-9]*)/;
 var SYMBOL  = /^(`[A-Za-z][A-Za-z0-9]*|`)/;
@@ -764,6 +765,10 @@ function parseNoun() {
 		var n = expect(BOOL); var r=[];
 		for(var z=0;z<n.length-1;z++) { r.push(k(0, parseInt(n[z]))); }
 		return applyindexright(k(3, r));
+	}
+	if (at(HEXLIT)) {
+		var h=expect(HEXLIT); if (h.length%2) { throw new Error("malformed byte string."); }
+		return krange(h.length/2-1, function(z) { return k(1,parseInt(h.slice(2*z+2,2*z+4),16)); });
 	}
 	if (at(NUMBER)) {
 		var r=[]; while(at(NUMBER)) {

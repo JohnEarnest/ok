@@ -625,6 +625,10 @@ test("*:'=0 1 1 2 3 5 3 3"            , "0 1 2 3 5!0 1 3 4 5"                 );
 test('<#:\'="abdbbac"'                , '"dcab"'                              );
 test("<[a:2;b:5;c:1]"                 , "`c`a`b"                              );
 
+test("0x414243"                       , '"ABC"'                               );
+fail("0x41424"                        , "malformed byte string."              );
+test("#0x6566"                        , "2"                                   );
+
 //test(".[3 3#0;(0 1;0 1);:;2 2#!4]"    , "(0 1 0\n 2 3 0\n 0 0 0)"             );
 //test("a:3 3#0;a[0 1;0 1]:2 2#!4"      , "(0 1 0\n 2 3 0\n 0 0 0)"             );
 
@@ -637,6 +641,8 @@ test("<[a:2;b:5;c:1]"                 , "`c`a`b"                              );
 //files();
 
 // NOTES/TODO:
+
+//test("0x0102", "0x0102"); // nonprintable chars should be printed as byte strings
 
 // global assignment doesn't appear to permit compound assignment, as in {c+::5}.
 // k5 doesn't appear to permit spaces in symbol-list literals.
