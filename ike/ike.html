@@ -163,6 +163,11 @@ var windows = tok([
 	"#FF00FF","#00FFFF","#800000","#008000","#808000","#000080","#800080","#008080",
 	"rgba(0,0,0,0)"
 ]);
+var arne = tok([
+	"#000000","#9D9D9D","#FFFFFF","#BE2633","#E06F8B","#493C2B","#A46422","#EB8931",
+	"#F7E26B","#2F484E","#44891A","#A3CE27","#1B2632","#005784","#31A2F2","#B2DCEF",
+	"rgba(0,0,0,0)"
+]);
 var lcd = tok([
 	"#0F380F","#306230","#8BAC0F","#9BBC0F","rgba(0,0,0,0)"
 ]);
@@ -178,6 +183,7 @@ var rgbaPalettes = {
 	solarized:   readpal(tojs(solarized)),
 	dawnbringer: readpal(tojs(dawnbringer)),
 	windows:     readpal(tojs(windows)),
+	arne:        readpal(tojs(arne)),
 	lcd:         readpal(tojs(lcd)),
 	cga:         readpal(tojs(cga)),
 	hot:         readpal(tojs(hot)),
@@ -315,6 +321,7 @@ function setvars() {
 	setvar("windows",     windows);
 	setvar("solarized",   solarized);
 	setvar("dawnbringer", dawnbringer);
+	setvar("arne",        arne);
 	setvar("lcd",         lcd);
 	setvar("cga",         cga);
 	setvar("hot",         hot);
