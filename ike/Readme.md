@@ -51,6 +51,16 @@ For dynamic behavior, iKe will call a number of K functions (provided they have 
 - `mm`: mouse moved. provides mouse x and y in pixels as arguments.
 - `mg`: mouse dragged. provides mouse x and y in pixels as arguments.
 
+Built-in Functions
+------------------
+iKe extends the basic k5 intrinsics `sin` `cos` `log` and `exp` with a broader range of math and utility functions:
+
+- `abs`: monadic. absolute value.
+- `tan`: monadic. tangent.
+- `acos`: monadic. inverse cosine.
+- `asin`: monadic. inverse sine.
+- `atan`: monadic. inverse tangent.
+
 Variables
 ---------
 iKe pre-defines and updates several K variables for your convenience:
@@ -62,6 +72,7 @@ iKe pre-defines and updates several K variables for your convenience:
 - `keys`: a vector of the keycodes currently held (read only)
 - `mx`: the horizontal position of the mouse in pixels (read only)
 - `my`: the vertical position of the mouse in pixels (read only)
+- `pi`: the mathematical constant Pi (read only)
 
 iKe provides a number of pre-defined palettes. Since transparency is useful, the last color of each palette is fully transparent:
 

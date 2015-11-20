@@ -6,5 +6,5 @@ arc:    {80++p2c[x]slice+y}       / centered points of a slice at a radius and o
 wind:   {arc[y*3]x+y*0.01*f}      / scale arc radius and offset by frame counter
 curve:  {,/wind[x]'1+!20}         / a wedge of windings
 
-draw:   {((curve[0.000];cga;2)
-          (curve[3.141];cga;3))}
+draw:   {((curve[ 0];cga;2)
+          (curve[pi];cga;3))}

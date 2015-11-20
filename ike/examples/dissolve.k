@@ -8,7 +8,7 @@ s:    */d                           / pixel count of the image
 px:   ,/+crate                      / pixels of the image
 ri:   _0.5*|/d                      / radius of the image
 rr:   ri*?s                         / random radii
-ra:   6.282*?s                      / random angles
+ra:   pi*2*?s                       / random angles
 p2c:  {x*(cos y;sin y)}             / polar (r;a) to cartesian (x;y)
 rc:   rr p2c'ra                     / random coordinates scattered in a circle
 ic:   (+!d)-\:_d%2                  / coordinates of each pixel of the image

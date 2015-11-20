@@ -147,6 +147,24 @@ button:focus {
 <script src="text.js"></script>
 <script>
 
+// install extended math/utility functions in oK:
+
+natives["abs"]  = 0;
+natives["tan"]  = 0;
+natives["acos"] = 0;
+natives["asin"] = 0;
+natives["atan"] = 0;
+
+function extendedEnv() {
+	var env = baseEnv();
+	env.put("abs",  true, k(13, am(function(x) { return k(0, Math.abs (n(x).v)) })));
+	env.put("tan",  true, k(13, am(function(x) { return k(0, Math.tan (n(x).v)) })));
+	env.put("acos", true, k(13, am(function(x) { return k(0, Math.acos(n(x).v)) })));
+	env.put("asin", true, k(13, am(function(x) { return k(0, Math.asin(n(x).v)) })));
+	env.put("atan", true, k(13, am(function(x) { return k(0, Math.atan(n(x).v)) })));
+	return env;
+}
+
 // builtin palettes
 var solarized = tok([
 	"#002b36","#073642","#586e75","#657b83","#839496","#93a1a1","#eee8d5","#fdf6e3",
@@ -195,7 +213,7 @@ var SCALE     = 2;
 var running = false;
 var editor = document.getElementById("editor");
 var canvas = document.getElementById("canvas");
-var env    = baseEnv();
+var env    = extendedEnv();
 var lx     = 0;
 var ux     = 0;
 var mx     = 0;
@@ -203,9 +221,12 @@ var my     = 0;
 var keys   = {};
 var frame  = 0;
 var click  = false;
-
 var tickTimeout = null;
 var drawTimeout = null;
+
+
+
+
 
 function loadExample() {
 	stop();
@@ -315,6 +336,7 @@ function callk2(n, x, y) {
 function setvars() {
 	setvar("w"  , num(160));
 	setvar("h"  , num(160));
+	setvar("pi" , num(Math.PI));
 	setvar("f"  , num(frame));
 	setvar("mx" , num(mx));
 	setvar("my" , num(my));
@@ -411,7 +433,7 @@ function play() {
 	b.src = "img/stop.png";
 	b.title = "Stop";
 	b.onclick = stop;
-	env = baseEnv();
+	env = extendedEnv();
 	loadresources(function() {
 		var code = editor.value;
 		try {
