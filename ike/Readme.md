@@ -30,7 +30,9 @@ If the "position" element of any drawing tuple is a matrix instead of a vector, 
 
 	draw: {,((5 5;30 5;18 20);`lcd;text@6)}
 
-This makes it very easy to draw many identical objects simulatenously.
+This makes it very easy to draw many identical objects simulatenously. If the "position" element is null, the bitmap will be drawn centered on the screen:
+
+	draw: ,(;cga;50 30#2)
 
 If the "bitmap" element of any drawing tuple is a number or a vector, it will be drawn as a single pixel or a horizontal strip of pixels, respectively. Drawing single pixels in this way is generally quite inefficient, but drawing horizontal strips in combination with a vector of positions can produce some interesting "rasterbar" effects.
 

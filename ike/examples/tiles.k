@@ -16,4 +16,4 @@ guy:  2*text@6
 
 pos:   1 1
 tick:  {pos+:dir*grid.|pos+dir}
-draw:: ((0 0;solarized;back);(8*pos;hot;guy))
+draw:: ((;solarized;back);(8*pos;hot;guy))

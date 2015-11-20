@@ -560,9 +560,11 @@ function paintEach(g, v) {
 	// (position; palette; bitmap)
 	if (v.length < 3) { return; }
 	// position(s):
-	var pos = getvar(v[0]); if (pos.t != 3 || len(pos) < 1) { return; }
+	var pos = getvar(v[0]); if (pos.t != 3 && !isnull(pos).v) { return; }
 	var px = []; var py = [];
-	if      (pos.v[0].t == 0) { position(pos, px, py); }
+	if      (isnull(pos).v)   {}
+	else if (len(pos) < 1)    { return; }
+	else if (pos.v[0].t == 0) { position(pos, px, py); }
 	else if (pos.v[0].t == 3) { for(var z=0; z < len(pos); z++) { position(pos.v[z], px, py); } }
 	else { return; }
 	// palette:
@@ -588,6 +590,10 @@ function paintEach(g, v) {
 	}
 	else if (img.t == 3) {
 		// matrix of pixels
+		if (px.length == 0) {
+			px.push(80 - (len(img.v[0]) / 2));
+			py.push(80 - (len(img)      / 2));
+		}
 		for(var y = 0; y < len(img); y++) {
 			if (img.v[y].t != 3) { continue; }
 			for(var x = 0; x < len(img.v[y]); x++) {
