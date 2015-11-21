@@ -62,6 +62,7 @@ iKe extends the basic k5 intrinsics `sin` `cos` `log` and `exp` with a broader r
 - `acos`: monadic. inverse cosine.
 - `asin`: monadic. inverse sine.
 - `atan`: monadic. inverse tangent.
+- `atan2`: dyadic. version of arctangent which disambiguates quadrants.
 
 Variables
 ---------
