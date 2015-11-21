@@ -63,6 +63,7 @@ iKe extends the basic k5 intrinsics `sin` `cos` `log` and `exp` with a broader r
 - `asin`: monadic. inverse sine.
 - `atan`: monadic. inverse tangent.
 - `atan2`: dyadic. version of arctangent which disambiguates quadrants.
+- `pn`: triadic. 3d Perlin Noise generator.
 
 Variables
 ---------

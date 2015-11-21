@@ -6,8 +6,8 @@ ep: 4 3@cir[10]
 
 a1:   0
 a2:   0
-mm:   {a1:: atan2[y-70;x-50]
-       a2:: atan2[y-70;x-90]}
+mm:   {a1:: atan2[y-80;x- 60]
+       a2:: atan2[y-80;x-100]}
 
 draw: {(( 40 60;cga;ew)
         ( 80 60;cga;ew)

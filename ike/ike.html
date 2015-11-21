@@ -145,6 +145,7 @@ button:focus {
 <script src="../oK.js"></script>
 <script src="../convert.js"></script>
 <script src="text.js"></script>
+<script src="noise.js"></script>
 <script>
 
 // install extended math/utility functions in oK:
@@ -155,16 +156,17 @@ natives["acos"] = 0;
 natives["asin"] = 0;
 natives["atan"] = 0;
 
-var dtramp = function(env, name, dyad) {
-	// construct a dyadic function-wrapper trampoline for a pseudonative.
-	// this permits dyadic extension functions to be properly curryable.
-	env.put(name, true, {t: 5, args:["x","y"], v: [
-		{"t":8,"v":name,"curry":[{"t":7,"v":"x"},{"t":7,"v":"y"}]}
-	]});
+var trampoline = function(env, name, args, body) {
+	// construct a function-wrapper trampoline for a pseudonative.
+	// this permits dyadic/triadic extension functions to be properly curryable.
+	var arguse = []; for(var z=0; z<args.length; z++) { arguse.push({"t":7, "v":args[z]}); }
+	env.put(name, true, {t: 5, args:args, v: [ {"t":8,"v":name,"curry":arguse} ]});
 }
 
 var katan2 = function(x, y) { return k(0, Math.atan2(n(x).v, n(y).v)); }
-verbs["atan2"] = [null, null, ad(katan2), ad(katan2), ad(katan2), ad(katan2), null, null];
+var knoise = function(a)    { return k(0, perlinnoise(n(a[0]).v, n(a[1]).v, n(a[2]).v)); }
+verbs["atan2"] = [null, null, ad(katan2), ad(katan2), ad(katan2), ad(katan2), null,   null];
+verbs["pn"   ] = [null, null, null,       null,       null,       null,       knoise, null];
 
 function extendedEnv() {
 	var env = baseEnv();
@@ -173,7 +175,8 @@ function extendedEnv() {
 	env.put("acos", true, k(13, am(function(x) { return k(0, Math.acos(n(x).v)) })));
 	env.put("asin", true, k(13, am(function(x) { return k(0, Math.asin(n(x).v)) })));
 	env.put("atan", true, k(13, am(function(x) { return k(0, Math.atan(n(x).v)) })));
-	dtramp(env, "atan2", katan2);
+	trampoline(env, "atan2", ["x", "y"],      katan2);
+	trampoline(env, "pn"   , ["x", "y", "z"], knoise);
 	return env;
 }
 
