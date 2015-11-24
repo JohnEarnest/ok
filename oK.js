@@ -571,6 +571,7 @@ function run(node, env) {
 	if (node.t == 3) {
 		var r=[]; for(var z=len(node)-1;z>=0;z--) { r.unshift(run(node.v[z], env)); } return k(3,r);
 	}
+	if (node.t == 4) { return md(node.k, kmap(node.v, function(x) { return run(x, env); })); }
 	if (node.t == 5 && node.r) { return call(node, k(3,[run(node.r, env)]), env); }
 	if (node.t == 6) { env.put(node.v, false, node); return node; }
 	if (node.t == 7) {
