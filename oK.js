@@ -144,6 +144,7 @@ function drop(x, y) {
 }
 
 function take(x, y) {
+	if (x.t == 5 || x.t == 8 || x.t == 9) { return call(filterimpl, k(3, [x,y])); }
 	if (y.t == 4) { return md(take(x, y.k), take(x, y.v)); }
 	if (y.t != 3 || len(y) == 0) { y = enlist(y); }
 	var s=n(x).v<0?kmod(x.v, len(y)):0;
@@ -738,6 +739,9 @@ function applycallright(node) {
 }
 
 function applyindexright(node) {
+	if (node.sticky && at(VERB)) {
+		var x = parseNoun(); x.l = node; x.r = parseEx(parseNoun()); return x;
+	}
 	while (matches(OPEN_B)) { node = asVerb(".", node, k(3, parseList(CLOSE_B))); }
 	return node;
 }
@@ -935,6 +939,7 @@ function baseEnv() {
 var packimpl   = parse("{+/y*|*\\1,|1_(#y)#x}")[0];
 var unpackimpl = parse("{(1_r,,y)-x*r:|y(_%)\\|x}")[0];
 var spliceimpl = parse("{,/(*x;$[99<@z;z x 1;z];*|x:(0,y)_x)}")[0];
+var filterimpl = parse("{y@&x'y}")[0];
 
 // export the public interface:
 function setIO(symbol, slot, func) {

@@ -18,6 +18,15 @@ If your predicate consists of atomic primitives, you can avoid the `each` (`'`).
 
 The use of `where` to solve this kind of problem is an extremely important concept.
 
+K5 adds a special overload to `take` (`#`) which simplifies this pattern, performing essentially `x@&y'x`:
+
+	  (2!)#!8
+	1 3 5 7
+	
+	  {x~|x}#("racecar";"nope";"bob")
+	("racecar"
+	 "bob")
+
 Case Selection
 --------------
 K offers an equivalent to "if" statements in the form of the 3 or more argument version of `$`, sometimes called `cond` for its semantic similarity to the Lisp statement:

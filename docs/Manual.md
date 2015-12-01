@@ -359,6 +359,17 @@ As a general note, verbs which operate on numbers will coerce characters to thei
   2 0N#!8
 (0 1 2 3
  4 5 6 7)</code></pre>
+
+		<tt>m#l</tt> is <b>filter</b>.<br>
+		Equivalent to <tt>l@&m'l</tt>.
+<pre><code>  (2!)#!8
+1 3 5 7
+  (&/)#(1 0 1 1;1 1;0 1 0;1 2 1)
+(1 1
+ 1 2 1)
+  {x~|x}#("racecar";"nope";"bob")
+("racecar"
+ "bob")</code></pre>
 	</td>
 </tr>
 <tr>
