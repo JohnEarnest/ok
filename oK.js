@@ -300,7 +300,7 @@ function eachpc(dyad, x, y, env) {
 function over(dyad, x, env) {
 	var specials = {"+":k0, "*":k1, "|":k(0,-1/0), "&":k(0,1/0)};
 	if (x.t == 3 && len(x) < 1 && dyad.v in specials) { return specials[dyad.v]; }
-	if (x.t == 3 && len(x) == 1 && dyad.v == ",") { return x; }
+	if (x.t == 3 && len(x) == 1 && dyad.v == ",") { return x.v[0].t != 3 ? x : x.v[0]; }
 	if (x.t != 3 || len(x) < 1) { return x; }
 	return x.v.reduce(function(x, y) { return applyd(dyad, x, y, env); });
 }

@@ -639,6 +639,10 @@ test("{(2!)#!6}"                      , "{((2!))#!6}"                         );
 test("(&/)#(1 0 1 1;1 1;0 1 0;1 2 1)" , "(1 1\n 1 2 1)"                       );
 test('{x~|x}#("racecar";"nope";"bob")', '("racecar"\n "bob")'                 );
 
+test(",/,1 1"                         , "1 1"                                 );
+test(',/,"ab"'                        , '"ab"'                                );
+test(",/,()"                          , "()"                                  );
+
 // sorting strings must be special cased!
 //test('<("Beta";"Alpha";"Gamma")', "1 0 2");
 
