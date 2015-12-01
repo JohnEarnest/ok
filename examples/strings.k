@@ -23,7 +23,7 @@
 {|/(y~)',/(1_)\',\x}["hneay";"ne"]                           / 16. string contains a substring?
 *>#:'="abdbbac"                                              / 17. most frequently occurring char
 {,/y\x}["peeled";"e"]                                        / 18. remove instances of a character
-t@*&{x~|x}'t@:>#:'t:,/(-1_)\'(1_)\"issrawar"                 / 19. longest palindrome substring
+*{x~|x}#t@:>#:'t:,/(-1_)\'(1_)\"issrawar"                    / 19. longest palindrome substring
 {x@<#:'x}("am";"i";"you";"they")                             / 20. sort list of strings by length
 
 )
