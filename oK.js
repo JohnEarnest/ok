@@ -143,8 +143,8 @@ function drop(x, y) {
 	return (y.t != 3 || len(y) < 1) ? y : k(3, n(x).v<0 ? y.v.slice(0,x.v) : y.v.slice(x.v));
 }
 
-function take(x, y) {
-	if (x.t == 5 || x.t == 8 || x.t == 9) { return call(filterimpl, k(3, [x,y])); }
+function take(x, y, env) {
+	if (x.t == 5 || x.t == 8 || x.t == 9) { return ar(atl)(y, where(each(x, y, env)), env); }
 	if (y.t == 4) { return md(take(x, y.k), take(x, y.v)); }
 	if (y.t != 3 || len(y) == 0) { y = enlist(y); }
 	var s=n(x).v<0?kmod(x.v, len(y)):0;
@@ -939,7 +939,6 @@ function baseEnv() {
 var packimpl   = parse("{+/y*|*\\1,|1_(#y)#x}")[0];
 var unpackimpl = parse("{(1_r,,y)-x*r:|y(_%)\\|x}")[0];
 var spliceimpl = parse("{,/(*x;$[99<@z;z x 1;z];*|x:(0,y)_x)}")[0];
-var filterimpl = parse("{y@&x'y}")[0];
 
 // export the public interface:
 function setIO(symbol, slot, func) {
