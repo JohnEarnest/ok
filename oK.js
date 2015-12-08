@@ -215,9 +215,9 @@ function flip(x) {
 function asc(x) {
 	if (x.t == 4) { return ar(atl)(x.k, asc(x.v)); }
 	return k(3, l(x).v.map(function(x,i) { return k(0, i); }).sort(function(a, b) {
-		if (less(x.v[a.v], x.v[b.v]).v) { return -1; }
-		if (more(x.v[a.v], x.v[b.v]).v) { return  1; }
-		return 0;
+		var av = x.v[a.v]; if (s(av)) { av = ks(ktos(av)); }
+		var bv = x.v[b.v]; if (s(bv)) { bv = ks(ktos(bv)); }
+		return (less(av,bv).v) ? -1 : (more(av,bv).v) ? 1 : 0;
 	}));
 }
 
@@ -225,6 +225,7 @@ function where(x) {
 	if (x.t != 3) { x=enlist(x); } var r=[]; for(var z=0;z<len(x);z++) {
 		for(var t=0;t<p(x.v[z]);t++) { r.push(k(0, z)); }
 	} return k(3,r);
+	//return over({t:8,v:","}, kzip(x, iota(count(x)), take));
 }
 
 function group(x) {
@@ -448,12 +449,13 @@ function applyverb(node, args, env) {
 		(left ? r(left, right, env) : r(right, env)));
 }
 
-function valence(node) {
+function valence(node, env) {
 	if (node.t == 5)     {
 		if (!node.curry) { return node.args.length; } var r=node.args.length;
 		for(var z=0;z<node.curry.length;z++) { if (!isnull(node.curry[z]).v) { r--; } } return r;
 	}
-	if (node.t == 9 && node.v == "'") { return valence(node.verb); }
+	if (node.t == 7) { return valence(env.lookup(node.v)); }
+	if (node.t == 9 && node.v == "'") { return valence(node.verb, env); }
 	if (node.t == 9)     { return 1; }
 	if (node.t != 8)     { return 0; }
 	if (node.forcemonad) { return 1; }
@@ -476,7 +478,7 @@ var adverbs = {
 
 function applyadverb(node, verb, args, env) {
 	if (verb.t == 7) { verb = run(verb, env); }
-	var r = null; var v = valence(verb);
+	var r = null; var v = valence(verb, env);
 	if (v == 0) { return applyverb(k(8,node.v), [verb, args[1]], env); }
 	if (v == 1 && !args[0]) { r = adverbs[node.v][0]; }
 	if (v == 2 && !args[0]) { r = adverbs[node.v][1]; }
@@ -538,7 +540,7 @@ function atdepth(x, y, i, env) {
 }
 
 function call(x, y, env) {
-	if (x.sticky) { return (valence(x.sticky)==1?applym:applyd)(x, y.v[0], y.v[1]); }
+	if (x.sticky) { return (valence(x.sticky, env)==1?applym:applyd)(x, y.v[0], y.v[1]); }
 	if (x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : dget(x, y); }
 	if (x.t == 2) { x = env.lookup(x.v, true); }
 	if (y.t == 0) { return atd(x, y, env); }
