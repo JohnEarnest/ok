@@ -676,8 +676,11 @@ desc[CLOSE_B]="']'"   ;desc[CLOSE_P]="')'"    ;desc[CLOSE_C]="'}'";
 var text = "";
 var funcdepth = 0;
 function begin(str) {
-	str = str.replace(/\s\/[^\n]*/g, "");                          // strip comments
-	str = str.replace(/([A-Za-z0-9\]\)])-(\d|(\.\d))/g, "$1- $2"); // minus ambiguity
+	// match string or comment or ambiguous minus that should be a verb
+	str = str.replace(/("(?:[^"\\\n]|\\.)*")|(\s\/.*)|([a-z\d\]\)]-\.?\d)/gi, function(_, x, y, z) {
+		// preserve a string (x), remove a comment (y), disambiguate a minus sign (z)
+		return x ? x : y ? "" : z.replace('-', '- ')
+	})
 	text = str.trim().replace(/\n/g, ";"); funcdepth = 0;
 }
 function done()         { return text.length < 1; }
