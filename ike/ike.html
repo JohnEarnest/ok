@@ -175,6 +175,15 @@ function extendedEnv() {
 	env.put("acos", true, k(13, am(function(x) { return k(0, Math.acos(n(x).v)) })));
 	env.put("asin", true, k(13, am(function(x) { return k(0, Math.asin(n(x).v)) })));
 	env.put("atan", true, k(13, am(function(x) { return k(0, Math.atan(n(x).v)) })));
+	env.put("sinh", true, k(13, am(function(x) { // {.5*(exp x)-exp-x}
+		x=n(x).v; return k(0, .5*Math.exp(x)-Math.exp(-x));
+	})));
+	env.put("cosh", true, k(13, am(function(x) { // {.5*(exp x)+exp-x}
+		x=n(x).v; return k(0, .5*Math.exp(x)+Math.exp(-x));
+	})));
+	env.put("tanh", true, k(13, am(function(x) { // {(sinh x)%cosh x}
+		x=n(x).v; return k(0, (Math.exp(x)-Math.exp(-x))/(Math.exp(x)+Math.exp(-x)));
+	})));
 	trampoline(env, "atan2", ["x", "y"],      katan2);
 	trampoline(env, "pn"   , ["x", "y", "z"], knoise);
 	return env;
