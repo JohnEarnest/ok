@@ -36,6 +36,10 @@ This makes it very easy to draw many identical objects simulatenously. If the "p
 
 If the "bitmap" element of any drawing tuple is a number or a vector, it will be drawn as a single pixel or a horizontal strip of pixels, respectively. Drawing single pixels in this way is generally quite inefficient, but drawing horizontal strips in combination with a vector of positions can produce some interesting "rasterbar" effects.
 
+If the tuple does not contain a bitmap, it represents drawing a filled polygon. The 0th palette color will be used for drawing the edges of the polygon (stroke) and the 1st palette color will be used to fill the polygon:
+
+	draw: ,((10 10;20 10;15 20);cga@3 2)
+
 Input Events
 ------------
 For dynamic behavior, iKe will call a number of K functions (provided they have been defined) whenever certain events occur:

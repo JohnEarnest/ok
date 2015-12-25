@@ -577,8 +577,8 @@ function pixel(g, x, y, pal, i) {
 }
 
 function paintEach(g, v) {
+	if (v.length < 2) { return; }
 	// (position; palette; bitmap)
-	if (v.length < 3) { return; }
 	// position(s):
 	var pos = getvar(v[0]); if (pos.t != 3 && !isnull(pos).v) { return; }
 	var px = []; var py = [];
@@ -592,6 +592,10 @@ function paintEach(g, v) {
 	if (pal._tojs_cached === undefined)
 		pal._tojs_cached = tojs(pal);
 	var colors = pal._tojs_cached;
+	if (v.length == 2) {
+		paintEachVector(g, px, py, colors);
+		return;
+	}
 	// sprite:
 	var img = getvar(v[2]);
 	if (img.t == 0) {
@@ -627,6 +631,19 @@ function paintEach(g, v) {
 			}
 		}
 	}
+}
+
+function paintEachVector(g, px, py, pal) {
+	if (px.length < 1) { return; }
+	g.strokeStyle = (pal.length > 0) ? pal[0] : "#FFFFFF";
+	g.fillStyle   = (pal.length > 1) ? pal[1] : "rgba(0,0,0,0)";
+	g.lineWidth = 1;
+	g.beginPath();
+	g.moveTo(px[0] * SCALE, py[0] * SCALE);
+	for(var z=1; z<px.length; z++) { g.lineTo(px[z] * SCALE, py[z] * SCALE); }
+	g.closePath();
+	g.fill();
+	g.stroke();
 }
 
 editor.onkeydown = function(event) {
