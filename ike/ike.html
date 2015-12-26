@@ -247,6 +247,16 @@ var frame  = 0;
 var click  = false;
 var tickTimeout = null;
 var drawTimeout = null;
+var playTimeout = null;
+
+var audio;
+var soundSource;
+var sampleMult;
+var soundBuffer;
+var soundSource;
+var bufferedAudio = [];
+var sampleCount = 0;
+var SAMPLE_QUOTA = 1000;
 
 function loadExample() {
 	stop();
@@ -344,13 +354,13 @@ function callk(n) {
 function callk1(n, x) {
 	setvars();
 	try { var v = env.lookup(n, true);
-		try { call(v, k(3, [num(x)])); } catch(e) { console.log(e.message); }
+		try { return call(v, k(3, [num(x)])); } catch(e) { console.log(e.message); }
 	} catch(e) {}
 }
 function callk2(n, x, y) {
 	setvars();
 	try { var v = env.lookup(n, true);
-		try { call(v, k(3, [num(x), num(y)])); } catch(e) { console.log(e.message); }
+		try { return call(v, k(3, [num(x), num(y)])); } catch(e) { console.log(e.message); }
 	} catch(e) {}
 }
 function setvars() {
@@ -467,6 +477,7 @@ function play() {
 				drawTimeout = setTimeout(paint, PER_FRAME);
 				tickTimeout = setTimeout(update, PER_FRAME);
 				running = true;
+				audioPlay();
 			}
 		}
 		catch(e) {
@@ -475,6 +486,7 @@ function play() {
 			if (canvas == document.getElementById("fullcanvas")) {
 				closefullscreen();
 			}
+			clearTimeout(playTimeout);
 		}
 	});
 }
@@ -486,6 +498,8 @@ function stop() {
 	running = false;
 	clearTimeout(tickTimeout);
 	clearTimeout(drawTimeout);
+	clearTimeout(playTimeout);
+	audioStop();
 }
 function fullscreen() {
 	canvas = document.getElementById("fullcanvas");
@@ -644,6 +658,68 @@ function paintEachVector(g, px, py, pal) {
 	g.closePath();
 	g.fill();
 	g.stroke();
+}
+
+function audioSetup() {
+	if (audio && soundSource) { return true; }
+	if (!audio) {
+		if (typeof webkitAudioContext !== 'undefined') {
+			audio = new webkitAudioContext();
+		}
+		else if (typeof AudioContext !== 'undefined') {
+			audio = new AudioContext();
+		}
+	}
+	if (audio) {
+		sampleMult  = Math.floor(audio.sampleRate / 8000);
+		soundBuffer = audio.createBuffer(1, 1000*sampleMult, audio.sampleRate);
+		soundSource = audio.createBufferSource();
+		soundSource.buffer = soundBuffer;
+		soundSource.connect(audio.destination);
+		soundSource.loop = true;
+		soundSource.start(0);
+		return true;
+	}
+	return false;
+}
+function audioPlay() {
+	if (running) { playTimeout = setTimeout(audioPlay, 1000/10); }
+	if (running && "play" in env.d && audioSetup()) {
+		while(bufferedAudio.length < SAMPLE_QUOTA) {
+			var samples = null;
+			if (env.d["play"].t == 3) {
+				samples = env.d["play"];
+			}
+			else {
+				console.log(sampleCount);
+				samples = callk1("play", sampleCount);
+				if (samples.t == 0) { samples = k(3, [samples]); }
+			}
+			sampleCount += len(samples);
+			for(var z = 0; z < len(samples); z++) {
+				bufferedAudio.push(samples.v[z].v);
+			}
+		}
+		var buff = soundBuffer.getChannelData(0);
+		for(var sample = 0; sample < SAMPLE_QUOTA; sample++) {
+			var value = bufferedAudio[sample];
+			for(var z = 0; z < sampleMult; z++) {
+				buff[sample*sampleMult + z] = value; // [-1.0, 1.0]
+			}
+		}
+		bufferedAudio = bufferedAudio.slice(SAMPLE_QUOTA);
+	}
+	else {
+		audioStop();
+	}
+}
+function audioStop() {
+	if (soundSource != null) {
+		soundSource.stop(0);
+		soundSource.disconnect();
+		soundSource = null;
+		sampleCount = 0;
+	}
 }
 
 editor.onkeydown = function(event) {

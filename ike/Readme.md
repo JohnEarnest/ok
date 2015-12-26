@@ -40,6 +40,18 @@ If the tuple does not contain a bitmap, it represents drawing a filled polygon. 
 
 	draw: ,((10 10;20 10;15 20);cga@3 2)
 
+Sound
+-----
+To add sound to your programs, define a monadic function or variable named `play`. Sound playback further requires a definition of `draw`. iKe plays waveforms at 8khz from a sequence of samples in the range [-1.0, 1.0]. If `play` is a list or scalar it will be repeated as necessary to supply 8000 samples every second:
+
+	draw: ,(;;)
+	play: .2*?500 / a short noise sample
+
+If `play` is a function, it will be called with a single argument indicating the number of samples which have been produced since the program started. This function will be called periodically whenever the audio subsystem requires more samples. For best performance, it is a good idea to produce a number of samples on each call and return them as a list, rather than one at a time. Here's an example which plays a sine wave:
+
+	draw: ,(;;)
+	play: {.2*sin .2*x+!1000}
+
 Input Events
 ------------
 For dynamic behavior, iKe will call a number of K functions (provided they have been defined) whenever certain events occur:
