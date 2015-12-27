@@ -359,7 +359,12 @@ function am(monad) { // create an atomic monad
 }
 function ad(dyad) { // create an atomic dyad
 	return function recur(left, right, env) {
-		if (left.t == 4 && right.t == 4) { return md(left.k, recur(left.v, right.v, env)); }
+		if (left.t == 4 && right.t == 4) {
+			var r=md(k(3,[]),k(3,[]));
+			kmap(unique(cat(left.k,right.k)), function(k) {
+				var a=dget(left,k), b=dget(right,k); dset(r,k,a==NA?b:b==NA?a:dyad(a,b,env));
+			}); return r;
+		}
 		if (left.t  == 4) { return md(left.k,  recur(left.v, right, env)); }
 		if (right.t == 4) { return md(right.k, recur(left, right.v, env)); }
 		if (left.t != 3 && right.t != 3) { return dyad(left, right, env); }
