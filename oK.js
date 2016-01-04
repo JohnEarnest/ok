@@ -24,6 +24,7 @@ var typenames = [
 	"nil"       , // 11 :
 	"cond"      , // 12 : body (list of expressions)
 	"native"    , // 13 : conceptually a verb
+	"quote"     , // 14 : value (for quoting verbs/etc as a value)
 ];
 
 var NIL = ks("");
@@ -360,8 +361,7 @@ function am(monad) { // create an atomic monad
 function ad(dyad) { // create an atomic dyad
 	return function recur(left, right, env) {
 		if (left.t == 4 && right.t == 4) {
-			var r=md(k(3,[]),k(3,[]));
-			kmap(unique(cat(left.k,right.k)), function(k) {
+			var r=md(k(3,[]),k(3,[])); kmap(unique(cat(left.k,right.k)), function(k) {
 				var a=dget(left,k), b=dget(right,k); dset(r,k,a==NA?b:b==NA?a:dyad(a,b,env));
 			}); return r;
 		}
@@ -571,6 +571,7 @@ function call(x, y, env) {
 
 function run(node, env) {
 	if (node == null) { return k(11); }
+	if (node.t == 14) { return run(node.v, env); }
 	if (node instanceof Array) {
 		var r; for(var z=0;z<node.length;z++) { r=run(node[z], env); } return r;
 	}
@@ -713,6 +714,7 @@ function findNames(node, names) {
 	if (node.r)                { findNames(node.r, names); }
 	if (node.verb)             { findNames(node.verb, names); }
 	if (node.curry)            { findNames(node.curry, names); }
+	if (node.t == 14)          { findNames(node.v, names); }
 	return names;
 }
 
@@ -864,7 +866,10 @@ function parseAdverb(left, verb) {
 function parseEx(node) {
 	if (node == null) { return null; }
 	if (at(ADVERB)) { return parseAdverb(null, node); }
-	if (node.t == 8 && !node.r) { node.r = parseEx(parseNoun()); node.sticky = null; }
+	if (node.t == 8 && !node.r) {
+		var p = at(OPEN_P); var x = parseNoun();
+		node.r = parseEx((p && x.t == 8) ? k(14, x) : x); node.sticky = null;
+	}
 	if (atNoun() && !at(IOVERB)) {
 		var x = parseNoun();
 		if (at(ADVERB)) { return parseAdverb(node, x); }
@@ -934,6 +939,7 @@ function format(k, indent) {
 	if (k.t == 11) { return ""; }
 	if (k.t == 12) { return "$["+format(k.v)+"]"; }
 	if (k.t == 13) { return "(native)"; }
+	if (k.t == 14) { return "("+format(k.v)+")"; }
 }
 
 // js natives and k natives:

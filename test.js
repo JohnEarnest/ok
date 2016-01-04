@@ -52,7 +52,8 @@ function files() {
 		"examples/strings.k",
 		"examples/treedepth.k",
 		"examples/idioms.k",
-		"examples/runlength.k"
+		"examples/runlength.k",
+		"examples/lexicographic.k",
 	];
 	for(var z=0;z<sourcefiles.length;z++) {
 		var program = fs.readFileSync(sourcefiles[z], { encoding:'utf8' });
@@ -650,6 +651,15 @@ test("[a:1;b:2]+[b:1;a:2]"            , "[a:3;b:3]"                           );
 test("[a:1;b:2;c:3]+[b:4;c:5;a:6]"    , "[a:7;b:6;c:8]"                       );
 test("[a:1;b:2;c:3]+[b:4;c:5]"        , "[a:1;b:6;c:8]"                       );
 test("[a:1;b:2]+[b:4;c:5;a:6]"        , "[a:7;b:6;c:5]"                       );
+
+test("#,(+)"                          , "1"                                   );
+test("#,(+=)"                         , "1"                                   );
+test("*,(+=)"                         , "(+=)"                                );
+test("#(+;-)"                         , "2"                                   );
+test("(*,(-:))@5"                     , "-5"                                  );
+test("?(,1),2"                        , "1 2"                                 );
+test("{*|&(x@y-1)<x}"                 , "{[x;y]*|&(x@y-1)<x}"                 );
+test('{&("ABC"@1)<"ABC"}[]'           , ",2"                                  );
 
 //test(".[3 3#0;(0 1;0 1);:;2 2#!4]"    , "(0 1 0\n 2 3 0\n 0 0 0)"             );
 //test("a:3 3#0;a[0 1;0 1]:2 2#!4"      , "(0 1 0\n 2 3 0\n 0 0 0)"             );
