@@ -697,7 +697,7 @@ function audioPlay() {
 			}
 			sampleCount += len(samples);
 			for(var z = 0; z < len(samples); z++) {
-				bufferedAudio.push(samples.v[z].v);
+				bufferedAudio.push(samples.v ? samples.v[z].v : 0);
 			}
 		}
 		var buff = soundBuffer.getChannelData(0);
