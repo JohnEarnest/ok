@@ -164,8 +164,10 @@ var trampoline = function(env, name, args, body) {
 }
 
 var katan2 = function(x, y) { return k(0, Math.atan2(n(x).v, n(y).v)); }
+var kpow   = function(x, y) { return k(0, Math.pow  (n(x).v, n(y).v)); }
 var knoise = function(a)    { return k(0, perlinnoise(n(a[0]).v, n(a[1]).v, n(a[2]).v)); }
 verbs["atan2"] = [null, null, ad(katan2), ad(katan2), ad(katan2), ad(katan2), null,   null];
+verbs["pow"  ] = [null, null, ad(kpow)  , ad(kpow)  , ad(kpow)  , ad(kpow)  , null,   null];
 verbs["pn"   ] = [null, null, null,       null,       null,       null,       knoise, null];
 
 function extendedEnv() {
@@ -185,6 +187,7 @@ function extendedEnv() {
 		x=n(x).v; return k(0, (Math.exp(x)-Math.exp(-x))/(Math.exp(x)+Math.exp(-x)));
 	})));
 	trampoline(env, "atan2", ["x", "y"],      katan2);
+	trampoline(env, "pow"  , ["x", "y"],      kpow);
 	trampoline(env, "pn"   , ["x", "y", "z"], knoise);
 	return env;
 }
