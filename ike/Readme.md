@@ -42,7 +42,7 @@ If the tuple does not contain a bitmap, it represents drawing a filled polygon. 
 
 Sound
 -----
-To add sound to your programs, define a monadic function or variable named `play`. Sound playback further requires a definition of `draw`. iKe plays waveforms at 8khz from a sequence of samples in the range [-1.0, 1.0]. If `play` is a list or scalar it will be repeated as necessary to supply 8000 samples every second:
+To add sound to your programs, define a monadic function or variable named `play`. Sound playback further requires a definition of `draw`. iKe plays waveforms at a sample rate given by the variable `srate` with samples in the range [-1.0, 1.0]. If `play` is a list or scalar it will be repeated as necessary to supply continuous audio:
 
 	draw: ,(;;)
 	play: .2*?500 / a short noise sample

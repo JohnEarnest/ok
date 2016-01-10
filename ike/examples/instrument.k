@@ -12,5 +12,5 @@ note:   {440*pow[2;x%12]}                         / freq. relative to a4
 freq:   (~color=2)*(note'-9+!18)@-1+\~color=2     / c4-f5 with key gaps
 gain:   0.25                                      / volume scale
 mix:    {(+/x)%#x}                                / arithmetic average
-osc:    {sin (y%8000)*x*2*pi}                     / (frequency;sample)
-play:   {gain*mix@+osc[0,freq@&held]'x+!1000}
+osc:    {sin (y%srate)*x*2*pi}                    / (frequency;sample)
+play:   {gain*mix@+osc[0,freq@&held]'x+!250}

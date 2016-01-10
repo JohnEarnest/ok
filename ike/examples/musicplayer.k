@@ -21,9 +21,9 @@ freq:  0,note'-21+!24                            / two octaves starting at c3
 gain:  0.25                                      / volume scale
 tempo: 1000                                      / samples per note
 mix:   {(+/x)%#x}                                / arithmetic average
-osi:   {    sin x*2*pi*y%8000}                   / sine oscillator
-osq:   {_.5+sin x*2*pi*y%8000}                   / square oscillator
-ost:   {     1! x*     y%8000}                   / sawtooth oscillator
+osi:   {    sin x*2*pi*y%srate}                  / sine oscillator
+osq:   {_.5+sin x*2*pi*y%srate}                  / square oscillator
+ost:   {     1! x*     y%srate}                  / sawtooth oscillator
 step:  {freq@song@(#song)!_x%tempo}              / frequencies of a step in the song
 play:  {gain*mix@((ost;osi)@'step x)@\:x+!1000}  / generate blended waveform
 draw:  (;;)

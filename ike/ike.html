@@ -657,6 +657,7 @@ function paintEachVector(g, px, py, pal) {
 var sampleCount   = 0;
 var sampleRem     = 0;
 var sampleIndex   = 0;
+var sampleMult    = 4;
 var bufferedAudio = [];
 
 function getAudioSample() {
@@ -688,7 +689,6 @@ function getAudioSample() {
 
 var audio;
 var soundSource;
-var sampleMult;
 var scriptNode;
 
 function audioSetup() {
@@ -703,7 +703,6 @@ function audioSetup() {
 	}
 	if (audio) {
 		soundSource = audio.createBufferSource();
-		sampleMult  = Math.floor(audio.sampleRate / 8000);
 		scriptNode  = audio.createScriptProcessor(4096, 1, 1);
 		
 		scriptNode.onaudioprocess = function(audioProcessingEvent) {
@@ -713,6 +712,7 @@ function audioSetup() {
 				var inputData  = inputBuffer.getChannelData(channel);
 				var outputData = outputBuffer.getChannelData(channel);
 				if ("play" in env.d) {
+					setvar("srate", num(Math.floor(outputBuffer.sampleRate / sampleMult)));
 					for(var sample = 0; sample < inputBuffer.length; sample += 1) {
 						outputData[sample] = getAudioSample();
 					}
