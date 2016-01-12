@@ -459,6 +459,8 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<tt>n?l</tt> picks random elements from y.
 <pre><code>  8?"ABC"
 "ACBBCBCB"</code></pre>
+
+		For <tt>n?n</tt> or <tt>n?l</tt>, if x is negative the result will pick abs(x) distinct items.
 	</td>
 </tr>
 <tr>

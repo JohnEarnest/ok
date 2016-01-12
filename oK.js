@@ -202,8 +202,9 @@ function cut(x, y) {
 }
 
 function rnd(x, y, env) {
-	if (y.t == 3) { return ar(atl)(y, rnd(x, k(0, len(y)))); }
-	p(y); return kmap(iota(x), function(x){ return k(0,Math.floor(Math.random()*y.v)); });
+	if (y.t == 3) { return ar(atl)(y, rnd(x, k(0, len(y)))); } p(y);
+	if (n(x).v<0) { if (-x.v>y.v) throw new Error("length error."); return take(x,asc(real(y))); }
+	return kmap(iota(x), function(x){ return k(0,Math.floor(Math.random()*y.v)); });
 }
 
 function flip(x) {
