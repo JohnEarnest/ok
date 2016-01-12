@@ -9,7 +9,7 @@ var bufferedAudio = [];
 
 function getAudioSample() {
 	// multiply samples out:
-	if (sampleRem == SAMPLE_MULT) { sampleRem = 0; sampleIndex++; }
+	if (sampleRem == SAMPLE_MULT-1) { sampleRem = 0; sampleIndex++; }
 	else { sampleRem++; }
 	
 	// fetch more samples from K if we're out of buffered ones:

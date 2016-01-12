@@ -19,7 +19,7 @@ song:  +(m1,m2,m1,m3; h1,h2,h1,h2)
 note:  {440*pow[2;x%12]}                         / freq. relative to a4 
 freq:  0,note'-21+!24                            / two octaves starting at c3
 gain:  0.25                                      / volume scale
-tempo: 1000                                      / samples per note
+tempo: 1500                                      / samples per note
 mix:   {(+/x)%#x}                                / arithmetic average
 osi:   {    sin x*2*pi*y%srate}                  / sine oscillator
 osq:   {_.5+sin x*2*pi*y%srate}                  / square oscillator
