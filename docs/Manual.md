@@ -558,6 +558,7 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 
 Adverb Reference
 ----------------
+As a general note, niladic functions may be used where monadic functions are valid adverb arguments; they will ignore any inputs.
 
 ['](#each) [':](#eachprior) [/:](#eachright) [\:](#eachleft) [/](#over) [\ ](#scan)
 

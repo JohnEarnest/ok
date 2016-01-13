@@ -473,7 +473,7 @@ function valence(node, env) {
 }
 
 var adverbs = {
-	//       mv          dv          l-mv         l-dv
+	//       mv/nv       dv          l-mv         l-dv
 	"':"  : [null,       eachprior,  null,        eachpc   ],
 	"'"   : [each,       eachd,      eachd,       eachd    ],
 	"/:"  : [null,       null,       eachright,   eachright],
@@ -485,11 +485,12 @@ var adverbs = {
 function applyadverb(node, verb, args, env) {
 	if (verb.t == 7) { verb = run(verb, env); }
 	var r = null; var v = valence(verb, env);
-	if (v == 0) { return applyverb(k(8,node.v), [verb, args[1]], env); }
-	if (v == 1 && !args[0]) { r = adverbs[node.v][0]; }
-	if (v == 2 && !args[0]) { r = adverbs[node.v][1]; }
-	if (v == 1 &&  args[0]) { r = adverbs[node.v][2]; }
-	if (v == 2 &&  args[0]) { r = adverbs[node.v][3]; }
+	if (v == 0 && verb.t != 5) { return applyverb(k(8,node.v), [verb, args[1]], env); }
+	if (v == 0 && verb.t == 5) { v = 1; }
+	if (v == 1 && !args[0])    { r = adverbs[node.v][0]; }
+	if (v == 2 && !args[0])    { r = adverbs[node.v][1]; }
+	if (v == 1 &&  args[0])    { r = adverbs[node.v][2]; }
+	if (v == 2 &&  args[0])    { r = adverbs[node.v][3]; }
 	if (!r) { throw new Error("invalid arguments to "+node.v+" ["+
 		(args[0]?format(args[0])+" ":"")+" "+format(verb)+" (valence "+v+"), "+format(args[1])+"]");
 	}
@@ -564,7 +565,7 @@ function call(x, y, env) {
 			curry[z]=y.v[i++];
 		}
 		if (!all) { return { t:5, v:x.v, args:x.args, env:x.env, curry:curry }; }
-		if (i < len(y)) { throw new Error("valence error."); }
+		if (i < len(y) && x.args.length != 0) { throw new Error("valence error."); }
 		for(var z=0;z<x.args.length;z++) { environment.put(x.args[z], false, curry[z]); }
 	}
 	return run(x.v, environment);
