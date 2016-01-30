@@ -636,7 +636,7 @@ function amendd(d, i, y, dyad, env) {
 function dmend(d, i, y, f, env) {
 	if (i.t != 3) { (y?amendd:amendm)(d, i, y, f, env); return; }
 	if (len(i) == 1) { dmend(d, i.v[0], y, f, env); return; }
-	var rest = drop(k1,i); if (len(i)<1) { throw new Error("index error."); } if (i.v[0].t == 3) {
+	var rest = drop(k1,i); if (len(i)<1) { return; } if (i.v[0].t == 3) {
 		if (y && y.t == 3) { kzip(i, y, function(a, b) { amendd(d, a, b, f, env); }); return; }
 		kmap(i.v[0],function(x) { dmend(atl(d,x,env), rest, y, f, env); });
 	}
