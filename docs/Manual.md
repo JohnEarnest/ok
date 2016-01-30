@@ -173,6 +173,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<tt>n!n</tt> is <b>mod</b>. Take y modulo x. Right atomic.
 <pre><code>  3!34 2 8
 1 2 2</code></pre>
+		If <tt>n</tt> is negative, divide y by x and truncate. Right atomic.
+<pre><code>  -3!5 6 27
+1 2 9</code></pre>
 		<tt>l!l</tt> is <b>map</b>. Make dictionary from x keys and y value(s). Right atomic.
 <pre><code>  `a`b!3 4
 [a:3;b:4]
