@@ -297,7 +297,10 @@ function processLine() {
 	if (prompt.value == "kOS") { printRepl("one system/all devices"); return; }
 	if (prompt.value.lastIndexOf("\\u") == 0) {
 		var code = prompt.value.slice(2);
-		var url = document.location + "?run=" + encodeURIComponent(code);
+		var enc = encodeURIComponent(code).replace(/[!'()*]/g, function(c) {
+			return '%' + c.charCodeAt(0).toString(16);
+		});
+		var url = document.location + "?run=" + enc;
 		printRepl("oK code url:");
 		printRepl("<a href=\""+url+"\" target='_blank'>"+url+"</a>");
 		return;
