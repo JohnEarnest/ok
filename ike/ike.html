@@ -600,7 +600,7 @@ function paintEach(g, v) {
 	else if (pos.v[0].t == 3) { for(var z=0; z < len(pos); z++) { position(pos.v[z], px, py); } }
 	else { return; }
 	// palette:
-	var pal = getvar(v[1]); if (pal.t != 3) { return; }
+	var pal = getvar(v[1]); if (pal.t == 11) { pal = cga; } if (pal.t != 3) { return; }
 	if (pal._tojs_cached === undefined)
 		pal._tojs_cached = tojs(pal);
 	var colors = pal._tojs_cached;

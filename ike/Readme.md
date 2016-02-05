@@ -26,13 +26,17 @@ Tuples will be drawn in the order they appear. For improved flexibility, any fie
 
 Observe how in the first example the box is drawn at a different position every time, but in the second example it is drawn in a consistent position as `2?w` is only evaluated once and then stored.
 
-If the "position" element of any drawing tuple is a matrix instead of a vector, the bitmap will be drawn several times at each (x;y) pair:
+If the "position" element of any drawing tuple is a matrix instead of a vector, the bitmap will be drawn several times at each (x;y) pair. This makes it very easy to draw many identical objects simulatenously:
 
 	draw: {,((5 5;30 5;18 20);`lcd;text@6)}
 
-This makes it very easy to draw many identical objects simulatenously. If the "position" element is null, the bitmap will be drawn centered on the screen:
+If the "position" element is null, the bitmap will be drawn centered on the screen:
 
 	draw: ,(;cga;50 30#2)
+
+If the "palette" element is null, the bitmap will be drawn using the built-in palette `cga`:
+
+	draw: ,(;;t+\:t:3!-20!!160)
 
 If the "bitmap" element of any drawing tuple is a number or a vector, it will be drawn as a single pixel or a horizontal strip of pixels, respectively. Drawing single pixels in this way is generally quite inefficient, but drawing horizontal strips in combination with a vector of positions can produce some interesting "rasterbar" effects.
 
@@ -113,7 +117,7 @@ iKe provides a number of pre-defined palettes. Since transparency is useful, the
 iKe also provides a built-in 8x8 character set called `text`:
 
 	t: ~,/'+text@`i$"Hello, World!"
-	draw: {,(0 0;`cga;`t)}
+	draw: ,(0 0;cga;t)
 
 The character set is aligned with 7-bit ASCII and control characters are replaced with some useful graphic characters including symbols and box drawing characters:
 
