@@ -180,6 +180,7 @@ function reshape(x, y) {
 
 function match(x, y) {
 	if (x.t != y.t) { return k0; }
+	if (x.t == 4) { return min(match(x.k, y.k), match(x.v, y.v)); }
 	if (x.t != 3) { return equal(x, y); }
 	if (len(x) != len(y)) { return k0; }
 	return kb(x.v.every(function(x,i) { return match(x, y.v[i]).v; }));
