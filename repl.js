@@ -43,16 +43,18 @@ function write(x, y) {
 for (var i = 0; i < 2; i++) { ok.setIO('0:', i, read ); }
 for (var i = 2; i < 6; i++) { ok.setIO('0:', i, write); }
 
+var env = ok.baseEnv();
+
 // process filename.k as a command-line arg
-if (process.argv.length === 3) {
+if (process.argv.length > 2) {
 	var program = fs.readFileSync(process.argv[2], 'utf8');
-	process.stdout.write(ok.format(ok.run(ok.parse(program), ok.baseEnv())) + '\n');
+	env.put('x', true, conv.tok(process.argv.slice(3)))
+	process.stdout.write(ok.format(ok.run(ok.parse(program), env)) + '\n');
 	process.exit(0);
 }
 
 // actual REPL
 process.stdout.write('oK v' + ok.version + '\n');
-var env = ok.baseEnv();
 var rl = readline.createInterface({
 	input:  process.stdin,
 	output: process.stdout,
