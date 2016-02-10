@@ -28,3 +28,8 @@ draw:  {vortx[],words[]}
 / keyboard tester
 
 draw:: ,(;cga;30#,2+|/(-1,keys)=\:!128)
+
+/ fermat spiral
+
+fs:   {(%t)*(sin t;cos t:137.508*x)}'!
+draw: {,(80+.2*fs f;`lcd;2)}
