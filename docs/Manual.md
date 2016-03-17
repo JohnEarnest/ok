@@ -463,6 +463,8 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 <pre><code>  8?"ABC"
 "ACBBCBCB"</code></pre>
 
+		<tt>n?"A"</tt> or <tt>n?"a"</tt> will pick random elements from the 26 uppercase or lowercase alphabet, respectively.
+
 		For <tt>n?n</tt> or <tt>n?l</tt>, if x is negative the result will pick abs(x) distinct items.
 	</td>
 </tr>
