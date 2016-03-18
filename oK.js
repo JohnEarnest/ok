@@ -47,6 +47,7 @@ function len(x)          { l(x); return x.v.length; }
 function krange(x, f)    { var r=[]; for(var z=0;z<x;z++) { r.push(f(z)); } return k(3,r); }
 function r2(f)           { return function(x,y) { return f(y,x); }; }
 function bind(f,x)       { return f.bind(null, x); }
+function h2(x)           { return (x.v+0x100).toString(16).substr(-2); }
 
 function dget(x, y)    { var i=find(x.k, y); return (i.v==len(x.k)) ? NA : atl(x.v, i); }
 function dset(x, y, z) { var i=find(x.k, y).v; if(i==len(x.k)) { x.k.v.push(y); } x.v.v[i]=z; }
@@ -55,8 +56,11 @@ function c(x) { return (x.t==3) ? k(x.t, x.v.slice(0)) : (x.t==4) ? md(c(x.k), c
 function stok(x) { return kl(krange(x.length, function(z) { return k(1,x.charCodeAt(z)); }).v); }
 function ktos(x, esc) {
 	if (x.t != 3) { x = enlist(x); }
+	var h = x.v.some(function(v){ return (v.v<32||v.v>127)&v.v!=9&v.v!=10; });
+	if (h) { return "0x"+x.v.map(h2).join(""); }
 	var r = x.v.map(function(k) { return String.fromCharCode(k.v); }).join("");
-	if (esc) { for(var z=0;z<EC.length;z++) { r=r.split(EC[z][0]).join(EC[z][1]); }} return r;
+	if (esc) { for(var z=0;z<EC.length;z++) { r=r.split(EC[z][0]).join(EC[z][1]); }}
+	return esc ? '"'+r+'"' : r;
 }
 function kmap(x, f) { var r=[]; for(var z=0;z<len(x);z++) { r.push(f(x.v[z],z)); } return k(3,r); }
 function kzip(x, y, f) {
@@ -789,7 +793,8 @@ function parseNoun() {
 	}
 	if (at(HEXLIT)) {
 		var h=expect(HEXLIT); if (h.length%2) { throw new Error("malformed byte string."); }
-		return krange(h.length/2-1, function(z) { return k(1,parseInt(h.slice(2*z+2,2*z+4),16)); });
+		var r=krange(h.length/2-1, function(z) { return k(1,parseInt(h.slice(2*z+2,2*z+4),16)); });
+		return (r.v.length == 1) ? first(r) : r;
 	}
 	if (at(NUMBER)) {
 		var r=[]; while(at(NUMBER)) {
@@ -909,7 +914,7 @@ function format(k, indent) {
 		return k.v==1/0?"0w":k.v==-1/0?"-0w":na(k)?"0N":
 		""+(k.v % 1 === 0 ? k.v : Math.round(k.v * 10000) / 10000);
 	}
-	if (k.t == 1) { return '"'+(ktos(k, true))+'"'; }
+	if (k.t == 1) { return ktos(k,true); }
 	if (k.t == 2) { return "`"+k.v; }
 	if (k.t == 3) {
 		if (len(k) <  1) { return "()"; }
@@ -917,7 +922,7 @@ function format(k, indent) {
 		var same = true; var sublist = false; indent = indent || "";
 		for(var z=0;z<len(k);z++) { same &= k.v[z].t == k.v[0].t; sublist |= k.v[z].t == 3; }
 		if (sublist) { return "("+k.v.map(indented).join("\n "+indent)+")"; }
-		if (same & k.v[0].t == 1) { return '"'+ktos(k, true)+'"'; }
+		if (same & k.v[0].t == 1) { return ktos(k, true); }
 		if (same & k.v[0].t <  3) { return k.v.map(format).join(k.v[0].t == 2 ? "" : " "); }
 		return "("+k.v.map(format).join(";")+")" ;
 	}

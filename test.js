@@ -672,10 +672,15 @@ test("[a:1]~[a:1;b:2]"                , "0"                                   );
 test("[a:1;b:2]~[b:2;a:1]"            , "0"                                   );
 test('(!256)["A"]'                    , "65"                                  );
 test('(!256)["Bean"]'                 , "66 101 97 110"                       );
-
 test('#?5000?"A"'                     , "26"                                  );
 test('#?5000?0+"A"'                   , "65"                                  );
 test('@*?10?"A"'                      , "-10"                                 );
+
+test("0x0a"                           , '"\\n"'                               );
+test("0x05"                           , "0x05"                                );
+test("0x0a05"                         , "0x0a05"                              );
+test("0x0102"                         , "0x0102"                              );
+test("0x80"                           , "0x80"                                );
 
 //test(".[3 3#0;(0 1;0 1);:;2 2#!4]"    , "(0 1 0\n 2 3 0\n 0 0 0)"             );
 //test("a:3 3#0;a[0 1;0 1]:2 2#!4"      , "(0 1 0\n 2 3 0\n 0 0 0)"             );
@@ -689,8 +694,6 @@ test('@*?10?"A"'                      , "-10"                                 );
 //files();
 
 // NOTES/TODO:
-
-//test("0x0102", "0x0102"); // nonprintable chars should be printed as byte strings
 
 // global assignment doesn't appear to permit compound assignment, as in {c+::5}.
 // k5 doesn't appear to permit spaces in symbol-list literals.

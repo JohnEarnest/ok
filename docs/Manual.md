@@ -30,7 +30,7 @@ Nouns
 		  10010b
 		1 0 0 1 0
 
-	Byte lists consist of `0x` followed by an even number of hexadecimal digits. Each byte is interpreted as the equivalent ascii character for prettyprinting purposes.
+	Byte lists consist of `0x` followed by an even number of hexadecimal digits. Each byte is interpreted as the equivalent ascii character for prettyprinting purposes if it is in the printable range (32-127). If only two digits are provided, this literal form will produce a lone character, rather than a 1-length list.
 
 		0x414243
 		0x6a6b
