@@ -701,8 +701,6 @@ test("0x80"                           , "0x80"                                );
 // [a:4]>/:1 4 6 prints in k5 as +[a:100b]
 // (+[a:4 3;b:3 4])@1   ~   [a:3;b:4]
 
-//test("{x,y,z}'1 2 3");
-
 //casts for date/time:
 // `y - years
 // `d - days

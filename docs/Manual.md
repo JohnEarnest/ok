@@ -698,3 +698,27 @@ If `v` is a monadic verb train or function, it is applied to the elements specif
 	2 14 9
 	  ?["a look back";2 6;|:]
 	"a kool back"
+
+Cond
+----
+The symbol `$`, when used with 3 or more argument expressions is `cond`. Much like the Lisp construct, `cond` considers argument expressions two at a time. If the first in a pair evaluates to a truthy value, the second in the pair is evaluated and returned. Otherwise it continues with the next pair. If no conditions match, the final value is returned.
+
+	 $[1;"A";0;"B";"C"]
+	"A"
+	 $[0;"A";0;"B";"C"]
+	"C"
+
+Note that `cond` is a special top-level construct which evaluates subexpressions only according to the above rules. Side-effecting subexpressions make this more obvious:
+
+	  $[0;a:50; 1;a:25; a:13];
+	  a
+	25
+
+This short-circuiting behavior of `cond` is vital for writing recursive procedures:
+
+	  r: {$[1<#x; |r'x; x]};
+	  r (1 2;(3 4;5 6 7))
+	((7 6 5
+	  4 3)
+	 2 1)
+
