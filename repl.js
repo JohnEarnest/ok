@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 var ok = require('./oK');
 var fs = require('fs');
+var os = require('os');
 var path = require('path');
 var readline = require('readline');
 var conv = require('./convert');
@@ -44,6 +45,15 @@ for (var i = 0; i < 2; i++) { ok.setIO('0:', i, read ); }
 for (var i = 2; i < 6; i++) { ok.setIO('0:', i, write); }
 
 var env = ok.baseEnv();
+
+// run user prelude file if exists
+try {
+	var preludeFile = os.homedir() + "/.config/okrc.k"
+	var program = fs.readFileSync(preludeFile, 'utf8');
+	ok.run(ok.parse(program), env)
+} catch (err) {
+	if (err.code != 'ENOENT') throw err
+}
 
 // process filename.k as a command-line arg
 if (process.argv.length > 2) {
