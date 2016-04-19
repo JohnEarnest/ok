@@ -111,7 +111,7 @@ function isnull   (x) { return max(match(x, NIL),match(x,k(11))); }
 function count    (x) { return k(0, x.t == 4 ? len(x.v) : x.t == 3 ? len(x) : 1); }
 function floor    (x) { return k(0, Math.floor(n(x).v)); }
 function type     (x) { return k(0, kt[x.t]); }
-function kfmt     (x) { var r=stok(format(x)); if (r.t!=3) { r=k(3,[r]); } return r; }
+function kfmt     (x) { var r=stok(format(x, 0, 1)); if (r.t!=3) { r=k(3,[r]); } return r; }
 function iota     (x) { return x.t == 4 ? keys(x) : krange(p(x), function(x) { return k(0,x); }); }
 function real     (x) { return krange(n(x).v, function() { return k(0, Math.random()); }); }
 
@@ -906,7 +906,7 @@ function parse(str) {
 //
 ////////////////////////////////////
 
-function format(k, indent) {
+function format(k, indent, symbol) {
 	if (typeof indent == "number") { indent = ""; } if (k == null) { return ""; }
 	function indented(k) { return format(k, indent+" "); };
 	if (k instanceof Array) { return k.map(format).join(";"); }
@@ -916,7 +916,7 @@ function format(k, indent) {
 		""+(k.v % 1 === 0 ? k.v : Math.round(k.v * 10000) / 10000);
 	}
 	if (k.t == 1) { return ktos(k,true); }
-	if (k.t == 2) { return "`"+k.v; }
+	if (k.t == 2) { return (symbol==1?"":"`")+k.v; }
 	if (k.t == 3) {
 		if (len(k) <  1) { return "()"; }
 		if (len(k) == 1) { return ","+format(k.v[0]); }
