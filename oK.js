@@ -49,6 +49,7 @@ function r2(f)           { return function(x,y) { return f(y,x); }; }
 function bind(f,x)       { return f.bind(null, x); }
 function h2(x)           { return (x.v+0x100).toString(16).substr(-2); }
 
+function lget(x, y)    { if(y<0||y>=len(x)) { throw new Error("length error."); } return x.v[y]; }
 function dget(x, y)    { var i=find(x.k, y); return (i.v==len(x.k)) ? NA : atl(x.v, i); }
 function dset(x, y, z) { var i=find(x.k, y).v; if(i==len(x.k)) { x.k.v.push(y); } x.v.v[i]=z; }
 function lset(x, y, v) { if (len(x) <= p(y)) { throw new Error("index error."); } x.v[y.v]=v; }
@@ -202,7 +203,7 @@ function pisnull(x) {
 
 function cut(x, y) {
 	return kzip(x, cat(drop(k1,x),k(0,len(y))), function(a, b) { // {x{x@y+!z-y}[y]'1_x,#y} ?
-		var r=[]; for(var z=p(a);z<p(b);z++) { r.push(y.v[z]); } return k(3,r);
+		var r=[]; for(var z=p(a);z<p(b);z++) { r.push(lget(y,z)); } return k(3,r);
 	});
 }
 

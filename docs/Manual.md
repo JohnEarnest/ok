@@ -1,6 +1,5 @@
 oK Manual
 =========
-
 oK aims to be an implementation of [k5](http://kparc.com), the still-evolving bleeding edge version of the K programming language. This manual will serve as a short but more comprehensive reference than the official [k5 reference card](http://kparc.com/k.txt). Since both oK and k5 are unfinished, this document will attempt to describe oK's *current behavior* and will be updated as semantics are brought in line with k5.
 
 K may look daunting at first, but the syntax of the language is very simple and regular. Programs consist of a series of expressions which are made up of *nouns*, *verbs* and *adverbs*. Nouns can be simple *atomic* types like *numbers*, *characters* or *symbols* or they can be the compound datatypes *lists*, *dictionaries* or *functions*. In general, `()` are for grouping subexpressions or forming lists, `[]` are used for creating dictionaries, indexing into a list or applying arguments to a function, `{}` are used for delimiting functions and newlines always behave identically to semicolons (`;`). The colon (`:`) has several possible meanings in different contexts, but most frequently behaves as an assignment operator binding the result of a right-hand expression to a name:
@@ -9,7 +8,6 @@ K may look daunting at first, but the syntax of the language is very simple and 
 
 Nouns
 -----
-
 - Numbers are composed of digits and can optionally have a leading negative sign or decimal part.
 
 - Characters are enclosed in double quotes (") and can make use of the escape sequences `\n`, `\t`, `\"` or `\\` to produce a newline, tab, double quote or backslash character, respectively. If more than one unescaped character is enclosed in quotes, the noun is a list of characters (see below), also known as a *string*.
@@ -49,9 +47,32 @@ Nouns
 		mean[4 7 18]
 		{x*x} 5
 
+
+Conditionals
+------------
+The symbol `$`, when used with 3 or more argument expressions is `cond`. Much like the Lisp construct, `cond` considers argument expressions two at a time. If the first in a pair evaluates to a truthy value, the second in the pair is evaluated and returned. Otherwise it continues with the next pair. If no conditions match, the final value is returned.
+
+	 $[1;"A";0;"B";"C"]
+	"A"
+	 $[0;"A";0;"B";"C"]
+	"C"
+
+Note that `cond` is a special top-level construct which evaluates subexpressions only according to the above rules. Side-effecting subexpressions make this more obvious:
+
+	  $[0;a:50; 1;a:25; a:13];
+	  a
+	25
+
+You can often program without this type of conditional statement, but the short-circuiting behavior of `cond` is vital for writing recursive procedures:
+
+	  r: {$[1<#x; |r'x; x]};
+	  r (1 2;(3 4;5 6 7))
+	((7 6 5
+	  4 3)
+	 2 1)
+
 Verbs
 -----
-
 K has 19 primitive verbs which are each represented as a single character: `+-*%!&|<>=~,^#_$?@.` Each has different behavior when used as a *monad* (with one argument) or as a *dyad* (with two arguments). Verbs behave as dyads if there is a noun immediately to their left, and otherwise they behave as a monad. Sometimes it is necessary to disambiguate, so using a colon (`:`) as a suffix will force a verb to behave as a monad. Verbs have uniform right-to-left evaluation unless explicitly grouped with `()`. If applied to nouns without a verb argument, the adverbs `/`, `\` and `'` can behave as verbs.
 
 Some verbs are *atomic*. A *fully atomic* verb penetrates to the atoms of arbitrary nested lists as arguments:
@@ -67,7 +88,6 @@ See below for a complete reference to verb behaviors.
 
 Adverbs
 -------
-
 K has 6 primitive adverbs, some of which consist of two characters: `'`, `/`,`\`, `/:`, `\:` and `':`. Adverbs take a verb as a left argument and apply it to a right or right and left noun argument in some special way. Some adverbs have several different behaviors based on the types of their arguments.
 
 For the purposes of the adverb and verb references, the following conventions will be used:
@@ -698,27 +718,3 @@ If `v` is a monadic verb train or function, it is applied to the elements specif
 	2 14 9
 	  ?["a look back";2 6;|:]
 	"a kool back"
-
-Cond
-----
-The symbol `$`, when used with 3 or more argument expressions is `cond`. Much like the Lisp construct, `cond` considers argument expressions two at a time. If the first in a pair evaluates to a truthy value, the second in the pair is evaluated and returned. Otherwise it continues with the next pair. If no conditions match, the final value is returned.
-
-	 $[1;"A";0;"B";"C"]
-	"A"
-	 $[0;"A";0;"B";"C"]
-	"C"
-
-Note that `cond` is a special top-level construct which evaluates subexpressions only according to the above rules. Side-effecting subexpressions make this more obvious:
-
-	  $[0;a:50; 1;a:25; a:13];
-	  a
-	25
-
-This short-circuiting behavior of `cond` is vital for writing recursive procedures:
-
-	  r: {$[1<#x; |r'x; x]};
-	  r (1 2;(3 4;5 6 7))
-	((7 6 5
-	  4 3)
-	 2 1)
-
