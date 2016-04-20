@@ -680,13 +680,14 @@ test("0x05"                           , "0x05"                                );
 test("0x0a05"                         , "0x0a05"                              );
 test("0x0102"                         , "0x0102"                              );
 test("0x80"                           , "0x80"                                );
-
 fail("0 6_!5"                         , "length error."                       );
 test("0 5_!5"                         , "(0 1 2 3 4\n ())"                    );
 fail("-1 2_!3"                        , "positive int expected."              );
-
 test("$`beef"                         , '"beef"'                              );
 test("$`beef`pork"                    , '("beef"\n "pork")'                   );
+
+test("$[();1;2]"                      , "2"                                   );
+test("$[0N;3;4]"                      , "3"                                   );
 
 //test(".[3 3#0;(0 1;0 1);:;2 2#!4]"    , "(0 1 0\n 2 3 0\n 0 0 0)"             );
 //test("a:3 3#0;a[0 1;0 1]:2 2#!4"      , "(0 1 0\n 2 3 0\n 0 0 0)"             );

@@ -38,6 +38,7 @@ var NA = k(0, NaN);
 function k(t, v)         { return { 't':t, 'v':v }; }
 function md(x, y)        { if (y.t != 3) { y=take(k(0,len(x)),y); } return { t:4, k:x, v:y }; }
 function kl(vl)          { return vl.length==1 ? vl[0] : k(3,vl); }
+function kf(x)           { return match(k(3,[]), x).v || match(k0, x).v; }
 function kb(x)           { return x ? k1 : k0; }
 function s(x)            { return x.t == 3 && x.v.every(function(c) { return c.t == 1; }); }
 function ks(x)           { return k(2, x); }
@@ -609,7 +610,7 @@ function run(node, env) {
 	}
 	if (node.t == 12) {
 		for(var z=0;z<node.v.length-1;z+=2) {
-			if (!match(k(0,0), run(node.v[z], env)).v) { return run(node.v[z+1], env); }
+			if (!kf(run(node.v[z], env))) { return run(node.v[z+1], env); }
 		} return run(node.v[node.v.length-1], env);
 	}
 	if (node.t == 5 && !node.env) {
