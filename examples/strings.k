@@ -15,7 +15,7 @@
 +/=["skimmed";"m"]                                           /  8. count occurrences of a character
 ."231"                                                       /  9. convert numeric string to int
 {(#z)_,/(z,)'y\x}["x y  z";" ";"%20"]                        / 10. replace character with a string
-(p:{$[2>#x;x;,/x{x,'y}'p'(x^)'x]})["xyz"]                    / 11. permutations of a string
+(p:{$[x;,/x,''p'x^/:x;,x]})["xyz"]                           / 11. permutations of a string
 " "/|:'" "\"a few words";                                    / 12. reverse words in a sentence
 {x~|x}"racecar"                                              / 13. is a string a palindrome?
 ?"bananas"                                                   / 14. unique characters in order
