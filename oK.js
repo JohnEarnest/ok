@@ -273,8 +273,14 @@ function odometer(x) {
 }
 
 function window(x, y) {
-    checktype(x, 0); var res=[]; for(var i=0; i+x.v<=len(y); i++) {
-        var w=[]; for(var j=0; j<x.v; j++) { w.push(y.v[i+j]); } res.push(k(3,w));
+    checktype(x, 0); var res = []; var off = x.v>0 ? x.v : x.v==0 ? 0 : 1;
+    for(var i=0; i+off<=len(y); i++) {
+        var w = []; var n = x.v>0 ? x.v : 3; for(var j=0; j<n; j++) {
+            if (x.v>0) { w.push(y.v[i+j]); }
+            else if (x.v==0) {}
+            else if ((i==0 && j==0) || (i+off==len(y) && j+1==n)) { w.push(k0); }
+            else { w.push(y.v[i+j-1]); }
+        } res.push(k(3,w));
     } return k(3,res);
 }
 
