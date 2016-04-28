@@ -212,7 +212,7 @@ In k6 this has changed. The pattern is unclear:
 
 More study is necessary.
 
-Letter Deals (<font color="red">Todo</font>)
+Letter Deals (<font color="green">Done</font>)
 ------------
 k5 special-cases "rand" when the right argument is the character "a" or "A", producing lower- or uppercase lists of letters. This feature does not work for any other character arguments.
 

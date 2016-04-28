@@ -484,7 +484,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 <pre><code>  8?"ABC"
 "ACBBCBCB"</code></pre>
 
-		<tt>n?"A"</tt> or <tt>n?"a"</tt> will pick random elements from the 26 uppercase or lowercase alphabet, respectively.
+		<tt>n?c</tt> or <tt>n?c</tt> where c is a character will pick random elements from the 26 characters including and up from c.
+        For example, <tt>10?"A"</tt> will pick 10 random elements from <tt>ABCDEFGHIJKLMNOPQRSTUVWXYZ</code>, and <tt>10?"0"</tt> will
+        pick 10 random elements from <tt>0123456789:;<=>?@ABCDEFGHI</tt>.
 
 		For <tt>n?n</tt> or <tt>n?l</tt>, if x is negative the result will pick abs(x) distinct items.
 	</td>
