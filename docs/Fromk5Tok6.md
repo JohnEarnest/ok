@@ -106,7 +106,7 @@ k6 behaves like k2 and other older versions of K:
 	 &/0#1 2 3
 	1
 
-Padding Can Truncate (<font color="red">Todo</font>)
+Padding Can Truncate (<font color="green">Done</font>)
 --------------------
 In k5, padding was treated as a minimum size for the output string:
 
