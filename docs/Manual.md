@@ -427,8 +427,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 "beef"</code></pre>
 	</td>
 	<td>
-		<tt>n$a</tt> is <b>pad</b>. Add spaces to strings to make them x characters long.<br>
-		A negative value pads from the left. Mostly fully atomic, strings are treated specially.
+		<tt>n$a</tt> is <b>pad</b>. Adjust strings to make them x characters long. If the string
+        is under x characters long, then it is right-padded with spaces; otherwise, characters are stripped from the end.<br>
+		A negative value pads/strips from the left. Mostly fully atomic, strings are treated specially.
 <pre><code>  5$"beef"
 "beef "
   -7$"beef"
