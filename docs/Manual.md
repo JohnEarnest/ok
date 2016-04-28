@@ -605,14 +605,14 @@ As a general note, niladic functions may be used where monadic functions are val
 	 5 4)
 
 <a name="eachprior"/>
-`d':l` is <b>eachprior</b>. Apply the dyad to each element of the list (left argument) and the element preceding that element in the list (right argument), producing a new list. Consistent with list indexing, the first element of the list will thus be paired up with 0N. Some primitive verbs result in a different special-cased initial value: `+`, `*`, `-` and `&` are provided with 0, 1, 0 or the first element of the sequence, respectively.
+`d':l` is <b>eachprior</b>. Apply the dyad to each element of the list (left argument) and the element preceding that element in the list (right argument), producing a new list. Consistent with list indexing, the first element of the list will thus be paired up with 0N. Some primitive verbs result in a different special-cased initial value: `+`, `*`, `-` and `&` are provided with 0, 1, 0 or the first element of the sequence, respectively, and `,` is provided with only 1 parameter.
 
 	  =':3 3 4 4 5
 	0 1 0 1 0
 	  -':1 3 5 2 9
 	1 2 2 -3 7
 	  ,':2 3 4
-	(2 0N
+	(,2
 	 3 2
 	 4 3)
 

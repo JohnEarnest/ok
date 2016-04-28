@@ -304,7 +304,8 @@ function eachleft(dyad, list, right, env) {
 
 function eachprior(dyad, x, env) {
 	var specials = {"+":k0, "*":k1, "-":k0, "&":first(x)};
-	return eachpc(dyad, (dyad.v in specials) ? specials[dyad.v] : NA, x);
+    if (dyad.v == ",") { return x.t == 3 && len(x) == 0 ? k(3,[]) : cat(enlist(enlist(first(x))), eachpc(dyad, first(x), k(3,x.v.slice(1)))); }
+    else { return eachpc(dyad, (dyad.v in specials) ? specials[dyad.v] : NA, x); }
 }
 
 function eachpc(dyad, x, y, env) {

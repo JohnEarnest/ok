@@ -158,7 +158,7 @@ In k6, dyadic `^` does the more obvious thing: remove all instances of items on 
 	"ABCBBDA"^"BA"
 	"CD"
 
-Each-Pair Base Cases (<font color="red">Todo</font>)
+Each-Pair Base Cases (<font color="green">Done</font>)
 --------------------
 In k2, each-pair began pairing up with the second element of a list, producing `(#a)-1` results:
 
