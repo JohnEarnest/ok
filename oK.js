@@ -145,7 +145,7 @@ function dfmt(x, y) {
 
 function except(x, y) {
 	x = c(x.t != 3 ? iota(x) : x); y = y.t != 3 ? enlist(y) : y;
-	kmap(y, function(v) { var i=pfind(x, v); if (!na(i)) { x.v.splice(i.v, 1); }}); return x;
+	kmap(y, function(v) { for(var i=pfind(x, v); !na(i); i=pfind(x, v)) { x.v.splice(i.v, 1); }}); return x;
 }
 
 function drop(x, y) {

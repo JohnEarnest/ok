@@ -144,7 +144,7 @@ k6 instead uses a somewhat more pleasant but equivalent style of displaying such
 	 #'1 2
 	1 2#'
 
-Except Removes All (<font color="red">Todo</font>)
+Except Removes All (<font color="green">Done</font>)
 ------------------
 In k5, dyadic `^` removes the first instance of items on the right from the left argument. This permits a cute idiom for isolating items which occur more than once:
 
