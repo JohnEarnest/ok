@@ -135,7 +135,7 @@ function dfmt(x, y) {
 	}
 	if (x.t == 3 && y.t != 3) { return kmap(x, bind(r2(dfmt),y)); }
 	if (x.t == 3)             { return kzip(x, y, dfmt); }
-	if (y.t == 1) { y=k(3,[y]); }
+	if (y.t == 1) { return y; }
 	if (!s(y)) { return kmap(l(y), bind(dfmt,x)); }
 	var r=c(y); var d=Math.abs(x.v);
     while(len(r) != d) {
