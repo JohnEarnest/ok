@@ -137,7 +137,10 @@ function dfmt(x, y) {
 	if (x.t == 3)             { return kzip(x, y, dfmt); }
 	if (y.t == 1) { y=k(3,[y]); }
 	if (!s(y)) { return kmap(l(y), bind(dfmt,x)); }
-	var r=c(y); while(len(r) < Math.abs(x.v)) { x.v>0 ? r.v.push(SP) : r.v.unshift(SP); } return r;
+	var r=c(y); var d=Math.abs(x.v);
+    while(len(r) != d) {
+        if (len(r) < d) { x.v>0 ? r.v.push(SP) : r.v.unshift(SP); } else { x.v>0 ? r.v.pop() : r.v.shift(); }
+    } return r;
 }
 
 function except(x, y) {
