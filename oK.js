@@ -272,6 +272,12 @@ function odometer(x) {
 	} return flip(r);
 }
 
+function window(x, y) {
+    checktype(x, 0); var res=[]; for(var i=0; i+x.v<=len(y); i++) {
+        var w=[]; for(var j=0; j<x.v; j++) { w.push(y.v[i+j]); } res.push(k(3,w));
+    } return k(3,res);
+}
+
 function unpack(x, y) { return call(unpackimpl, k(3,[x,y])); }
 function pack  (x, y) { if (x.t == 1) { return join(x, y); } return call(packimpl, k(3,[x,y])); }
 function splice(xyz)  { return call(spliceimpl, k(3,xyz)); }
@@ -434,7 +440,7 @@ var verbs = {
 	"?" : [real,      unique,     rnd,        pfind,      rnd,        ar(pfind),  splice,  null  ],
 	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,     keval,      call,       call,       call,       call,       dmend4,  dmend4],
-	"'" : [null,      null,       null,       bin,        null,       ar(bin),    null,    null  ],
+	"'" : [null,      null,       null,       bin,        window,     ar(bin),    null,    null  ],
 	"/" : [null,      null,       null,       null,       pack,       pack,       null,    null  ],
 	"\\": [null,      null,       null,       unpack,     split,      null,       null,    null  ],
 };

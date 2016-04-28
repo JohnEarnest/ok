@@ -537,7 +537,17 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 <tr>
 	<td>
 		<a name="bin"/>
-		n/a
+		<tt>n'l</tt> is <b>window</b>. Create a sliding window of length x from y.
+<pre><code>  3'!5
+(0 1 2
+ 1 2 3
+ 2 3 4)
+ 2'!5
+(0 1
+ 1 2
+ 2 3
+ 3 4)
+</code></pre>
 	</td>
 	<td>
 		<tt>l'a</tt> is <b>bin</b>. Perform a binary search for y in x. Right atomic.<br>
