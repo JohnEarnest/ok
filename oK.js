@@ -546,7 +546,7 @@ function atd(x, y, env) {
 function atl(x, y, env) {
 	if (x.t == 4) { return dget(x, y); }
 	if (x.t == 2) { x = env.lookup(x.v, true); }
-	if (y.t == 4) { return md(y.k, (ar(atl))(x, y.v)); }
+	if (y.t == 4) { return md(y.k, (ar(atl))(x, y.v, env)); }
 	if (y.t > 1 || y.v < 0 || y.v >= len(x) || y.v%1 != 0) { return NA; }
 	return x.v[y.v];
 }
