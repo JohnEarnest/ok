@@ -135,7 +135,7 @@ function dfmt(x, y) {
 	}
 	if (x.t == 3 && y.t != 3) { return kmap(x, bind(r2(dfmt),y)); }
 	if (x.t == 3)             { return kzip(x, y, dfmt); }
-	if (y.t == 1) { y=k(3,[y]); }
+	if (y.t == 1) { return y; }
 	if (!s(y)) { return kmap(l(y), bind(dfmt,x)); }
 	var r=c(y); var d=Math.abs(x.v);
     while(len(r) != d) {
@@ -145,7 +145,7 @@ function dfmt(x, y) {
 
 function except(x, y) {
 	x = c(x.t != 3 ? iota(x) : x); y = y.t != 3 ? enlist(y) : y;
-	kmap(y, function(v) { var i=pfind(x, v); if (!na(i)) { x.v.splice(i.v, 1); }}); return x;
+	kmap(y, function(v) { for(var i=pfind(x, v); !na(i); i=pfind(x, v)) { x.v.splice(i.v, 1); }}); return x;
 }
 
 function drop(x, y) {
@@ -212,7 +212,7 @@ function cut(x, y) {
 }
 
 function rnd(x, y, env) {
-	if (y.t == 1 & (y.v==65 || y.v==97)) { return dfmt(k(2,"c"),rnd(x,ar(plus)(y,iota(k(0,26))))); }
+	if (y.t == 1) { return dfmt(k(2,"c"),rnd(x,ar(plus)(y,iota(k(0,26))))); }
 	if (y.t == 3) { return ar(atl)(y, rnd(x, k(0, len(y)))); } p(y);
 	if (n(x).v<0) { if (-x.v>y.v) throw new Error("length error."); return take(x,asc(real(y))); }
 	return kmap(iota(x), function(x){ return k(0,Math.floor(Math.random()*y.v)); });
@@ -272,6 +272,18 @@ function odometer(x) {
 	} return flip(r);
 }
 
+function window(x, y) {
+    checktype(x, 0); var res = []; var off = x.v>0 ? x.v : x.v==0 ? 0 : 1;
+    for(var i=0; i+off<=len(y); i++) {
+        var w = []; var n = x.v>0 ? x.v : 3; for(var j=0; j<n; j++) {
+            if (x.v>0) { w.push(y.v[i+j]); }
+            else if (x.v==0) {}
+            else if ((i==0 && j==0) || (i+off==len(y) && j+1==n)) { w.push(k0); }
+            else { w.push(y.v[i+j-1]); }
+        } res.push(k(3,w));
+    } return k(3,res);
+}
+
 function unpack(x, y) { return call(unpackimpl, k(3,[x,y])); }
 function pack  (x, y) { if (x.t == 1) { return join(x, y); } return call(packimpl, k(3,[x,y])); }
 function splice(xyz)  { return call(spliceimpl, k(3,xyz)); }
@@ -304,7 +316,8 @@ function eachleft(dyad, list, right, env) {
 
 function eachprior(dyad, x, env) {
 	var specials = {"+":k0, "*":k1, "-":k0, "&":first(x)};
-	return eachpc(dyad, (dyad.v in specials) ? specials[dyad.v] : NA, x);
+    if (dyad.v == ",") { return x.t == 3 && len(x) == 0 ? k(3,[]) : cat(enlist(enlist(first(x))), eachpc(dyad, first(x), k(3,x.v.slice(1)))); }
+    else { return eachpc(dyad, (dyad.v in specials) ? specials[dyad.v] : NA, x); }
 }
 
 function eachpc(dyad, x, y, env) {
@@ -433,7 +446,7 @@ var verbs = {
 	"?" : [real,      unique,     rnd,        pfind,      rnd,        ar(pfind),  splice,  null  ],
 	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,     keval,      call,       call,       call,       call,       dmend4,  dmend4],
-	"'" : [null,      null,       null,       bin,        null,       ar(bin),    null,    null  ],
+	"'" : [null,      null,       null,       bin,        window,     ar(bin),    null,    null  ],
 	"/" : [null,      null,       null,       null,       pack,       pack,       null,    null  ],
 	"\\": [null,      null,       null,       unpack,     split,      null,       null,    null  ],
 };

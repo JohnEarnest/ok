@@ -144,7 +144,7 @@ k6 instead uses a somewhat more pleasant but equivalent style of displaying such
 	 #'1 2
 	1 2#'
 
-Except Removes All (<font color="red">Todo</font>)
+Except Removes All (<font color="green">Done</font>)
 ------------------
 In k5, dyadic `^` removes the first instance of items on the right from the left argument. This permits a cute idiom for isolating items which occur more than once:
 
@@ -158,7 +158,7 @@ In k6, dyadic `^` does the more obvious thing: remove all instances of items on 
 	"ABCBBDA"^"BA"
 	"CD"
 
-Each-Pair Base Cases (<font color="red">Todo</font>)
+Each-Pair Base Cases (<font color="green">Done</font>)
 --------------------
 In k2, each-pair began pairing up with the second element of a list, producing `(#a)-1` results:
 
@@ -212,7 +212,7 @@ In k6 this has changed. The pattern is unclear:
 
 More study is necessary.
 
-Letter Deals (<font color="red">Todo</font>)
+Letter Deals (<font color="green">Done</font>)
 ------------
 k5 special-cases "rand" when the right argument is the character "a" or "A", producing lower- or uppercase lists of letters. This feature does not work for any other character arguments.
 

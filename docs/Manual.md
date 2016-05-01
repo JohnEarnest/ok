@@ -330,9 +330,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 0 1 1</code></pre>
 	</td>
 	<td>
-		<tt>l^a</tt> or <tt>l^l</tt> is <b>except</b>. Remove the first instance of each of y from x.
+		<tt>l^a</tt> or <tt>l^l</tt> is <b>except</b>. Remove all instances of each of y from x.
 <pre><code>  1 3 2 5 1 2 3^1 3 5
-2 1 2 3</code></pre>
+2 2</code></pre>
 		
 		<tt>n^a</tt> or <tt>n^l</tt> is equivalent to <tt>(!n)^l</tt>:
 <pre><code> 10^1 3 7
@@ -427,8 +427,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 "beef"</code></pre>
 	</td>
 	<td>
-		<tt>n$a</tt> is <b>pad</b>. Add spaces to strings to make them x characters long.<br>
-		A negative value pads from the left. Mostly fully atomic, strings are treated specially.
+		<tt>n$a</tt> is <b>pad</b>. Adjust strings to make them x characters long. If the string
+        is under x characters long, then it is right-padded with spaces; otherwise, characters are stripped from the end.<br>
+		A negative value pads/strips from the left. Mostly fully atomic, strings are treated specially.
 <pre><code>  5$"beef"
 "beef "
   -7$"beef"
@@ -483,7 +484,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 <pre><code>  8?"ABC"
 "ACBBCBCB"</code></pre>
 
-		<tt>n?"A"</tt> or <tt>n?"a"</tt> will pick random elements from the 26 uppercase or lowercase alphabet, respectively.
+		<tt>n?c</tt> or <tt>n?c</tt> where c is a character will pick random elements from the 26 characters including and up from c.
+        For example, <tt>10?"A"</tt> will pick 10 random elements from <tt>ABCDEFGHIJKLMNOPQRSTUVWXYZ</code>, and <tt>10?"0"</tt> will
+        pick 10 random elements from <tt>0123456789:;<=>?@ABCDEFGHI</tt>.
 
 		For <tt>n?n</tt> or <tt>n?l</tt>, if x is negative the result will pick abs(x) distinct items.
 	</td>
@@ -534,7 +537,18 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 <tr>
 	<td>
 		<a name="bin"/>
-		n/a
+		<tt>n'l</tt> is <b>window</b>. Create a sliding window of length x from y. If x is less then zero, then it
+        is equivalent to <tt>3'0,y,0</tt>. If x is zero, then this is equivalent to <tt>(1+#y)#()</tt>.
+<pre><code>  3'!5
+(0 1 2
+ 1 2 3
+ 2 3 4)
+ 2'!5
+(0 1
+ 1 2
+ 2 3
+ 3 4)
+</code></pre>
 	</td>
 	<td>
 		<tt>l'a</tt> is <b>bin</b>. Perform a binary search for y in x. Right atomic.<br>
@@ -605,14 +619,14 @@ As a general note, niladic functions may be used where monadic functions are val
 	 5 4)
 
 <a name="eachprior"/>
-`d':l` is <b>eachprior</b>. Apply the dyad to each element of the list (left argument) and the element preceding that element in the list (right argument), producing a new list. Consistent with list indexing, the first element of the list will thus be paired up with 0N. Some primitive verbs result in a different special-cased initial value: `+`, `*`, `-` and `&` are provided with 0, 1, 0 or the first element of the sequence, respectively.
+`d':l` is <b>eachprior</b>. Apply the dyad to each element of the list (left argument) and the element preceding that element in the list (right argument), producing a new list. Consistent with list indexing, the first element of the list will thus be paired up with 0N. Some primitive verbs result in a different special-cased initial value: `+`, `*`, `-` and `&` are provided with 0, 1, 0 or the first element of the sequence, respectively, and `,` is provided with only 1 parameter.
 
 	  =':3 3 4 4 5
 	0 1 0 1 0
 	  -':1 3 5 2 9
 	1 2 2 -3 7
 	  ,':2 3 4
-	(2 0N
+	(,2
 	 3 2
 	 4 3)
 
