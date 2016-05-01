@@ -135,17 +135,18 @@ function dfmt(x, y) {
 	}
 	if (x.t == 3 && y.t != 3) { return kmap(x, bind(r2(dfmt),y)); }
 	if (x.t == 3)             { return kzip(x, y, dfmt); }
-	if (y.t == 1) { return y; }
+	if (y.t == 1)             { return y; }
 	if (!s(y)) { return kmap(l(y), bind(dfmt,x)); }
 	var r=c(y); var d=Math.abs(x.v);
-    while(len(r) != d) {
-        if (len(r) < d) { x.v>0 ? r.v.push(SP) : r.v.unshift(SP); } else { x.v>0 ? r.v.pop() : r.v.shift(); }
-    } return r;
+	while(len(r) < d) { x.v>0 ? r.v.push(SP) : r.v.unshift(SP); }
+	while(len(r) > d) { x.v>0 ? r.v.pop() : r.v.shift(); }
+	return r;
 }
 
 function except(x, y) {
 	x = c(x.t != 3 ? iota(x) : x); y = y.t != 3 ? enlist(y) : y;
-	kmap(y, function(v) { for(var i=pfind(x, v); !na(i); i=pfind(x, v)) { x.v.splice(i.v, 1); }}); return x;
+	kmap(y, function(v) { for(var i=pfind(x, v); !na(i); i=pfind(x, v)) { x.v.splice(i.v, 1); }});
+	return x;
 }
 
 function drop(x, y) {
@@ -238,7 +239,6 @@ function where(x) {
 	if (x.t != 3) { x=enlist(x); } var r=[]; for(var z=0;z<len(x);z++) {
 		for(var t=0;t<p(x.v[z]);t++) { r.push(k(0, z)); }
 	} return k(3,r);
-	//return over({t:8,v:","}, kzip(x, iota(count(x)), take));
 }
 
 function group(x) {
@@ -315,9 +315,8 @@ function eachleft(dyad, list, right, env) {
 }
 
 function eachprior(dyad, x, env) {
-	var specials = {"+":k0, "*":k1, "-":k0, "&":first(x)};
-    if (dyad.v == ",") { return x.t == 3 && len(x) == 0 ? k(3,[]) : cat(enlist(enlist(first(x))), eachpc(dyad, first(x), k(3,x.v.slice(1)))); }
-    else { return eachpc(dyad, (dyad.v in specials) ? specials[dyad.v] : NA, x); }
+	var specials = {"+":k0, "*":k1, "-":k0, "&":first(x), ",":k(3,[])};
+	return eachpc(dyad, (dyad.v in specials) ? specials[dyad.v] : NA, x);
 }
 
 function eachpc(dyad, x, y, env) {
@@ -709,7 +708,6 @@ desc[CLOSE_B]="']'"   ;desc[CLOSE_P]="')'"    ;desc[CLOSE_C]="'}'";
 var text = "";
 var funcdepth = 0;
 function begin(str) {
-	// match string or comment or ambiguous minus that should be a verb
 	str = str.replace(/("(?:[^"\\\n]|\\.)*")|(\s\/.*)|([a-z\d\]\)]-\.?\d)/gi, function(_, x, y, z) {
 		// preserve a string (x), remove a comment (y), disambiguate a minus sign (z)
 		return x ? x : y ? "" : z.replace('-', '- ')
