@@ -190,7 +190,7 @@ In k6:
 	 @:'(+;;`a;1.0;1;"a";();,"a";,1;,1.0;,`a)
 	-14 -13 -10 -9 -2 -1 0 1 2 9 10
 
-Altered Bin (<font color="red">Todo</font>)
+Removed Bin (<font color="red">Todo</font>)
 -----------
 In k5, `l'n` and `l'l` were "bin", which performed a binary-search lookup for the index of the right item in the left (sorted) list:
 
@@ -201,7 +201,8 @@ In k5, `l'n` and `l'l` were "bin", which performed a binary-search lookup for th
 	 0 2 4 6 8 10'-10 0 4 5 6 20
 	-1 0 2 2 3 5
 
-In k6 this has changed. The pattern is unclear:
+In k6, `l'n` and `l'l` are "each", and we get the usual behaviour of calling a list as though it was a function, i.e.
+indexing within the list, or a null for values outside the range of the list.
 
 	 0 2 4 6 8 10'5
 	10
@@ -209,8 +210,6 @@ In k6 this has changed. The pattern is unclear:
 	0N 0N 0N 4
 	 0 2 4 6 8 10'-10 0 4 5 6 20
 	0N 0 8 10 0N 0N
-
-More study is necessary.
 
 Letter Deals (<font color="red">Todo</font>)
 ------------
