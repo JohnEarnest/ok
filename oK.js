@@ -675,21 +675,21 @@ function dmend(d, i, y, f, env) {
 //
 ////////////////////////////////////
 
-var NUMBER  = /^((-?0w)|(0N)|(-?\d*\.?\d+))/;
-var HEXLIT  = /^0x([a-zA-Z0-9]+)/;
+var NUMBER  = /^(-?0w|0N|-?\d*\.?\d+)/;
+var HEXLIT  = /^0x[a-zA-Z\d]+/;
 var BOOL    = /^[01]+b/;
-var NAME    = /^([A-Za-z][A-Za-z0-9]*)/;
-var SYMBOL  = /^(`[A-Za-z][A-Za-z0-9]*|`)/;
-var STRING  = /^"((\\n)|(\\t)|(\\")|(\\\\)|[^"])*"/;
-var VERB    = /^(\+|-|\*|%|!|&|\||<|>|=|~|,|\^|#|_|\$|\?|@|\.)/;
-var ASSIGN  = /^(\+|-|\*|%|!|&|\||<|>|=|~|,|\^|#|_|\$|\?|@|\.):/;
+var NAME    = /^[a-z][a-z\d]*/i;
+var SYMBOL  = /^`([a-z][a-z0-9]*)?/i;
+var STRING  = /^"(\\.|[^"\\\r\n])*"/;
+var VERB    = /^[+\-*%!&|<>=~,^#_$?@.]/;
+var ASSIGN  = /^[+\-*%!&|<>=~,^#_$?@.]:/;
 var IOVERB  = /^\d:/;
-var ADVERB  = /^(':|'|\/:|\\:|\/|\\)/;
+var ADVERB  = /^['\\\/]:?/;
 var SEMI    = /^;/;
 var COLON   = /^:/;
 var VIEW    = /^::/;
 var COND    = /^\$\[/;
-var DICT    = /^\[([A-Za-z]+):/;
+var DICT    = /^\[[a-z]+:/i;
 var APPLY   = /^\./;
 var OPEN_B  = /^\[/;
 var OPEN_P  = /^\(/;
