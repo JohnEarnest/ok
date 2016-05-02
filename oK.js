@@ -272,7 +272,7 @@ function odometer(x) {
 	} return flip(r);
 }
 
-function window(x, y) {
+function kwindow(x, y) {
     checktype(x, 0); var res = []; var off = x.v>0 ? x.v : x.v==0 ? 0 : 1;
     for(var i=0; i+off<=len(y); i++) {
         var w = []; var n = x.v>0 ? x.v : 3; for(var j=0; j<n; j++) {
@@ -445,7 +445,7 @@ var verbs = {
 	"?" : [real,      unique,     rnd,        pfind,      rnd,        ar(pfind),  splice,  null  ],
 	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,     keval,      call,       call,       call,       call,       dmend4,  dmend4],
-	"'" : [null,      null,       null,       bin,        window,     ar(bin),    null,    null  ],
+	"'" : [null,      null,       null,       bin,        kwindow,    ar(bin),    null,    null  ],
 	"/" : [null,      null,       null,       null,       pack,       pack,       null,    null  ],
 	"\\": [null,      null,       null,       unpack,     split,      null,       null,    null  ],
 };
