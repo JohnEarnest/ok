@@ -221,7 +221,7 @@ function rnd(x, y, env) {
 
 function flip(x) {
 	x=eachright(k(8,"#"), over(k(8,"|"), each(k(8,"#"), x)), x);
-	return krange(len(x.v[0]), function(z){
+	return krange(len(x) > 0 ? len(x.v[0]) : 0, function(z){
 		return krange(len(x), function(t){ return x.v[t].v[z]; });
 	});
 }
