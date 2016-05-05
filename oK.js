@@ -596,16 +596,11 @@ function call(x, y, env) {
 }
 
 function run(node, env) {
-	if (node == null) { return k(11); }
 	if (node.t == 14) { return run(node.v, env); }
-	if (node instanceof Array) {
-		var r; for(var z=0;z<node.length;z++) { r=run(node[z], env); } return r;
-	}
+	if (node instanceof Array) { var r; node.forEach(function(v) { r=run(v, env); }); return r; }
 	if (node.t == 8 && node.curry && !node.r) { return applyverb(node, [], env); }
 	if (node.sticky) { return node; }
-	if (node.t == 3) {
-		var r=[]; for(var z=len(node)-1;z>=0;z--) { r.unshift(run(node.v[z], env)); } return k(3,r);
-	}
+	if (node.t == 3) { return rev(kmap(rev(node), function(v) { return run(v, env); })); }
 	if (node.t == 4) { return md(node.k, kmap(node.v, function(x) { return run(x, env); })); }
 	if (node.t == 5 && node.r) { return call(node, k(3,[run(node.r, env)]), env); }
 	if (node.t == 6) { env.put(node.v, false, node); return node; }
