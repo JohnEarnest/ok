@@ -247,7 +247,7 @@ For the case `n'l`, k6 splits the right argument into sublists using a sliding w
 	 2'!6
 	(0 1;1 2;2 3;3 4;4 5)
 
-Identity Matrix (<font color="red">Todo</font>)
+Identity Matrix (<font color="green">Done</font>)
 ---------------
 For the case `=n`, k6 produces an NxN identity matrix:
 
@@ -259,6 +259,15 @@ For the case `=n`, k6 produces an NxN identity matrix:
 Identity matrix is implemented in k6, in the common idiomatic manner:
 
 	{x=/:x:!x}
+
+Countdown (<font color="green">Done</font>)
+---------
+`!n` where `n` is negative will produce a list of negative numbers counting up:
+
+	 !-5
+	-5 -4 -3 -2 -1
+	 !-1
+	,-1
 
 Permutations (<font color="red">Todo</font>)
 ------------

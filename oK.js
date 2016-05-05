@@ -113,8 +113,12 @@ function count    (x) { return k(0, x.t == 4 ? len(x.v) : x.t == 3 ? len(x) : 1)
 function floor    (x) { return k(0, Math.floor(n(x).v)); }
 function type     (x) { return k(0, kt[x.t]); }
 function kfmt     (x) { var r=stok(format(x, 0, 1)); if (r.t!=3) { r=k(3,[r]); } return r; }
-function iota     (x) { return x.t == 4 ? keys(x) : krange(p(x), function(x) { return k(0,x); }); }
 function real     (x) { return krange(n(x).v, function() { return k(0, Math.random()); }); }
+
+function iota(x) {
+	if (x.t == 4) { return keys(x); }
+	var i = krange(Math.abs(n(x).v), k.bind(null, 0)); return x.v>=0 ? i : ar(plus)(x, i);
+}
 
 function cat(x, y) {
 	if (x.t==4&&y.t==4) { x=c(x); kmap(y.k, function(v) { dset(x,v,dget(y,v)); }); return x; };
@@ -287,6 +291,7 @@ function kwindow(x, y) {
 function unpack(x, y) { return call(unpackimpl, k(3,[x,y])); }
 function pack  (x, y) { if (x.t == 1) { return join(x, y); } return call(packimpl, k(3,[x,y])); }
 function splice(xyz)  { return call(spliceimpl, k(3,xyz)); }
+function imat(x)      { return call(imatimpl, k(3, [x])); }
 
 ////////////////////////////////////
 //
@@ -435,7 +440,7 @@ var verbs = {
 	"|" : [rev,       rev,        ad(max),    ad(max),    ad(max),    ad(max),    null,    null  ],
 	"<" : [asc,       asc,        ad(less),   ad(less),   ad(less),   ad(less),   null,    null  ],
 	">" : [desc,      desc,       ad(more),   ad(more),   ad(more),   ad(more),   null,    null  ],
-	"=" : [null,      group,      ad(equal),  ad(equal),  ad(equal),  ad(equal),  null,    null  ],
+	"=" : [imat,      group,      ad(equal),  ad(equal),  ad(equal),  ad(equal),  null,    null  ],
 	"~" : [am(not),   am(not),    match,      match,      match,      match,      null,    null  ],
 	"," : [enlist,    enlist,     cat,        cat,        cat,        cat,        null,    null  ],
 	"^" : [pisnull,   am(pisnull),except,     except,     except,     except,     null,    null  ],
@@ -972,6 +977,7 @@ function baseEnv() {
 var packimpl   = parse("{+/y*|*\\1,|1_(#y)#x}")[0];
 var unpackimpl = parse("{(1_r,,y)-x*r:|y(_%)\\|x}")[0];
 var spliceimpl = parse("{,/(*x;$[99<@z;z x 1;z];*|x:(0,y)_x)}")[0];
+var imatimpl   = parse("{x=/:x:!x}")[0];
 
 // export the public interface:
 function setIO(symbol, slot, func) {
