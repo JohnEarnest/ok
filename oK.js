@@ -727,15 +727,11 @@ function expect(regex) {
 ////////////////////////////////////
 
 function findNames(node, names) {
-	if (node instanceof Array) { for(var z=0;z<node.length;z++) { findNames(node[z], names); } }
+	if (node == null)          { return names; }
+	if (node instanceof Array) { node.forEach(function(v) { findNames(v, names); }); return names; }
 	if (node.t == 7)           { names[node.v] = 0; }
-	if (node.t != 5)           { if (node.v instanceof Array) { findNames(node.v, names); } }
-	if (node.l)                { findNames(node.l, names); }
-	if (node.r)                { findNames(node.r, names); }
-	if (node.verb)             { findNames(node.verb, names); }
-	if (node.curry)            { findNames(node.curry, names); }
-	if (node.t == 14)          { findNames(node.v, names); }
-	return names;
+	if (node.t != 5)           { findNames(node.v, names); }
+	return findNames([node.l, node.r, node.verb, node.curry], names);
 }
 
 function atNoun() {
