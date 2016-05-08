@@ -1,6 +1,6 @@
 oK Manual
 =========
-oK aims to be an implementation of [k5](http://kparc.com), the still-evolving bleeding edge version of the K programming language. This manual will serve as a short but more comprehensive reference than the official [k5 reference card](http://kparc.com/k.txt). Since both oK and k5 are unfinished, this document will attempt to describe oK's *current behavior* and will be updated as semantics are brought in line with k5.
+oK aims to be an implementation of [k6](http://kparc.com), the still-evolving bleeding edge version of the K programming language. This manual will serve as a short but more comprehensive reference than the official [k6 reference card](http://kparc.com/k.txt). Since both oK and k6 are unfinished, this document will attempt to describe oK's *current behavior* and will be updated as semantics are brought in line with k6.
 
 K may look daunting at first, but the syntax of the language is very simple and regular. Programs consist of a series of expressions which are made up of *nouns*, *verbs* and *adverbs*. Nouns can be simple *atomic* types like *numbers*, *characters* or *symbols* or they can be the compound datatypes *lists*, *dictionaries* or *functions*. In general, `()` are for grouping subexpressions or forming lists, `[]` are used for creating dictionaries, indexing into a list or applying arguments to a function, `{}` are used for delimiting functions and newlines always behave identically to semicolons (`;`). The colon (`:`) has several possible meanings in different contexts, but most frequently behaves as an assignment operator binding the result of a right-hand expression to a name:
 	
@@ -47,6 +47,10 @@ Nouns
 		mean[4 7 18]
 		{x*x} 5
 
+Functions may alternatively begin with a list of explicit named arguments, enclosed in square brackets and separated by semicolons. The following expressions are semantically equivalent:
+
+		{x*2+y}
+		{[apple;square] apple*2+square}
 
 Conditionals
 ------------
@@ -181,6 +185,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<tt>!n</tt> is <b>int</b>. Generate a range from 0 up to but excluding N.
 <pre><code>  !5
 0 1 2 3 4</code></pre>
+		If N is negative, count up and exclude zero.
+<pre><code>  !-3
+-3 -2 -1</code></pre>
 		<tt>!l</tt> is <b>odometer</b>. Generate ranged permutations.
 <pre><code>  !2 3
 (0 0 0 1 1 1
@@ -275,6 +282,11 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<tt>=l</tt> is <b>group</b>. Generate a dictionary from items to the indices where they were found.
 <pre><code>  =`c`a`b`b`a`c`a
 [c:0 5;a:1 4 6;b:2 3]</code></pre>
+		<tt>=n</tt> is <b>identity matrix</b>. Generate an NxN identity matrix.
+<pre><code>  =3
+(1 0 0
+ 0 1 0
+ 0 0 1)</code></pre>
 	</td>
 	<td>
 		<tt>a=a</tt> is <b>equal</b>. Fully atomic.
@@ -715,7 +727,7 @@ As a general note, niladic functions may be used where monadic functions are val
 
 Special Forms
 -------------
-The verbs `?`, `@` and `.` have special triadic and tetradic overloads in k5 to perform miscellaneous functions. This section will try to explain known overloads on a case-by-case basis.
+The verbs `?`, `@` and `.` have special triadic and tetradic overloads in k6 to perform miscellaneous functions. This section will try to explain known overloads on a case-by-case basis.
 
 `?[l;x;v]` is <b>splice</b>. Replace the elements of `l` in the interval given by `x` with `v`. `x` must be a length-2 list.
 
