@@ -276,22 +276,11 @@ function odometer(x) {
 	} return flip(r);
 }
 
-function kwindow(x, y) {
-    checktype(x, 0); var res = []; var off = x.v>0 ? x.v : x.v==0 ? 0 : 1;
-    for(var i=0; i+off<=len(y); i++) {
-        var w = []; var n = x.v>0 ? x.v : 3; for(var j=0; j<n; j++) {
-            if (x.v>0) { w.push(y.v[i+j]); }
-            else if (x.v==0) {}
-            else if ((i==0 && j==0) || (i+off==len(y) && j+1==n)) { w.push(k0); }
-            else { w.push(y.v[i+j-1]); }
-        } res.push(k(3,w));
-    } return k(3,res);
-}
-
-function unpack(x, y) { return call(unpackimpl, k(3,[x,y])); }
-function pack  (x, y) { if (x.t == 1) { return join(x, y); } return call(packimpl, k(3,[x,y])); }
-function splice(xyz)  { return call(spliceimpl, k(3,xyz)); }
-function imat(x)      { return call(imatimpl, k(3, [x])); }
+function unpack (x, y) { return call(unpackimpl, k(3,[x,y])); }
+function pack   (x, y) { return (x.t == 1) ? join(x, y) : call(packimpl, k(3,[x,y])); }
+function kwindow(x, y) { return (x.t > 1) ? ar(atd)(x, y) : call(winimpl, k(3,[x,y])); }
+function splice(xyz)   { return call(spliceimpl, k(3,xyz)); }
+function imat(x)       { return call(imatimpl, k(3, [x])); }
 
 ////////////////////////////////////
 //
@@ -553,7 +542,7 @@ function Environment(pred) {
 
 function atd(x, y, env) {
 	if (x.t == 13) { return x.v(y); }
-	if (x.t == 2) { x = env.lookup(x.v, true); }
+	if (x.t == 2) { return x; }
 	if (x.t == 3) { return atl(x, y, env); }
 	if (x.t == 5) { return call(x, k(3,[y]), env); }
 	if (x.t == 8 || x.t == 9) { return applym(x, y, env); }
@@ -562,7 +551,6 @@ function atd(x, y, env) {
 
 function atl(x, y, env) {
 	if (x.t == 4) { return dget(x, y); }
-	if (x.t == 2) { x = env.lookup(x.v, true); }
 	if (y.t == 4) { return md(y.k, (ar(atl))(x, y.v, env)); }
 	if (y.t > 1 || y.v < 0 || y.v >= len(x) || y.v%1 != 0) { return NA; }
 	return x.v[y.v];
@@ -578,7 +566,7 @@ function atdepth(x, y, i, env) {
 function call(x, y, env) {
 	if (x.sticky) { return (valence(x.sticky, env)==1?applym:applyd)(x, y.v[0], y.v[1]); }
 	if (x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : dget(x, y); }
-	if (x.t == 2) { x = env.lookup(x.v, true); }
+	if (x.t == 2) { return x; }
 	if (y.t == 0) { return atd(x, y, env); }
 	if (y.t == 3 && len(y) == 0) { return (x.t==5&&x.args.length==0) ? run(x.v, env) : x; }
 	if (x.t == 3 && y.t == 3) { return atdepth(x, y, 0, env); }
@@ -978,6 +966,7 @@ var packimpl   = parse("{+/y*|*\\1,|1_(#y)#x}")[0];
 var unpackimpl = parse("{(1_r,,y)-x*r:|y(_%)\\|x}")[0];
 var spliceimpl = parse("{,/(*x;$[99<@z;z x 1;z];*|x:(0,y)_x)}")[0];
 var imatimpl   = parse("{x=/:x:!x}")[0];
+var winimpl    = parse("{x&:1+#y;$[x<0;3'0,y,0;y(!x)+/:!(#y)-x-1]}")[0];
 
 // export the public interface:
 function setIO(symbol, slot, func) {

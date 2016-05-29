@@ -265,9 +265,6 @@ fail("@[1;2]"                         , "dictionary expected, found number."  );
 fail("{5;"                            , "parse error. '}' expected."          );
 fail("(5"                             , "parse error. ')' expected."          );
 fail("a[3"                            , "parse error. ']' expected."          );
-test("a:1 2 3;`a[1]"                  , "2"                                   ); // !
-test("a:1 4 3;`a @ 1"                 , "4"                                   ); // !
-test("a:1 6 3;`a . 1"                 , "6"                                   ); // !
 test("a:(1 2;3 4)[;1]"                , "2 4"                                 );
 test("5,/:1 2 3"                      , "(5 1\n 5 2\n 5 3)"                   );
 test("(!3)+/:!3"                      , "(0 1 2\n 1 2 3\n 2 3 4)"             );
@@ -297,7 +294,7 @@ fail("a:1 2 3;a[1.4]:5;a"             , "positive int expected."              );
 test("$!5"                            , '(,"0"\n ,"1"\n ,"2"\n ,"3"\n ,"4")'  );
 test('"&"\\"foo=42&bar=69"'           , '("foo=42"\n "bar=69")'               );
 fail("1\\3 1 2 2 4 1 5 1"             , "list expected, found number."        );
-fail("`'!5"                           , "number expected, found symbol."      );
+test("`'!5"                           , "`````"                               );
 test("1'!5"                           , "(,0\n ,1\n ,2\n ,3\n ,4)"            );
 test("2'!5"                           , "(0 1\n 1 2\n 2 3\n 3 4)"             );
 test("3'!5"                           , "(0 1 2\n 1 2 3\n 2 3 4)"             );
@@ -611,7 +608,6 @@ test("[a:0][`a]"                      , "0"                                   );
 test("{`a 0}"                         , "{`a@0}"                              );
 test('{"a"0}'                         , '{"a"@0}'                             );
 test("[a:0]`a"                        , "0"                                   );
-fail("`a 0"                           , "the name 'a' has not been defined."  );
 fail('"a"0'                           , "dictionary expected, found char."    );
 test('{""   0: "bb"}'                 , '{()0:"bb"}'                          );
 test('{"aa" 0: "bb"}'                 , '{"aa"0:"bb"}'                        );
@@ -705,8 +701,13 @@ test("+()"                            , "()"                                  );
 test("!-5"                            , "-5 -4 -3 -2 -1"                      );
 test("!-1"                            , ",-1"                                 );
 test("=3"                             , "(1 0 0\n 0 1 0\n 0 0 1)"             );
-
 test("%':1 3 4 2 1"                   , "1 3 1.3333 0.5 0.5"                  );
+
+test("`@5"                            , "`"                                   );
+test("a:1 2 3;`a[1]"                  , "`a"                                  );
+test("a:1 4 3;`a @ 1"                 , "`a"                                  );
+test("`a 0"                           , "`a"                                  );
+test("a:1 6 3;`a . 1"                 , "`a"                                  );
 
 //test(".[3 3#0;(0 1;0 1);:;2 2#!4]"    , "(0 1 0\n 2 3 0\n 0 0 0)"             );
 //test("a:3 3#0;a[0 1;0 1]:2 2#!4"      , "(0 1 0\n 2 3 0\n 0 0 0)"             );

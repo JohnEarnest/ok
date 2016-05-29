@@ -187,7 +187,7 @@ For example,
 
 If you need more context, you can split the list appropriately yourself. To provide sliding windows into a list `x` which each have a length `y`:
 
-	  {+x@(-y-1)_'(!#x)+/:!y}[4 8 9 10 22 3;3]
+	  {x(!y)+/:!(#x)-y-1}[4 8 9 10 22 3;3]
 	(4 8 9
 	 8 9 10
 	 9 10 22
