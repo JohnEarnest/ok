@@ -164,17 +164,38 @@ You might find that `eval` (`.`) is useful for unpacking this tuple into separat
 
 Sequential Processing
 ---------------------
-Sometimes problems which appear to require sequential processing can be performed in parallel if you provide each iteration with the necessary context. `eachprior` (`':`) handles the most straightforward of these cases. It is often combined with `~` or `-` to find the beginnings of identical runs in a list or find the change between successive elements, respectively:
+Sometimes problems which appear to require sequential processing can be performed in parallel if you provide each iteration with the necessary context. `eachprior` (`':`) handles the most straightforward of these cases. It is usually combined with one of the *difference* operations:
+
+- `-':` *delta* (change in value)
+- `%':` *ratio* (percent change)
+- `~~':` *differ* (beginnings of identical runs)
+- `^':` *set difference* (items added to each set)
+
+For example,
+
+	  -':3 3 4 0 1 1 3 0
+	3 0 1 -4 1 0 2 -3
+
+	  %':1 3 4 2 1
+	1.0 3.0 1.333333 .5 .5
 
 	  ~~':3 3 4 0 1 1 3 0
 	1 0 1 1 1 0 1 1
-	
-	  -':3 3 4 0 1 1 3 0
-	3 0 1 -4 1 0 2 -3
+
+	  ^':(1 2;1 3 2;1 3 5 6 2)
+	(1 2;,3;5 6)
 
 If you need more context, you can split the list appropriately yourself. To provide sliding windows into a list `x` which each have a length `y`:
 
 	  {+x@(-y-1)_'(!#x)+/:!y}[4 8 9 10 22 3;3]
+	(4 8 9
+	 8 9 10
+	 9 10 22
+	 10 22 3)
+
+K6 introduces `window` (`'`), which makes this much simpler:
+
+	 3'4 8 9 10 22 3
 	(4 8 9
 	 8 9 10
 	 9 10 22
@@ -213,3 +234,19 @@ The way this works is clearer if we show the intermediate results:
 	 "f|adef"
 	 "#|ade"
 	 "#|ad")
+
+If you find yourself seemingly needing to update several data structures on each iteration of an algorithm, consider whether you can break the algorithm into several simpler passes. For example, consider a program which, given a graph as an adjacency list `g`, finds the visited items at each layer of a breadth-first traversal. We can first simply walk the graph by expanding a visited set, and then afterwards extract each ply's expansion by using *set difference*:
+
+	  g: (1 2 4;0 5;0 6 7;,7;0 9;1 8;,2;2 3 9;5 9;4 7 8);
+
+	  {?x,,/g@x}\,0
+	(,0
+	 0 1 2 4
+	 0 1 2 4 5 6 7 9
+	 0 1 2 4 5 6 7 9 8 3)
+
+	  ^':{?x,,/g@x}\,0
+	(,0
+	 1 2 4
+	 5 6 7 9
+	 8 3)
