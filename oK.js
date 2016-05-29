@@ -966,7 +966,7 @@ var packimpl   = parse("{+/y*|*\\1,|1_(#y)#x}")[0];
 var unpackimpl = parse("{(1_r,,y)-x*r:|y(_%)\\|x}")[0];
 var spliceimpl = parse("{,/(*x;$[99<@z;z x 1;z];*|x:(0,y)_x)}")[0];
 var imatimpl   = parse("{x=/:x:!x}")[0];
-var winimpl    = parse("{x&:1+#y;$[x<0;3'0,y,0;y(!x)+/:!(#y)-x-1]}")[0];
+var winimpl    = parse("{$[0>x;3'0,y,0;y(!0|1+(#y)-x)+\\:!x]}")[0];
 
 // export the public interface:
 function setIO(symbol, slot, func) {
