@@ -320,7 +320,7 @@ function eachleft(dyad, list, right, env) {
 }
 
 function eachprior(dyad, x, env) {
-	var specials = {"+":k0, "*":k1, "-":k0, "&":first(x), ",":k(3,[])};
+	var specials = {"+":k0, "*":k1, "-":k0, "&":first(x), ",":k(3,[]), "%":k1};
 	return eachpc(dyad, (dyad.v in specials) ? specials[dyad.v] : NA, x);
 }
 
