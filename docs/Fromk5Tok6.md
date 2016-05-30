@@ -90,6 +90,26 @@ In keeping with the unification of numeric types, booleans have been expunged fr
 	 011010b
 	0N
 
+Removed Bin (<font color="green">Done</font>)
+-----------
+In k5, `l'n` and `l'l` were "bin", which performed a binary-search lookup for the index of the right item in the left (sorted) list:
+
+	 0 2 4 6 8 10'5
+	2
+	 0 2 4 6 8 10'6 6 8 2
+	3 3 4 1
+	 0 2 4 6 8 10'-10 0 4 5 6 20
+	-1 0 2 2 3 5
+
+In k6, these cases simply perform indexing.
+
+	 11 22 33'2 1 1
+	33 22 22
+	 11 22 33'2
+	33
+	 11 22 33'10
+	0N
+
 Goodbye To Infinity (<font color="red">Todo</font>)
 -------------------
 In k5, various compositions have special base cases for dealing with an empty list argument. Observe how using min or max produces an appropriate infinity value when applied to an empty list:
@@ -190,28 +210,6 @@ In k6:
 	 @:'(+;;`a;1.0;1;"a";();,"a";,1;,1.0;,`a)
 	-14 -13 -10 -9 -2 -1 0 1 2 9 10
 
-Altered Bin (<font color="red">Todo</font>)
------------
-In k5, `l'n` and `l'l` were "bin", which performed a binary-search lookup for the index of the right item in the left (sorted) list:
-
-	 0 2 4 6 8 10'5
-	2
-	 0 2 4 6 8 10'6 6 8 2
-	3 3 4 1
-	 0 2 4 6 8 10'-10 0 4 5 6 20
-	-1 0 2 2 3 5
-
-In k6 this has changed. The pattern is unclear:
-
-	 0 2 4 6 8 10'5
-	10
-	 0 2 4 6 8 10'6 6 8 2
-	0N 0N 0N 4
-	 0 2 4 6 8 10'-10 0 4 5 6 20
-	0N 0 8 10 0N 0N
-
-More study is necessary.
-
 Letter Deals (<font color="green">Done</font>)
 ------------
 k5 special-cases "rand" when the right argument is the character "a" or "A", producing lower- or uppercase lists of letters. This feature does not work for any other character arguments.
@@ -238,7 +236,7 @@ New And Tasty
 =============
 Some features of k6 are entirely new!
 
-Window (<font color="red">Todo</font>)
+Window (<font color="green">Done</font>)
 ------
 For the case `n'l`, k6 splits the right argument into sublists using a sliding window. This is a bit like a generalization of each-pair:
 

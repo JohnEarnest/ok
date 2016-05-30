@@ -256,12 +256,6 @@ function unique(x) {
 	} return k(3,r);
 }
 
-function bin(x, y) {
-	var a=0; var b=len(x); if (b<1 || less(y, x.v[0]).v) { return k(0,-1); }
-	while(b - a > 1) { var i=a+Math.floor((b-a)/2); if (more(x.v[i], y).v) { b=i; } else { a=i; } }
-	return k(0, a);
-}
-
 function split(x, y) {
 	if (x.t != 1) { return unpack(x, y); } var r=[k(3,[])]; for(var z=0;z<len(y);z++) {
 		if (match(x, y.v[z]).v) { r.push(k(3,[])); } else { r[r.length-1].v.push(y.v[z]); }
@@ -439,7 +433,7 @@ var verbs = {
 	"?" : [real,      unique,     rnd,        pfind,      rnd,        ar(pfind),  splice,  null  ],
 	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,     keval,      call,       call,       call,       call,       dmend4,  dmend4],
-	"'" : [null,      null,       null,       bin,        kwindow,    ar(bin),    null,    null  ],
+	"'" : [null,      null,       null,       atl,        kwindow,    ar(atl),    null,    null  ],
 	"/" : [null,      null,       null,       null,       pack,       pack,       null,    null  ],
 	"\\": [null,      null,       null,       unpack,     split,      null,       null,    null  ],
 };

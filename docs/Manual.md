@@ -46,8 +46,8 @@ Nouns
 		mean:{(+/x)%#x}
 		mean[4 7 18]
 		{x*x} 5
-
-Functions may alternatively begin with a list of explicit named arguments, enclosed in square brackets and separated by semicolons. The following expressions are semantically equivalent:
+	
+	Functions may alternatively begin with a list of explicit named arguments, enclosed in square brackets and separated by semicolons. The following expressions are semantically equivalent:
 
 		{x*2+y}
 		{[apple;square] apple*2+square}
@@ -563,12 +563,13 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 </code></pre>
 	</td>
 	<td>
-		<tt>l'a</tt> is <b>bin</b>. Perform a binary search for y in x. Right atomic.<br>
-		x must already be sorted.
-<pre><code>  0 2 4 6 8 10'5
-2
-  0 2 4 6 8 10'-10 0 4 5 6 20
--1 0 2 2 3 5</code></pre>
+		<tt>l'a</tt> and <tt>l'l</tt> are equivalent to <tt>l@a</tt> and <tt>l@l</tt>.
+<pre><code>  11 22 33'2 1 1
+33 22 22
+  11 22 33'2
+33
+  11 22 33'10
+0N</code></pre>
 	</td>
 </tr>
 <tr>
