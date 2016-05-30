@@ -267,7 +267,7 @@ Countdown (<font color="green">Done</font>)
 	 !-1
 	,-1
 
-Permutations (<font color="red">Todo</font>)
+Permutations (<font color="green">Done</font>)
 ------------
 The built in function `prm` generates the permutations of a list:
 

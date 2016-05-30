@@ -558,6 +558,7 @@ function atdepth(x, y, i, env) {
 }
 
 function call(x, y, env) {
+	if (x.t == 13) { return x.v(first(y)); }
 	if (x.sticky) { return (valence(x.sticky, env)==1?applym:applyd)(x, y.v[0], y.v[1]); }
 	if (x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : dget(x, y); }
 	if (x.t == 2) { return x; }
@@ -954,8 +955,10 @@ function baseEnv() {
 	env.put("exp", true, k(13, am(function(x) { return k(0, Math.exp(n(x).v)) })));
 	env.put("cos", true, k(13, am(function(x) { return k(0, Math.cos(n(x).v)) })));
 	env.put("sin", true, k(13, am(function(x) { return k(0, Math.sin(n(x).v)) })));
+	run(parse("prm:{p:{$[x;,/x,''p'x^/:x;,x]};p$[-8>@x;!x;x]}"), env);
 	return env;
 }
+
 var packimpl   = parse("{+/y*|*\\1,|1_(#y)#x}")[0];
 var unpackimpl = parse("{(1_r,,y)-x*r:|y(_%)\\|x}")[0];
 var spliceimpl = parse("{,/(*x;$[99<@z;z x 1;z];*|x:(0,y)_x)}")[0];
