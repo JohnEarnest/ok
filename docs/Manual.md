@@ -549,6 +549,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 <tr>
 	<td>
 		<a name="bin"/>
+		n/a
+	</td>
+	<td>
 		<tt>n'l</tt> is <b>window</b>. Create a sliding window of length x from y. If x is less then zero, then it
         is equivalent to <tt>3'0,y,0</tt>. If x is zero, then this is equivalent to <tt>(1+#y)#()</tt>.
 <pre><code>  3'!5
@@ -561,9 +564,8 @@ As a general note, verbs which operate on numbers will coerce characters to thei
  2 3
  3 4)
 </code></pre>
-	</td>
-	<td>
-		<tt>l'a</tt> and <tt>l'l</tt> are equivalent to <tt>l@a</tt> and <tt>l@l</tt>.
+
+		Otherwise, <tt>x'y</tt> is equivalent to <tt>x@y</tt>.
 <pre><code>  11 22 33'2 1 1
 33 22 22
   11 22 33'2
