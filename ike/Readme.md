@@ -10,7 +10,7 @@ Read about iKe in *Vector*: [A graphical sandbox for K](http://archive.vector.or
 
 Output
 ------
-To draw to the display, you must provide a definition of a niladic function, view or variable named `draw`. This will be invoked 30 times per second and should return/consist of a list of tuples. Each tuple must contain a vector indicating an (x;y) position on screen, a palette and a bitmap. The palette consists of a list of strings representing any valid DOM color code such as "black" or "#FAC". The bitmap is a matrix of indices into the palette. By default, the display is 160x160 pixels.
+To draw to the display, you must provide a definition of a niladic function, view or variable named `draw`. This will be invoked 30 times per second (see `tr`) and should return/consist of a list of tuples. Each tuple must contain a vector indicating an (x;y) position on screen, a palette and a bitmap. The palette consists of a list of strings representing any valid DOM color code such as "black" or "#FAC". The bitmap is a matrix of indices into the palette. By default, the display is 160x160 pixels.
 
 For example, the following definition of `draw` will draw a small blue on red box at a random position:
 
@@ -103,6 +103,7 @@ iKe pre-defines and updates several K variables for your convenience:
 - `mx`: the horizontal position of the mouse in pixels (read only)
 - `my`: the vertical position of the mouse in pixels (read only)
 - `pi`: the mathematical constant Pi (read only)
+- `tr`: tick rate; how many times per second `tick` and `draw` are fired (read and write)
 
 iKe provides a number of pre-defined palettes. Since transparency is useful, the last color of each palette is fully transparent:
 

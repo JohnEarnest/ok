@@ -193,6 +193,7 @@ function extendedEnv() {
 	trampoline(env, "atan2", ["x", "y"],      katan2);
 	trampoline(env, "pow"  , ["x", "y"],      kpow);
 	trampoline(env, "pn"   , ["x", "y", "z"], knoise);
+	env.put("tr", true, k(0, 30));
 	return env;
 }
 
@@ -238,8 +239,16 @@ var rgbaPalettes = {
 	hot:         readpal(tojs(hot)),
 };
 
-var PER_FRAME = 1000/30;
-var SCALE     = 2;
+function frameDelay() {
+	var tr = 30;
+	try {
+		var v = env.lookup("tr", true);
+		if (v.t == 0) { tr = v.v; }
+	} catch(e) {}
+	return 1000 / tr;
+}
+
+var SCALE = 2;
 
 var running = false;
 var editor = document.getElementById("editor");
@@ -472,8 +481,8 @@ function play() {
 	
 			if (!("draw" in env.d)) { stop(); return; }
 			if (!running) {
-				drawTimeout = setTimeout(paint, PER_FRAME);
-				tickTimeout = setTimeout(update, PER_FRAME);
+				drawTimeout = setTimeout(paint, frameDelay());
+				tickTimeout = setTimeout(update, frameDelay());
 				running = true;
 				audioPlay();
 			}
@@ -546,7 +555,7 @@ loadshared();
 function update() {
 	setvars();
 	var r = callk("tick");
-	if (running) { tickTimeout = setTimeout(update, PER_FRAME); }
+	if (running) { tickTimeout = setTimeout(update, frameDelay()); }
 	else { tickTimeout = null; }
 }
 
@@ -572,7 +581,7 @@ function paintValue(r) {
 		if (c.t != 3) { continue; }
 		paintEach(g, c.v);
 	}
-	if (running) { drawTimeout = setTimeout(paint, PER_FRAME); }
+	if (running) { drawTimeout = setTimeout(paint, frameDelay()); }
 	else { drawTimeout = null; }
 }
 
