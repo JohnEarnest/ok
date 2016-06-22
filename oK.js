@@ -565,7 +565,8 @@ function call(x, y, env) {
 	if (y.t == 0) { return atd(x, y, env); }
 	if (y.t == 3 && len(y) == 0) { return (x.t==5&&x.args.length==0) ? run(x.v, env) : x; }
 	if (x.t == 3 && y.t == 3) { return atdepth(x, y, 0, env); }
-	if (x.t == 8) { return applyverb(x, y.t == 3 ? y.v : [x], env); }
+	if (x.t == 8) { return applyverb(x, y.t == 3 ? y.v : [y], env); }
+	if (x.t == 9) { return applyadverb(x, x.verb, y.v, env); }
 	if (x.t != 5) { throw new Error("function or list expected."); }
 	if (y.t != 3) { y = enlist(y); }
 	var environment = new Environment(x.env); var curry = x.curry?x.curry.concat([]):[];
@@ -580,7 +581,7 @@ function call(x, y, env) {
 		if (i < len(y) && x.args.length != 0) { throw new Error("valence error."); }
 		for(var z=0;z<x.args.length;z++) { environment.put(x.args[z], false, curry[z]); }
 	}
-	return run(x.v, environment);
+	environment.put("o", false, x); return run(x.v, environment);
 }
 
 function run(node, env) {
@@ -865,6 +866,7 @@ function parseNoun() {
 function parseAdverb(left, verb) {
 	var a = expect(ADVERB);
 	while(at(ADVERB)) { var b = expect(ADVERB); verb = { t:9, v:a, verb:verb }; a = b; }
+	if (at(OPEN_B)) { return applycallright({ t:9, v:a, verb:verb, l:left }); }
 	return { t:9, v:a, verb:verb, l:left, r:parseEx(parseNoun()) };
 }
 

@@ -52,6 +52,11 @@ Nouns
 		{x*2+y}
 		{[apple;square] apple*2+square}
 
+	The special variable `o` will contain a reference to the current (enclosing) function. This is generally used for writing recursive definitions:
+
+		  {(o;o)}[]
+		({(o;o)};{(o;o)})
+
 Conditionals
 ------------
 The symbol `$`, when used with 3 or more argument expressions is `cond`. Much like the Lisp construct, `cond` considers argument expressions two at a time. If the first in a pair evaluates to a truthy value, the second in the pair is evaluated and returned. Otherwise it continues with the next pair. If no conditions match, the final value is returned. For the purposes of `cond`, anything except `0`, `0x00` or `()` is truthy.
