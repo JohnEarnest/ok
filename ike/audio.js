@@ -15,8 +15,9 @@ function getAudioSample() {
 	// fetch more samples from K if we're out of buffered ones:
 	if (sampleIndex >= bufferedAudio.length) {
 		var samples = null;
-		if (env.d["play"].t == 3) {
-			samples = env.d["play"];
+		var playval = env.lookup(ks("play"));
+		if (playval.t == 3) {
+			samples = playval;
 		}
 		else {
 			samples = callk1("play", sampleCount);
@@ -56,7 +57,7 @@ function audioSetup() {
 			for(var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
 				var inputData  = inputBuffer.getChannelData(channel);
 				var outputData = outputBuffer.getChannelData(channel);
-				if ("play" in env.d) {
+				if (env.contains(ks("play"))) {
 					setvar("srate", num(Math.floor(outputBuffer.sampleRate / SAMPLE_MULT)));
 					for(var sample = 0; sample < inputBuffer.length; sample += 1) {
 						outputData[sample] = getAudioSample();

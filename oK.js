@@ -126,7 +126,7 @@ function cat(x, y) {
 }
 
 function keval(x, env) {
-	return x.t == 4 ? c(x.v) : x.t == 2 ? env.lookup(x.v, true) : run(parse(ktos(x)), env);
+	return x.t == 4 ? c(x.v) : x.t == 2 ? env.lookup(x, true) : run(parse(ktos(x)), env);
 }
 
 function dfmt(x, y) {
@@ -471,7 +471,7 @@ function valence(node, env) {
 		if (!node.curry) { return node.args.length; } var r=node.args.length;
 		for(var z=0;z<node.curry.length;z++) { if (!isnull(node.curry[z]).v) { r--; } } return r;
 	}
-	if (node.t == 7) { return valence(env.lookup(node.v)); }
+	if (node.t == 7) { return valence(env.lookup(ks(node.v))); }
 	if (node.t == 9 && node.v == "'") { return valence(node.verb, env); }
 	if (node.t == 9)     { return 1; }
 	if (node.t != 8)     { return 0; }
@@ -510,27 +510,29 @@ function applyadverb(node, verb, args, env) {
 }
 
 function Environment(pred) {
-	this.p = pred; this.d = {};
+	this.p = pred; this.d = md(k(3,[]), k(3,[]));
 	this.put = function(n, g, v) {
-		if (g && this.p) { this.p.put(n, g, v); } else { this.d[n] = v; }
+		if (g && this.p) { this.p.put(n, g, v); } else { dset(this.d, n, v); }
 	};
+	this.contains = function(x) { return find(this.d.k, x).v != len(this.d.k); }
 	this.lookup = function(n, g) {
 		if (g && this.p) { return this.p.lookup(n, g); }
-		if (!(n in this.d)) {
-			if (!this.p) { throw new Error("the name '"+n+"' has not been defined."); }
+		if (!this.contains(n)) {
+			if (!this.p) { throw new Error("the name '"+n.v+"' has not been defined."); }
 			return this.p.lookup(n);
 		}
-		if (this.d[n].t == 6) {
-			var view = this.d[n]; var dirty = view.cache == 0;
+		var view = dget(this.d, n);
+		if (view.t == 6) {
+			var dirty = view.cache == 0;
 			var keys = Object.keys(view.depends);
 			for(var z=0;z<keys.length;z++) {
-				var n = this.lookup(keys[z]); var o = view.depends[keys[z]];
+				var n = this.lookup(ks(keys[z])); var o = view.depends[keys[z]];
 				if (!o || !match(n,o).v) { dirty = true; view.depends[keys[z]] = n; }
 			}
 			if (dirty) { view.cache = run(view.r, this); }
 			return view.cache;
 		}
-		return this.d[n];
+		return view;
 	};
 }
 
@@ -579,9 +581,9 @@ function call(x, y, env) {
 		}
 		if (!all) { return { t:5, v:x.v, args:x.args, env:x.env, curry:curry }; }
 		if (i < len(y) && x.args.length != 0) { throw new Error("valence error."); }
-		for(var z=0;z<x.args.length;z++) { environment.put(x.args[z], false, curry[z]); }
+		for(var z=0;z<x.args.length;z++) { environment.put(ks(x.args[z]), false, curry[z]); }
 	}
-	environment.put("o", false, x); return run(x.v, environment);
+	environment.put(ks("o"), false, x); return run(x.v, environment);
 }
 
 function run(node, env) {
@@ -592,10 +594,10 @@ function run(node, env) {
 	if (node.t == 3) { return rev(kmap(rev(node), function(v) { return run(v, env); })); }
 	if (node.t == 4) { return md(node.k, kmap(node.v, function(x) { return run(x, env); })); }
 	if (node.t == 5 && node.r) { return call(node, k(3,[run(node.r, env)]), env); }
-	if (node.t == 6) { env.put(node.v, false, node); return node; }
+	if (node.t == 6) { env.put(ks(node.v), false, node); return node; }
 	if (node.t == 7) {
-		if (node.r) { env.put(node.v, node.global, run(node.r, env)); }
-		return env.lookup(node.v);
+		if (node.r) { env.put(ks(node.v), node.global, run(node.r, env)); }
+		return env.lookup(ks(node.v));
 	}
 	if (node.t == 8 && node.r) {
 		var right = run(node.r, env);
@@ -624,8 +626,8 @@ function dmend4(args, env) { return mend(args, env, dmend, dmend); }
 
 function mend(args, env, monadic, dyadic) {
 	var ds = args[0], i = args[1], f = args[2], y = args[3];
-	var d = ds.t == 2 ? env.lookup(ds.v,true) : ds; (y?dyadic:monadic)(d, i, y, f, env);
-	if (ds.t!=2) { return d; } env.put(ds.v.slice[1], true, d); return ds;
+	var d = ds.t == 2 ? env.lookup(ds,true) : ds; (y?dyadic:monadic)(d, i, y, f, env);
+	if (ds.t!=2) { return d; } env.put(ks(ds.v.slice[1]), true, d); return ds;
 }
 
 function amendm(d, i, y, monad, env) {
@@ -953,10 +955,10 @@ function format(k, indent, symbol) {
 var natives = {"log":0,"exp":0,"cos":0,"sin":0};
 function baseEnv() {
 	var env = new Environment(null);
-	env.put("log", true, k(13, am(function(x) { return k(0, Math.log(n(x).v)) })));
-	env.put("exp", true, k(13, am(function(x) { return k(0, Math.exp(n(x).v)) })));
-	env.put("cos", true, k(13, am(function(x) { return k(0, Math.cos(n(x).v)) })));
-	env.put("sin", true, k(13, am(function(x) { return k(0, Math.sin(n(x).v)) })));
+	env.put(ks("log"), true, k(13, am(function(x) { return k(0, Math.log(n(x).v)) })));
+	env.put(ks("exp"), true, k(13, am(function(x) { return k(0, Math.exp(n(x).v)) })));
+	env.put(ks("cos"), true, k(13, am(function(x) { return k(0, Math.cos(n(x).v)) })));
+	env.put(ks("sin"), true, k(13, am(function(x) { return k(0, Math.sin(n(x).v)) })));
 	run(parse("prm:{p:{$[x;,/x,''p'x^/:x;,x]};p$[-8>@x;!x;x]}"), env);
 	return env;
 }
