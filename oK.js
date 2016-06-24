@@ -570,6 +570,7 @@ function call(x, y, env) {
 	if (x.t == 8) { return applyverb(x, y.t == 3 ? y.v : [y], env); }
 	if (x.t == 9) { return applyadverb(x, x.verb, y.v, env); }
 	if (x.t != 5) { throw new Error("function or list expected."); }
+	if (y.t == 4) { var e=new Environment(null); e.d=y; x.env=e; return x; }
 	if (y.t != 3) { y = enlist(y); }
 	var environment = new Environment(x.env); var curry = x.curry?x.curry.concat([]):[];
 	if (x.args.length != 0 || len(y) != 1 || !isnull(y.v[0]).v) {
