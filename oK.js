@@ -256,25 +256,13 @@ function unique(x) {
 	} return k(3,r);
 }
 
-function split(x, y) {
-	if (x.t != 1) { return unpack(x, y); } var r=[k(3,[])]; for(var z=0;z<len(y);z++) {
-		if (match(x, y.v[z]).v) { r.push(k(3,[])); } else { r[r.length-1].v.push(y.v[z]); }
-	} return k(3,r);
-}
-
-function odometer(x) {
-	var r = iota(x.v[0]); for(var z=1; z<len(x); z++) {
-		var t = k(3, []); for(var p=0; p<len(r); p++) {
-			for(var i=0; i<x.v[z].v; i++) { t.v.push(cat(r.v[p], k(0, i))); }
-		} r = t;
-	} return flip(r);
-}
-
-function unpack (x, y) { return call(unpackimpl, k(3,[x,y])); }
-function pack   (x, y) { return (x.t == 1) ? join(x, y) : call(packimpl, k(3,[x,y])); }
-function kwindow(x, y) { return (x.t > 1) ? ar(atd)(x, y) : call(winimpl, k(3,[x,y])); }
-function splice(xyz)   { return call(spliceimpl, k(3,xyz)); }
+function split  (x, y) { return (x.t != 1) ? unpack(x, y) : call(splitimpl, k(3, [x,y])); }
+function unpack (x, y) { return call(unpackimpl, k(3, [x,y])); }
+function pack   (x, y) { return (x.t == 1) ? join(x, y) : call(packimpl, k(3, [x,y])); }
+function kwindow(x, y) { return (x.t > 1) ? ar(atd)(x, y) : call(winimpl, k(3, [x,y])); }
+function splice(xyz)   { return call(spliceimpl, k(3, xyz)); }
 function imat(x)       { return call(imatimpl, k(3, [x])); }
+function odometer(x)   { return call(odoimpl, k(3, [x])); }
 
 ////////////////////////////////////
 //
@@ -969,6 +957,8 @@ var unpackimpl = parse("{(1_r,,y)-x*r:|y(_%)\\|x}")[0];
 var spliceimpl = parse("{,/(*x;$[99<@z;z x 1;z];*|x:(0,y)_x)}")[0];
 var imatimpl   = parse("{x=/:x:!x}")[0];
 var winimpl    = parse("{$[0>x;3'0,y,0;y(!0|1+(#y)-x)+\\:!x]}")[0];
+var odoimpl    = parse("{+x\\'!*/x}")[0];
+var splitimpl  = parse("{1_'(&x=y)_y:x,y}")[0];
 
 // export the public interface:
 function setIO(symbol, slot, func) {
