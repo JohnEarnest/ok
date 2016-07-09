@@ -486,6 +486,7 @@ function applyadverb(node, verb, args, env) {
 	var r = null; var v = valence(verb, env);
 	if (v == 0 && verb.t != 5) { return applyverb(k(8,node.v), [verb, args[1]], env); }
 	if (v == 0 && verb.t == 5) { v = 1; }
+	if (v == 2 && !args[1])    { args = [null, args[0]]; }
 	if (v == 1 && !args[0])    { r = adverbs[node.v][0]; }
 	if (v == 2 && !args[0])    { r = adverbs[node.v][1]; }
 	if (v == 1 &&  args[0])    { r = adverbs[node.v][2]; }
