@@ -324,8 +324,8 @@ function fixedwhile(monad, x, y, env) {
 
 function scan(dyad, x, env) {
 	if (x.t != 3 || len(x) < 1) { return x; } if (len(x) == 1) { return first(x); }
-	var c=x.v[0]; var r=[c];
-	for(var z=1;z<len(x);z++) { c = applyd(dyad, c, x.v[z], env); r.push(c); } return k(3,r);
+	var r=[x.v[0]];
+	for(var z=1;z<len(x);z++) { r.push(applyd(dyad, r[z-1], x.v[z], env)); } return k(3,r);
 }
 
 function scand(dyad, x, y, env) {
@@ -490,6 +490,7 @@ function applyadverb(node, verb, args, env) {
 	if (v == 2 && !args[0])    { r = adverbs[node.v][1]; }
 	if (v == 1 &&  args[0])    { r = adverbs[node.v][2]; }
 	if (v == 2 &&  args[0])    { r = adverbs[node.v][3]; }
+
 	if (!r) { throw new Error("invalid arguments to "+node.v+" ["+
 		(args[0]?format(args[0])+" ":"")+" "+format(verb)+" (valence "+v+"), "+format(args[1])+"]");
 	}
