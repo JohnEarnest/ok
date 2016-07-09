@@ -872,6 +872,7 @@ function parseEx(node) {
 	}
 	if (atNoun() && !at(IOVERB)) {
 		var x = parseNoun();
+		if (x.t == 7 && x.v == "o") { return asVerb(".", x, k(3, [node, parseNoun()])); }
 		if (at(ADVERB)) { return parseAdverb(node, x); }
 		return asVerb("@", node, parseEx(x));
 	}
