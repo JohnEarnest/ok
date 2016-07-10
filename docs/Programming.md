@@ -39,7 +39,7 @@ This statement checks conditions one after another and falls through to the fina
 	
 This is nicely general and if you augment the list by indexing it to replicate elements you can express complex logic based on a lookup table:
 
-	{(`A;`B;`C)[1 0 0 1 2 1 0]x}
+	{`A`B`C[1 0 0 1 2 1 0]x}
 
 Zipping
 -------
@@ -132,10 +132,9 @@ Iterative Algorithms
 --------------------
 If an algorithm can be completed in a known number of steps, it is well suited to a solution involving array processing as in the above techniques. Some algorithms, however, must execute for a number of steps which is not easily determined ahead of time or yield a variable number of results depending on the input. K includes some verbs which handle very common algorithms of this nature- for example:
 
-- `find` (dyadic `?`) locates the first instance of a value in a list via a linear search.
-- `bin` (dyadic `'`) performs a binary search on a list to find the closest index to a key element.
-- `except` (dyadic `^`) removes instances of an element from a list.
 - `distinct` (monadic `?`) isolates the unique elements of a list.
+- `find` (dyadic `?`) locates the first instance of a value in a list via a linear search.
+- `except` (dyadic `^`) removes instances of an element from a list.
 - `group` (monadic `=`) collates the indices of matching elements of a list.
 - `split` (dyadic `\`) breaks a list at each instance of an element.
 
@@ -235,6 +234,28 @@ The way this works is clearer if we show the intermediate results:
 	 "#|ade"
 	 "#|ad")
 
+Scan `\` combined with `|` or `&` and applied to a boolean list produces vectors which identify the suffix or prefix, respectively, for which a property holds. Sometimes these are called *smear vectors*:
+
+	 |\0 0 1 0 1 1 0
+	0 0 1 1 1 1 1
+
+	 &\1 1 1 0 1 1 0
+	1 1 1 0 0 0 0
+
+Consider how we can use this type of composition to write a function which trims leading spaces from a string:
+
+	  {~" "=x}"  some text"
+	0 0 1 1 1 1 0 1 1 1 1
+
+	  {x@&~" "=x}"  some text"
+	"sometext"
+
+	  {|\~" "=x}"  some text"
+	0 0 1 1 1 1 1 1 1 1 1
+
+	  {x@&|\~" "=x}"  some text"
+	"some text"
+
 If you find yourself seemingly needing to update several data structures on each iteration of an algorithm, consider whether you can break the algorithm into several simpler passes. For example, consider a program which, given a graph as an adjacency list `g`, finds the visited items at each layer of a breadth-first traversal. We can first simply walk the graph by expanding a visited set, and then afterwards extract each ply's expansion by using *set difference*:
 
 	  g: (1 2 4;0 5;0 6 7;,7;0 9;1 8;,2;2 3 9;5 9;4 7 8);
@@ -250,3 +271,123 @@ If you find yourself seemingly needing to update several data structures on each
 	 1 2 4
 	 5 6 7 9
 	 8 3)
+
+As another example, consider gathering a vector representing the shape of a nested rectangular structure. As a first pass, we can progressively strip the structure apart, one layer at a time. Then, measure the size of each item:
+
+	  *:\((1 2 3;4 5 6);(7 8 9;10 11 12))
+	(((1 2 3
+	   4 5 6)
+	  (7 8 9
+	   10 11 12))
+	 (1 2 3
+	  4 5 6)
+	 1 2 3
+	 1)
+
+	  #:'*:\((1 2 3;4 5 6);(7 8 9;10 11 12))
+	2 2 3 1
+
+	  -1_#:'*:\((1 2 3;4 5 6);(7 8 9;10 11 12))
+	2 2 3
+
+Making The Grade
+----------------
+The `grade up` (`<`) and `grade down` (`>`) operators have one extremely obvious application: sorting a list, in combination with `@`:
+
+	 {x@<x} 3 2 4 1 5
+	1 2 3 4 5
+
+You might wonder why `<` doesn't simply sort a list directly. There are actually several other useful applications for and properties of this operator. For example, sorting several columns of a table based on a single column:
+
+	  d: +("ABC";2 -1 0)
+	(("A";2)
+	 ("B";-1)
+	 ("C";0))
+
+	  d@<d[;1]
+	(("B";-1)
+	 ("C";0)
+	 ("A";2))
+
+The indices of the three smallest elements of a list:
+
+	  3#<3 2 7 1 9 4 20 -2 7
+	7 3 1
+
+Grading any list will produce a *permutation vector*- a list in which the numbers up to but not including the length of the original list each appear exactly once. Grading a random list is a handy way to produce random, uniformly distributed permutation vectors:
+
+	  <?5
+	4 3 1 0 2
+
+	  <?5
+	1 4 2 0 3
+
+Grading once produces a permutation vector which will sort the original list. Grading that vector again will produce a vector that will *unsort* a sorted list into the original list's relative configuration. This composition is sometimes called `ordinal`:
+
+	  <22 11 55 33 44
+	1 0 3 4 2
+
+	  <<22 11 55 33 44
+	1 0 4 2 3
+
+	 <<<22 11 55 33 44
+	1 0 3 4 2
+
+	  "ABCDE"@<<22 11 55 33 44
+	"BAECD"
+
+Encode and Decode
+-----------------
+K5 introduced overloads for `/` and `\` called `encode` and `decode`, respectively. In older versions of K, similar operations were called `_vs` and `_sv`. These operators come from a long APL tradition, yet rarely have direct equivalents in the standard libraries of more conventional languages.
+
+You can think of `decode` as a function for splitting a scalar right argument into digits in some base given by the left argument. Consider converting ascending numbers into binary:
+
+	  2 2 2\'!4
+	(0 0 0
+	 0 0 1
+	 0 1 0
+	 0 1 1)
+
+Or converting a decimal number into hexadecimal digits:
+
+	  16 16\179
+	11 3
+
+	 "0123456789ABCDEF"@16 16\179
+	"B3"
+
+The `encode` operator is the inverse, converting digits in some arbitrary base into a decimal equivalent:
+
+	  2 2 2/1 0 1
+	5
+
+	  16 16/11 3
+	179
+
+Things get more interesting when you work with mixed bases. Many everyday counting systems like imperial units of measure and time use mixed bases. Consider converting 7 days, 4 hours and 37 minutes into raw minutes. There are 365 days in a year, 24 hours in a day and 60 minutes in an hour, so:
+
+	  (7*24*60)+(4*60)+(37)
+	10357
+
+	  365 24 60/7 4 37
+	10357
+
+	  365 24 60\10357
+	7 4 37
+
+Mixed-based decoding is one way to reproduce the effects of `odometer`:
+
+	  !*/2 3
+	0 1 2 3 4 5
+
+	 {x\'!*/x} 2 3
+	(0 0
+	 0 1
+	 0 2
+	 1 0
+	 1 1
+	 1 2)
+
+	  !2 3
+	(0 0 0 1 1 1
+	 0 1 2 0 1 2)
