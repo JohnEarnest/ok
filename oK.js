@@ -872,7 +872,7 @@ function parseEx(node) {
 	}
 	if (atNoun() && !at(IOVERB)) {
 		var x = parseNoun();
-		if (x.t == 7 && (x.v=="o"||x.v=="in")) { return asVerb(".", x, k(3, [node, parseNoun()])); }
+		if (x.t == 7 && x.v in infix) { return asVerb(".", x, k(3, [node, parseEx(parseNoun())])); }
 		if (at(ADVERB)) { return parseAdverb(node, x); }
 		return asVerb("@", node, parseEx(x));
 	}
@@ -945,6 +945,7 @@ function format(k, indent, symbol) {
 
 // js natives and k natives:
 var natives = {"log":0,"exp":0,"cos":0,"sin":0};
+var infix   = {"o":0,"in":0};
 function baseEnv() {
 	var env = new Environment(null);
 	env.put(ks("log"), true, k(13, am(function(x) { return k(0, Math.log(n(x).v)) })));
