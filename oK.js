@@ -953,7 +953,7 @@ function baseEnv() {
 	env.put(ks("cos"), true, k(13, am(function(x) { return k(0, Math.cos(n(x).v)) })));
 	env.put(ks("sin"), true, k(13, am(function(x) { return k(0, Math.sin(n(x).v)) })));
 	run(parse("prm:{{$[x;,/x,''o'x^/:x;,x]}@$[-8>@x;!x;x]}"), env);
-	run(parse("in:{$[@x;~^y?x;o[;y]'x]}"), env);
+	run(parse("in:{~^y?x}"), env);
 	return env;
 }
 
