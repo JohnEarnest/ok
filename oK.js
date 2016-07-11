@@ -872,7 +872,7 @@ function parseEx(node) {
 	}
 	if (atNoun() && !at(IOVERB)) {
 		var x = parseNoun();
-		if (x.t == 7 && x.v == "o") { return asVerb(".", x, k(3, [node, parseNoun()])); }
+		if (x.t == 7 && (x.v=="o"||x.v=="in")) { return asVerb(".", x, k(3, [node, parseNoun()])); }
 		if (at(ADVERB)) { return parseAdverb(node, x); }
 		return asVerb("@", node, parseEx(x));
 	}
@@ -951,7 +951,8 @@ function baseEnv() {
 	env.put(ks("exp"), true, k(13, am(function(x) { return k(0, Math.exp(n(x).v)) })));
 	env.put(ks("cos"), true, k(13, am(function(x) { return k(0, Math.cos(n(x).v)) })));
 	env.put(ks("sin"), true, k(13, am(function(x) { return k(0, Math.sin(n(x).v)) })));
-	run(parse("prm:{p:{$[x;,/x,''p'x^/:x;,x]};p$[-8>@x;!x;x]}"), env);
+	run(parse("prm:{{$[x;,/x,''o'x^/:x;,x]}@$[-8>@x;!x;x]}"), env);
+	run(parse("in:{$[@x;~^y?x;o[;y]'x]}"), env);
 	return env;
 }
 
