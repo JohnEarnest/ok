@@ -84,8 +84,21 @@ var rl = readline.createInterface({
 });
 rl.on('line', function (line) {
 	if (line === '\\\\') { process.exit(0); }
+	var showtime = false;
+	if (line.lastIndexOf("\\t") == 0) {
+		line = line.slice(2);
+		showtime = true;
+	}
 	try {
-		line.trim() && process.stdout.write(ok.format(ok.run(ok.parse(line), env)) + '\n');
+		if (line.trim()) {
+			var starttime = new Date().getTime();
+			var output = ok.format(ok.run(ok.parse(line), env)) + '\n';
+			if (showtime) {
+				var endtime = new Date().getTime();
+				output += "completed in "+(endtime-starttime)+"ms.\n";
+			}
+			process.stdout.write(output);
+		}
 	} catch (err) {
 		process.stdout.write(err.message + '\n');
 	}
