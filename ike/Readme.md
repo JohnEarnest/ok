@@ -95,8 +95,8 @@ Variables
 ---------
 iKe pre-defines and updates several K variables for your convenience:
 
-- `w`: the width of the screen in pixels (read only)
-- `h`: the height of the screen in pixels (read only)
+- `w`: the width of the screen in pixels (read and write)
+- `h`: the height of the screen in pixels (read and write)
 - `f`: counts up once for each drawn frame (read only)
 - `dir`: a 2d vector with the (x;y) offset of the cursor keys currently held (read only)
 - `keys`: a vector of the keycodes currently held (read only)

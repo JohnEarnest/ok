@@ -249,6 +249,8 @@ function frameDelay() {
 }
 
 var SCALE = 2;
+var DISPLAY_WIDTH  = 160;
+var DISPLAY_HEIGHT = 160;
 
 var running = false;
 var editor = document.getElementById("editor");
@@ -264,6 +266,21 @@ var click  = false;
 var tickTimeout = null;
 var drawTimeout = null;
 var playTimeout = null;
+
+function setDisplaySize(w, h) {
+	DISPLAY_WIDTH  = w;
+	DISPLAY_HEIGHT = h;
+	function setCanvasSize(w, h, c) {
+		c = document.getElementById(c);
+		c.width        = w;
+		c.style.width  = w;
+		c.height       = h;
+		c.style.height = h;
+		c.style.margin = ""+(-Math.floor(h/2))+"px 0 0 "+(-Math.floor(w/2))+"px";
+	}
+	setCanvasSize(w * 2, h * 2, "canvas");
+	setCanvasSize(w * 3, h * 3, "fullcanvas");
+}
 
 function loadExample() {
 	stop();
@@ -372,8 +389,8 @@ function callk2(n, x, y) {
 	} catch(e) {}
 }
 function setvars() {
-	setvar("w"  , num(160));
-	setvar("h"  , num(160));
+	setvar("w"  , num(DISPLAY_WIDTH));
+	setvar("h"  , num(DISPLAY_HEIGHT));
 	setvar("pi" , num(Math.PI));
 	setvar("f"  , num(frame));
 	setvar("mx" , num(mx));
@@ -570,9 +587,15 @@ function paint() {
 }
 
 function paintValue(r) {
+	var kw = env.lookup(ks("w"), true);
+	var kh = env.lookup(ks("h"), true);
+	if (kw.t != 0) { kw.v = DISPLAY_WIDTH; }
+	if (kh.t != 0) { kh.v = DISPLAY_HEIGHT; }
+	if ((kw.v != DISPLAY_WIDTH) || (kh.v != DISPLAY_HEIGHT)) { setDisplaySize(kw.v, kh.v); }
+
 	var g = canvas.getContext("2d");
 	g.fillStyle = "#000000";
-	g.fillRect(0, 0, 160*SCALE, 160*SCALE);
+	g.fillRect(0, 0, DISPLAY_WIDTH*SCALE, DISPLAY_HEIGHT*SCALE);
 
 	if (!r) { return; }
 	if (r.t != 3 || len(r) < 1) { return; }
