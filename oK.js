@@ -617,8 +617,7 @@ function dmend4(args, env) { return mend(args, env, dmend, dmend); }
 
 function mend(args, env, monadic, dyadic) {
 	var ds = args[0], i = args[1], f = args[2], y = args[3];
-	var d = ds.t == 2 ? env.lookup(ds,true) : ds; (y?dyadic:monadic)(d, i, y, f, env);
-	if (ds.t!=2) { return d; } env.put(ks(ds.v.slice[1]), true, d); return ds;
+	(y?dyadic:monadic)(ds.t == 2 ? env.lookup(ds,true) : ds, i, y, f, env); return ds;
 }
 
 function amendm(d, i, y, monad, env) {
