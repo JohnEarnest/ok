@@ -757,3 +757,45 @@ If `v` is a monadic verb train or function, it is applied to the elements specif
 	2 14 9
 	  ?["a look back";2 6;|:]
 	"a kool back"
+
+Builtins
+--------
+Beyond the standard verbs, K includes a number of named functions for useful but less common operations:
+
+- `sin x`: Monadic, atomic. Calculate the sine of `x`.
+
+		  sin 0 .5 3.141
+		0 0.4794 0.0006
+
+- `cos x`: Monadic, atomic. Calculate the cosine of `x`.
+
+		  cos 0 .5 3.141
+		1 0.8776 -1
+
+- `exp x`: Monadic, atomic. Calculate the exponential function- `e` to the power `x`.
+
+		  exp 1 5 12
+		2.7183 148.4132 162754.7914
+
+- `log x`: Monadic, atomic. Calculate the natural logarithm of `x`.
+
+		  log 2.7183 5 10
+		1 1.6094 2.3026
+
+- `prm x`: Monadic. Generate all permutations of the items of a list `x`. If `x` is a number, treat it the same as `!x`:
+
+		  prm "AB"
+		("AB"
+		 "BA")
+		  prm 3
+		(0 1 2
+		 0 2 1
+		 1 0 2
+		 1 2 0
+		 2 0 1
+		 2 1 0)
+
+- `x in y`: Dyadic, left-atomic. Is `x` a member of `y`?
+
+		  1 3 7 in 1 2 3 4 5
+		1 1 0
