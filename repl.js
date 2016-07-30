@@ -20,12 +20,11 @@ function read(x) {
 	} else if (rl) {
 		throw Error('ERROR: cannot read from stdin while in REPL');
 	} else {
-		var b = Buffer(128), b0, n = 0, fd = fs.openSync('/dev/stdin', 'rs');
-		while (fs.readSync(fd, b, n, 1) && b[n] !== 10) {
+		var b = Buffer(128), b0, n = 0;
+		while (fs.readSync(process.stdin.fd, b, n, 1) && b[n] !== 10) {
 			n++;
 			if (n === b.length) { b0 = b; b = Buffer(2 * n); b0.copy(b, 0, 0, n); b0 = null; } // resize buffer when full
 		}
-		fs.closeSync(fd);
 		return conv.tok(b.toString('utf8', 0, n));
 	}
 }
