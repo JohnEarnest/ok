@@ -752,10 +752,12 @@ window.onkeypress = function(e) {
 canvas.onmousedown = function(e) {
 	click = true;
 	if(running) { callk2("md", Math.floor(e.offsetX/SCALE), Math.floor(e.offsetY/SCALE)); }
+	e.preventDefault();
 }
 canvas.onmouseup = function(e) {
 	click = false;
 	if(running) { callk2("mu", Math.floor(e.offsetX/SCALE), Math.floor(e.offsetY/SCALE)); }
+	e.preventDefault();
 }
 canvas.onmousemove = function(e) {
 	if(!running) { return; }
@@ -764,6 +766,7 @@ canvas.onmousemove = function(e) {
 	callk2("mm", mx, my);
 	if (!click) { return; }
 	callk2("mg", mx, my);
+	e.preventDefault();
 }
 var fullcanvas = document.getElementById("fullcanvas");
 fullcanvas.onmousedown = canvas.onmousedown;
