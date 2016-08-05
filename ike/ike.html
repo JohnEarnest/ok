@@ -651,8 +651,8 @@ function paintEach(g, v) {
 	else if (img.t == 3 && len(img)>0 && img.v[0].t == 0) {
 		// row of pixels
 		if (px.length == 0) {
-			px.push(80 - (len(img) / 2));
-			py.push(80);
+			px.push((DISPLAY_WIDTH/2) - (len(img) / 2));
+			py.push((DISPLAY_HEIGHT/2));
 		}
 		for(var x = 0; x < len(img); x++) {
 			for(var z = 0; z < px.length; z++) {
@@ -663,8 +663,8 @@ function paintEach(g, v) {
 	else if (img.t == 3) {
 		// matrix of pixels
 		if (px.length == 0) {
-			px.push(80 - (len(img.v[0]) / 2));
-			py.push(80 - (len(img)      / 2));
+			px.push((DISPLAY_WIDTH/2) - (len(img.v[0]) / 2));
+			py.push((DISPLAY_HEIGHT/2) - (len(img)      / 2));
 		}
 		for(var y = 0; y < len(img); y++) {
 			if (img.v[y].t != 3) { continue; }
