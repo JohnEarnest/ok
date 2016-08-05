@@ -5,7 +5,7 @@ mag:   {%dot[x;x]}                   / magnitude of vector
 norm:  {x%mag x}                     / normalized vector
 vang:  {acos dot[x;y]%*/mag'(x;y)}   / angle between vectors
 mmul:  (+/*)\:                       / matrix multiply
-det2:  {-/*/'+(*x;|*|x)}             / 2x2 matrix determinant
+det2:  {-/x*|y}.                     / 2x2 matrix determinant
 rot2:  {((a;-b);(b:sin x;a:cos x))}  / 2x2 rotation matrix
 scal:  {(x,1)*=1+#x}                 / arbitrary scale matrix
 tran:  {(-1_'=1+#x),'x,1}            / arbitrary translation matrix
