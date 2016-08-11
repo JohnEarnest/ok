@@ -114,6 +114,7 @@ iKe provides a number of pre-defined palettes. Since transparency is useful, the
 - `dawnbringer`: [dawnbringer's](http://pixeljoint.com/forum/forum_posts.asp?TID=12795) pixel art palette. (16 colors + transparency)
 - `windows`: Windows 3.1 palette (16 colors + transparency)
 - `arne`: [Arne's](http://androidarts.com/palette/16pal.htm) Generic 16 color game palette. (16 colors + transparency)
+- `pico`: The [PICO-8](http://www.lexaloffle.com/pico-8.php) fantasy game console's 16 color palette. (16 colors + transparency)
 
 ![palettes](https://raw.githubusercontent.com/JohnEarnest/ok/gh-pages/ike/img/swatches.png)
 

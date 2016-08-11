@@ -218,6 +218,11 @@ var arne = tok([
 	"#F7E26B","#2F484E","#44891A","#A3CE27","#1B2632","#005784","#31A2F2","#B2DCEF",
 	"rgba(0,0,0,0)"
 ]);
+var pico = tok([
+	"#000000","#1D2B53","#7E2553","#008751","#AB5236","#5F574F","#C2C3C7","#FFF1E8",
+	"#FF004D","#FFA300","#FFEC27","#00E436","#29ADFF","#83769C","#FF77AB","#FFCCAA",
+	"rgba(0,0,0,0)"
+]);
 var lcd = tok([
 	"#0F380F","#306230","#8BAC0F","#9BBC0F","rgba(0,0,0,0)"
 ]);
@@ -234,6 +239,7 @@ var rgbaPalettes = {
 	dawnbringer: readpal(tojs(dawnbringer)),
 	windows:     readpal(tojs(windows)),
 	arne:        readpal(tojs(arne)),
+	pico:        readpal(tojs(pico)),
 	lcd:         readpal(tojs(lcd)),
 	cga:         readpal(tojs(cga)),
 	hot:         readpal(tojs(hot)),
@@ -399,6 +405,7 @@ function setvars() {
 	setvar("solarized",   solarized);
 	setvar("dawnbringer", dawnbringer);
 	setvar("arne",        arne);
+	setvar("pico",        pico);
 	setvar("lcd",         lcd);
 	setvar("cga",         cga);
 	setvar("hot",         hot);
