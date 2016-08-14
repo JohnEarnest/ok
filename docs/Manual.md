@@ -98,6 +98,13 @@ Some verbs are *atomic*. A *fully atomic* verb penetrates to the atoms of arbitr
 
 A *right atomic* verb only penetrates to the atoms of the right argument, leaving the left argument intact. Similarly, a *left atomic* verb only penetrates to the atoms of the left argument.
 
+Verbs and adverbs which are not supplied with sufficient arguments behave as nouns, and can be passed around. A sequence of such verbs and adverbs is implicitly composed, forming a *train*. You may also hear a train be described as a *tacit form*, as it permits compositions which contain no explicit references to named variables. If the final verb of a train is dyadic, the train behaves as a dyad- otherwise it behaves as a monad. Here are some examples of trains:
+
+	(+)     / dyadic,  equivalent to {x+y}
+	(2+)    / monadic, equivalent to {2+x}
+	(*<2*)  / monadic, equivalent to {*<2*x}
+	(+/*)   / dyadic,  equiavelnt to {+/x*y}
+
 See below for a complete reference to verb behaviors.
 
 Adverbs
