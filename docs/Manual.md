@@ -723,7 +723,7 @@ As a general note, niladic functions may be used where monadic functions are val
 	  {3!1+x}\2
 	2 0 1
 
-`n m/y` is <b>scan-for</b>. Apply the monad to y, x times and accumulate a list of intermediate results.
+`n m\y` is <b>scan-for</b>. Apply the monad to y, x times and accumulate a list of intermediate results.
 
 	  5{,x}\7
 	(7
