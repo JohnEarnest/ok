@@ -159,6 +159,9 @@ natives["tan"]  = 0;
 natives["acos"] = 0;
 natives["asin"] = 0;
 natives["atan"] = 0;
+natives["sinh"] = 0;
+natives["cosh"] = 0;
+natives["tanh"] = 0;
 
 var trampoline = function(env, name, args, body) {
 	// construct a function-wrapper trampoline for a pseudonative.
@@ -176,20 +179,16 @@ verbs["pn"   ] = [null, null, null,       null,       null,       null,       kn
 
 function extendedEnv() {
 	var env = baseEnv();
-	env.put(ks("abs"),  true, k(13, am(function(x) { return k(0, Math.abs (n(x).v)) })));
-	env.put(ks("tan"),  true, k(13, am(function(x) { return k(0, Math.tan (n(x).v)) })));
-	env.put(ks("acos"), true, k(13, am(function(x) { return k(0, Math.acos(n(x).v)) })));
-	env.put(ks("asin"), true, k(13, am(function(x) { return k(0, Math.asin(n(x).v)) })));
-	env.put(ks("atan"), true, k(13, am(function(x) { return k(0, Math.atan(n(x).v)) })));
-	env.put(ks("sinh"), true, k(13, am(function(x) { // {.5*(exp x)-exp-x}
-		x=n(x).v; return k(0, .5*Math.exp(x)-Math.exp(-x));
-	})));
-	env.put(ks("cosh"), true, k(13, am(function(x) { // {.5*(exp x)+exp-x}
-		x=n(x).v; return k(0, .5*Math.exp(x)+Math.exp(-x));
-	})));
-	env.put(ks("tanh"), true, k(13, am(function(x) { // {(sinh x)%cosh x}
+	nmonad("abs",  function(x) { return k(0, Math.abs (n(x).v)) });
+	nmonad("tan",  function(x) { return k(0, Math.tan (n(x).v)) });
+	nmonad("acos", function(x) { return k(0, Math.acos(n(x).v)) });
+	nmonad("asin", function(x) { return k(0, Math.asin(n(x).v)) });
+	nmonad("atan", function(x) { return k(0, Math.atan(n(x).v)) });
+	nmonad("sinh", function(x) { x=n(x).v; return k(0, .5*Math.exp(x)-Math.exp(-x)); });
+	nmonad("cosh", function(x) { x=n(x).v; return k(0, .5*Math.exp(x)+Math.exp(-x)); });
+	nmonad("tanh", function(x) {
 		x=n(x).v; return k(0, (Math.exp(x)-Math.exp(-x))/(Math.exp(x)+Math.exp(-x)));
-	})));
+	});
 	trampoline(env, "atan2", ["x", "y"],      katan2);
 	trampoline(env, "pow"  , ["x", "y"],      kpow);
 	trampoline(env, "pn"   , ["x", "y", "z"], knoise);

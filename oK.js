@@ -23,7 +23,7 @@ var typenames = [
 	"return"    , // 10 : return (deprecated)
 	"nil"       , // 11 :
 	"cond"      , // 12 : body (list of expressions)
-	"native"    , // 13 : conceptually a verb
+	"native"    , // 13 : (deprecated)
 	"quote"     , // 14 : value (for quoting verbs/etc as a value)
 ];
 
@@ -461,10 +461,11 @@ function valence(node, env) {
 	}
 	if (node.t == 7) { return valence(env.lookup(ks(node.v))); }
 	if (node.t == 9 && node.v == "'") { return valence(node.verb, env); }
-	if (node.t == 9)     { return 1; }
-	if (node.t != 8)     { return 0; }
-	if (node.forcemonad) { return 1; }
-	if (node.sticky)     {
+	if (node.t == 9)       { return 1; }
+	if (node.t != 8)       { return 0; }
+	if (node.forcemonad)   { return 1; }
+	if (node.v in natives) { return 1; }
+	if (node.sticky) {
 		if (node.sticky.t == 9)                      { return 1; }
 		if (node.sticky.forcemonad || node.sticky.l) { return 1; }
 	}
@@ -527,7 +528,6 @@ function Environment(pred) {
 }
 
 function atd(x, y, env) {
-	if (x.t == 13) { return x.v(y); }
 	if (x.t == 2) { return x; }
 	if (x.t == 3) { return atl(x, y, env); }
 	if (x.t == 5) { return call(x, k(3,[y]), env); }
@@ -550,7 +550,6 @@ function atdepth(x, y, i, env) {
 }
 
 function call(x, y, env) {
-	if (x.t == 13) { return x.v(first(y)); }
 	if (x.sticky) { return (valence(x.sticky, env)==1?applym:applyd)(x, y.v[0], y.v[1]); }
 	if (x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : dget(x, y); }
 	if (x.t == 2) { return x; }
@@ -830,6 +829,7 @@ function parseNoun() {
 	}
 	if (at(NAME)) {
 		var n = k(7, expect(NAME));
+		if (n.v in natives) { return applycallright(k(8, n.v)); }
 		if (toplevel() && matches(VIEW)) {
 			var r = k(6, n.v);
 			r.r = parseEx(parseNoun());
@@ -877,7 +877,6 @@ function parseEx(node) {
 	}
 	if (at(VERB) || at(IOVERB)) {
 		var x = parseNoun();
-		if (node.v in natives) { return asVerb("@", node, parseEx(x)); }
 		if (x.forcemonad) { node.r = parseEx(x); return node; }
 		if (at(ADVERB)) { return parseAdverb(node, x); }
 		x.l = node; x.r = parseEx(parseNoun()); node = x;
@@ -938,19 +937,19 @@ function format(k, indent, symbol) {
 	if (k.t ==  9) { return (k.l?format(k.l)+" ":"")+format(k.verb)+k.v+format(k.r); }
 	if (k.t == 11) { return ""; }
 	if (k.t == 12) { return "$["+format(k.v)+"]"; }
-	if (k.t == 13) { return "(native)"; }
 	if (k.t == 14) { return "("+format(k.v)+")"; }
 }
 
 // js natives and k natives:
 var natives = {"log":0,"exp":0,"cos":0,"sin":0};
 var infix   = {"o":0,"in":0};
+function nmonad(n, f) { verbs[n]=[f, am(f), null,null,null,null,null,null]; }
 function baseEnv() {
 	var env = new Environment(null);
-	env.put(ks("log"), true, k(13, am(function(x) { return k(0, Math.log(n(x).v)) })));
-	env.put(ks("exp"), true, k(13, am(function(x) { return k(0, Math.exp(n(x).v)) })));
-	env.put(ks("cos"), true, k(13, am(function(x) { return k(0, Math.cos(n(x).v)) })));
-	env.put(ks("sin"), true, k(13, am(function(x) { return k(0, Math.sin(n(x).v)) })));
+	nmonad("log", function(x) { return k(0, Math.log(n(x).v)) });
+	nmonad("exp", function(x) { return k(0, Math.exp(n(x).v)) });
+	nmonad("cos", function(x) { return k(0, Math.cos(n(x).v)) });
+	nmonad("sin", function(x) { return k(0, Math.sin(n(x).v)) });
 	run(parse("prm:{{$[x;,/x,''o'x^/:x;,x]}@$[-8>@x;!x;x]}"), env);
 	run(parse("in:{~^y?x}"), env);
 	return env;
