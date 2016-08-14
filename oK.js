@@ -629,7 +629,7 @@ function amendm(d, i, y, monad, env) {
 function amendd(d, i, y, dyad, env) {
 	if      (i.t==3&y.t==3) { for(var z=0;z<len(i);z++) { amendd(d,i.v[z],y.v[z],dyad,env); } }
 	else if (i.t==3&y.t!=3) { for(var z=0;z<len(i);z++) { amendd(d,i.v[z],y     ,dyad,env); } }
-	else if (i.t==2)        { dset(d, i, applyd(dyad, atl(d, i, env), y, env)); }
+	else if (d.t==4)        { dset(d, i, applyd(dyad, atl(d, i, env), y, env)); }
 	else                    { lset(d, i, applyd(dyad, atl(d, i, env), y, env)); }
 }
 
