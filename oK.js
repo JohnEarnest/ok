@@ -46,8 +46,6 @@ function asVerb(x, y, z) { return { t:8, v:x, l:y, r:z }; }
 function kmod(x, y)      { return x-y*Math.floor(x/y); }
 function len(x)          { l(x); return x.v.length; }
 function krange(x, f)    { var r=[]; for(var z=0;z<x;z++) { r.push(f(z)); } return k(3,r); }
-function r2(f)           { return function(x,y) { return f(y,x); }; }
-function bind(f,x)       { return f.bind(null, x); }
 function h2(x)           { return (x.v+0x100).toString(16).substr(-2); }
 
 function lget(x, y)    { if(y<0||y>=len(x)) { throw new Error("length error."); } return x.v[y]; }
@@ -130,20 +128,13 @@ function keval(x, env) {
 }
 
 function dfmt(x, y) {
-	if (x.t == 2) {
-		if (y.t == 3) { return kmap(l(y), bind(dfmt,x)); }
-		if (x.v == "b") { return k(0, y.v & 0x1); }
-		if (x.v == "i") { return k(0, y.v | 0); }
-		if (x.v == "f") { return k(0, y.v); }
-		if (x.v == "c") { return k(1, y.v); }
-	}
-	if (x.t == 3 && y.t != 3) { return kmap(x, bind(r2(dfmt),y)); }
-	if (x.t == 3)             { return kzip(x, y, dfmt); }
-	if (y.t == 1)             { return y; }
-	if (!s(y)) { return kmap(l(y), bind(dfmt,x)); }
-	var r=c(y); var d=Math.abs(x.v);
+	if ( x.t == 3           && y.t == 3) { return kzip(x, y, dfmt); }
+	if ( x.t == 3           && y.t != 3) { return kmap(x, function(z) { return dfmt(z, y); }); }
+	if ((x.t == 2 || !s(y)) && y.t == 3) { return kmap(y, function(z) { return dfmt(x, z); }); }
+	if (x.t == 2) { return {b: k(0,y.v&1), i: k(0,y.v|0), f: k(0,y.v), c: k(1,y.v)}[x.v]; }
+	if (y.t == 1) { return y; } var r=c(y); var d=Math.abs(x.v);
 	while(len(r) < d) { x.v>0 ? r.v.push(SP) : r.v.unshift(SP); }
-	while(len(r) > d) { x.v>0 ? r.v.pop() : r.v.shift(); }
+	while(len(r) > d) { x.v>0 ? r.v.pop()    : r.v.shift();     }
 	return r;
 }
 

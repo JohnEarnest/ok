@@ -103,7 +103,7 @@ Verbs and adverbs which are not supplied with sufficient arguments behave as nou
 	(+)     / dyadic,  equivalent to {x+y}
 	(2+)    / monadic, equivalent to {2+x}
 	(*<2*)  / monadic, equivalent to {*<2*x}
-	(+/*)   / dyadic,  equiavelnt to {+/x*y}
+	(+/*)   / dyadic,  equivalent to {+/x*y}
 
 See below for a complete reference to verb behaviors.
 
