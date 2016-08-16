@@ -303,6 +303,20 @@ function overd(dyad, x, y, env) {
 	return y.v.reduce(function(x, y) { return applyd(dyad, x, y, env); }, x);
 }
 
+function eacha(func, args, env) {
+	var x = args[0]; var y = flip(k(3, args.slice(1)));
+	if (x.t != 3) { return kmap(y, function(y) { return call(func, cat(x, y), env); }); }
+	return kzip(x, y, function(x, y) { return call(func, cat(x, y), env); });
+}
+function overa(func, args, env) {
+	var x = args[0]; var y = flip(k(3, args.slice(1)));
+	return y.v.reduce(function(x, y) { return call(func, cat(enlist(x), y), env); }, x);
+}
+function scana(func, args, env) {
+	var x = args[0]; var y = flip(k(3, args.slice(1)));
+	return cat(x, kmap(y, function(y) { return x = call(func, cat(enlist(x), y), env); }));
+}
+
 function fixed(monad, x, env) {
 	var r=x; var p=x;
 	do { p=r; r=applym(monad, r, env); } while(!match(p, r).v && !match(r, x).v); return p;
@@ -464,18 +478,19 @@ function valence(node, env) {
 }
 
 var adverbs = {
-	//       mv/nv       dv          l-mv         l-dv
-	"':"  : [null,       eachprior,  null,        eachpc   ],
-	"'"   : [each,       eachd,      eachd,       eachd    ],
-	"/:"  : [null,       null,       eachright,   eachright],
-	"\\:" : [null,       null,       eachleft,    eachleft ],
-	"/"   : [fixed,      over,       fixedwhile,  overd    ],
-	"\\"  : [scanfixed,  scan,       scanwhile,   scand    ],
+	//       mv/nv       dv          l-mv         l-dv       3+v
+	"':"  : [null,       eachprior,  null,        eachpc,    null ],
+	"'"   : [each,       eachd,      eachd,       eachd,     eacha],
+	"/:"  : [null,       null,       eachright,   eachright, null ],
+	"\\:" : [null,       null,       eachleft,    eachleft,  null ],
+	"/"   : [fixed,      over,       fixedwhile,  overd,     overa],
+	"\\"  : [scanfixed,  scan,       scanwhile,   scand,     scana],
 };
 
 function applyadverb(node, verb, args, env) {
 	if (verb.t == 7) { verb = run(verb, env); }
 	var r = null; var v = valence(verb, env);
+	if (v > 2)                 { return adverbs[node.v][4](verb, args, env); }
 	if (v == 0 && verb.t != 5) { return applyverb(k(8,node.v), [verb, args[1]], env); }
 	if (v == 0 && verb.t == 5) { v = 1; }
 	if (v == 2 && !args[1])    { args = [null, args[0]]; }
