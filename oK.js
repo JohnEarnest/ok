@@ -494,6 +494,7 @@ function applyadverb(node, verb, args, env) {
 function Environment(pred) {
 	this.p = pred; this.d = md(k(3,[]), k(3,[]));
 	this.put = function(n, g, v) {
+		if(typeof n == "string") n = ks(n);
 		if (g && this.p) { this.p.put(n, g, v); } else { dset(this.d, n, v); }
 	};
 	this.contains = function(x) { return find(this.d.k, x).v != len(this.d.k); }
