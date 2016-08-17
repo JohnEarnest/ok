@@ -75,7 +75,7 @@ function n(x) { if (x.t==0||x.t==1) { return x; } return checktype(x, 0); }
 function l(x) { return checktype(x, 3); }
 function d(x) { return checktype(x, 4); }
 function a(x) { if (x.t > 2) { throw new Error("domain error."); } return x; }
-function na(x) { return (x.v != undefined) & isNaN(x.v); }
+function na(x) { return x.t === 0 && isNaN(x.v); }
 function p(x) {
 	n(x); if (x.v < 0 || x.v%1 != 0) { throw new Error("positive int expected."); } return x.v;
 }
@@ -95,7 +95,7 @@ function max   (x, y) { return na(x)?y:na(y)?x:k(0, Math.max(n(x).v, n(y).v)); }
 function min   (x, y) { return                 k(0, Math.min(n(x).v, n(y).v)); }
 function less  (x, y) { return kb(a(x).v < a(y).v); }
 function more  (x, y) { return kb(a(x).v > a(y).v); }
-function equal (x, y) { return kb(x.v == y.v); }
+function equal (x, y) { return kb((x.v == y.v) || (na(x) && na(y))); }
 function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
 function ident    (x) { return x; }
 function negate   (x) { return k(0, -n(x).v); }
@@ -778,7 +778,7 @@ function parseNoun() {
 	}
 	if (at(NUMBER)) {
 		var r=[]; while(at(NUMBER)) {
-			var n=expect(NUMBER); r.push(k(0, n=="0w"?1/0:n=="-0w"?-1/0:n=="0N"?NA:parseFloat(n)));
+			var n=expect(NUMBER); r.push(k(0, n=="0w"?1/0:n=="-0w"?-1/0:n=="0N"?NaN:parseFloat(n)));
 		} return applyindexright(kl(r));
 	}
 	if (at(SYMBOL)) {
