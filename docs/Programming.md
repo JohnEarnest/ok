@@ -27,32 +27,27 @@ K5 adds a special overload to `take` (`#`) which simplifies this pattern, perfor
 	("racecar"
 	 "bob")
 
-Case Selection
---------------
-K offers an equivalent to "if" statements in the form of the 3 or more argument version of `$`, sometimes called `cond` for its semantic similarity to the Lisp statement:
-
-	{$[2!x; x%2; 1+3*x]}
-
-This statement checks conditions one after another and falls through to the final case if none of the predicates succeeds. This behavior is useful in many situations. However, if you want to avoid using "cond", you can often replace it by constructing a list and indexing into it, provided each case has no side effects:
-
-	{(1+3*x; x%2)2!x}
-	
-This is nicely general and if you augment the list by indexing it to replicate elements you can express complex logic based on a lookup table:
-
-	{`A`B`C[1 0 0 1 2 1 0]x}
-
 Zipping
 -------
-You have two lists and you want to map a function `D` over pairings of the elements of these lists. Concatenate the lists and then use `flip` (`+`) to create a list of pairings. You can then apply each pair to `D` by using `eval` (`.`). This works equally well for dyads, triads, tetrads, etc. and an appropriate number of input lists:
-
-	V1: ("A  ";"B  ";"C  ")
-	V2: 2 1 3
-	D:  {x@(#x)!y+!#x}      / rotate the list x by y positions
-	D.'+(V1;V2)             / flip and apply
-
-When you only need to pair up two elements, each-dyad is simpler:
+You have two lists and you want to map a function `D` over pairings of the elements of these lists. Use each-dyad:
 
 	V1 D'V2
+
+In the more general case, you can use the prefix form of `each`. This works for dyads, triads, tetrads, etc:
+
+	D'[V1;V2]                              / dyadic
+	T'[V1;V2;V3]                           / triadic
+	{[a;b;c;d] a,b,c,d}'[1 2;3 4;5 6;7 8]  / tetradic
+
+Note that similar generalizations exist for `over` (`/`) and `scan` (`\`):
+
+	  {x,y,z}/[1;2 3;4 5]
+	1 2 4 3 5
+
+	  {x,y,z}\[1;2 3;4 5]
+	(1
+	 1 2 4
+	 1 2 4 3 5)
 
 Always consider whether `flip` can make it easier to calculate "with the grain" of your data. If `V1` and `V2` are of different lengths we can insert `take` (`#`) to replicate elements or `drop` (`_`) to remove elements from lists.
 
@@ -67,6 +62,32 @@ Of course, sometimes we can do the whole operation in parallel and combine the c
 
 	  `c${65+x+32*2!x}@!26
 	"AbCdEfGhIjKlMnOpQrStUvWxYz"
+
+Case Selection
+--------------
+K offers an equivalent to "if" statements in the form of the 3 or more argument version of `$`, sometimes called `cond` for its semantic similarity to the Lisp statement:
+
+	{$[2!x; x%2; 1+3*x]}
+
+This statement checks conditions one after another and falls through to the final case if none of the predicates succeeds. This behavior is useful in many situations. However, if you want to avoid using "cond", you can often replace it by constructing a list and indexing into it, provided each case has no side effects:
+
+	{(1+3*x; x%2)2!x}
+	
+This is nicely general and if you augment the list by indexing it to replicate elements you can express complex logic based on a lookup table:
+
+	{`A`B`C[1 0 0 1 2 1 0]x}
+
+Sometimes you need to apply a function to a subset of the items of a list. You can do this by using cond:
+
+	  {2!x}7 6 15 29 28 42
+	1 0 1 1 0 0
+	  {$[2!x; 100+x; x]}'7 6 15 29 28 42
+	107 6 115 129 28 42
+
+Or you could index into a list of functions and apply them to the original list with each-dyad:
+
+	  {({x};100+)[2!x]@'x}7 6 15 29 28 42
+	107 6 115 129 28 42
 
 Cartesian Product
 -----------------
