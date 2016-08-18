@@ -8,7 +8,7 @@ var conv = require('./convert');
 
 // register I/O hooks
 function str(x) { // convert a k string or symbol to a js string
-	var s = x.t === 2 ? x.v : conv.tojs(x);
+	var s = conv.tojs(x);
 	if (typeof s !== 'string') { throw Error('ERROR: type'); }
 	return s;
 }
@@ -29,7 +29,7 @@ function read(x) {
 	}
 }
 function write(x, y) {
-	var s = y.t === 2 ? y.v : conv.tojs(y);
+	var s = conv.tojs(y);
 	if (Array.isArray(s)) { s = s.join('\n') + '\n'; }
 	if (typeof s !== 'string') { throw Error('ERROR: type'); }
 	var f = str(x);

@@ -1,0 +1,7 @@
+{ "name": "ok"
+, "version": "0.0.0"
+, "license" : "MIT"
+, "description": "An open-source interpreter for the K5 programming language"
+, "scripts": { "start": "node repl.js" }
+, "main": "oK.js"
+}
