@@ -37,7 +37,7 @@ function tok(v) {
 }
 
 function tojs(v) {
-	if (v.t == 0) {
+	if (v.t == 0 || v.t == 2) {
 		return v.v;
 	}
 	if (v.t == 1) {
