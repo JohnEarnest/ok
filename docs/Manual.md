@@ -236,6 +236,10 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 0 0 1 1 1 2
   &1 0 0 1 0 1
 0 3 5</code></pre>
+
+		<tt>&d</ttd> indexes keys by where of values:
+<pre><code>  &`a`b`c!1 0 2
+`a`c`c</code></pre>
 	</td>
 	<td>
 		<tt>n&n</tt> is <b>min</b>. Fully atomic. For booleans, effectively logical <b>and</b>.
@@ -390,6 +394,10 @@ As a general note, verbs which operate on numbers will coerce characters to thei
   -2#"ABC"
 "BC"</code></pre>
 
+		<tt>l#d</tt> selects the elements keyed in x:
+<pre><code>  "fb"#"fab"!3 5 9
+"fb"!3 9</code></pre>
+
 		<tt>l#l</tt> or <tt>l#a</tt> is <b>reshape</b>.<br>
 		Works like take, but creates an arbitrary dimensioned result based on x.<br>
 <pre><code>  3 2#1 2 3
@@ -438,6 +446,11 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 "DE"
   -3_"ABCDE"
 "AB"</code></pre>
+
+		<tt>l_d</tt> filters out keys from a dictionary:
+<pre><code>  `b`e_`a`b`c!3 5 9
+`a`c!3 9</code></pre>
+
 		<tt>l_l</tt> is <b>cut</b>. Splits y at the indices given in x.<br>
 		The indices must be ascending.
 <pre><code>  0 4_"feedface"

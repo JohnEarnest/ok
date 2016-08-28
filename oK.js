@@ -144,6 +144,7 @@ function except(x, y) {
 	return x;
 }
 
+function ddrop(x, y) { var k = except(d(y).k, x); return md(k, atd(y, k)); }
 function drop(x, y) {
 	if (y.t == 4) { return md(drop(x, y.k), drop(x, y.v)); }
 	return (y.t != 3 || len(y) < 1) ? y : k(3, n(x).v<0 ? y.v.slice(0,x.v) : y.v.slice(x.v));
@@ -158,6 +159,7 @@ function take(x, y, env) {
 }
 
 function reshape(x, y) {
+	if (y.t == 4) { return md(x, atd(y, x)); }
 	if (na(first(x))) { // with a leading 0N, group from innermost to outermost
 		y = c(y); for(var z=len(x)-1;z>0;z--) {
 			var w=[]; for(var a=0; a<len(y); a += x.v[z].v) {
@@ -231,6 +233,7 @@ function asc(x) {
 }
 
 function where(x) {
+	if (x.t == 4) { return ar(atl)(x.k, where(x.v)); }
 	if (x.t != 3) { x=enlist(x); } var r=[]; for(var z=0;z<len(x);z++) {
 		for(var t=0;t<p(x.v[z]);t++) { r.push(k(0, z)); }
 	} return k(3,r);
@@ -421,7 +424,7 @@ var verbs = {
 	"," : [enlist,    enlist,     cat,        cat,        cat,        cat,        null,    null  ],
 	"^" : [pisnull,   am(pisnull),except,     except,     except,     except,     null,    null  ],
 	"#" : [count,     count,      take,       reshape,    take,       reshape,    null,    null  ],
-	"_" : [am(floor), am(floor),  drop,       null,       drop,       cut,        null,    null  ],
+	"_" : [am(floor), am(floor),  drop,       ddrop,      drop,       cut,        null,    null  ],
 	"$" : [kfmt,      am(kfmt),   dfmt,       dfmt,       dfmt,       dfmt,       null,    null  ],
 	"?" : [real,      unique,     rnd,        pfind,      rnd,        ar(pfind),  splice,  null  ],
 	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
