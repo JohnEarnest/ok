@@ -539,7 +539,7 @@ function atd(x, y, env) {
 	if (x.t == 3) { return atl(x, y, env); }
 	if (x.t == 5) { return call(x, k(3,[y]), env); }
 	if (x.t == 8 || x.t == 9) { return applym(x, y, env); }
-	d(x); return dget(x, y);
+	d(x); return ar(dget)(x, y);
 }
 
 function atl(x, y, env) {
