@@ -473,10 +473,7 @@ function valence(node, env) {
 	if (node.t != 8)       { return 0; }
 	if (node.forcemonad)   { return 1; }
 	if (node.v in natives) { return 1; }
-	if (node.sticky) {
-		if (node.sticky.t == 9)                      { return 1; }
-		if (node.sticky.forcemonad || node.sticky.l) { return 1; }
-	}
+	if (node.sticky && (node.sticky.t==9 || node.sticky.forcemonad || node.sticky.l)) { return 1; }
 	return 2;
 }
 
@@ -501,7 +498,6 @@ function applyadverb(node, verb, args, env) {
 	if (v == 2 && !args[0])    { r = adverbs[node.v][1]; }
 	if (v == 1 &&  args[0])    { r = adverbs[node.v][2]; }
 	if (v == 2 &&  args[0])    { r = adverbs[node.v][3]; }
-
 	if (!r) { throw new Error("invalid arguments to "+node.v+" ["+
 		(args[0]?format(args[0])+" ":"")+" "+format(verb)+" (valence "+v+"), "+format(args[1])+"]");
 	}
@@ -512,7 +508,7 @@ function applyadverb(node, verb, args, env) {
 function Environment(pred) {
 	this.p = pred; this.d = md(k(3,[]), k(3,[]));
 	this.put = function(n, g, v) {
-		if(typeof n == "string") n = ks(n);
+		if (typeof n == "string") { n = ks(n); }
 		if (g && this.p) { this.p.put(n, g, v); } else { dset(this.d, n, v); }
 	};
 	this.contains = function(x) { return find(this.d.k, x).v != len(this.d.k); }
@@ -524,14 +520,12 @@ function Environment(pred) {
 		}
 		var view = dget(this.d, n);
 		if (view.t == 6) {
-			var dirty = view.cache == 0;
-			var keys = Object.keys(view.depends);
+			var dirty = view.cache == 0; var keys = Object.keys(view.depends);
 			for(var z=0;z<keys.length;z++) {
 				var n = this.lookup(ks(keys[z])); var o = view.depends[keys[z]];
 				if (!o || !match(n,o).v) { dirty = true; view.depends[keys[z]] = n; }
 			}
-			if (dirty) { view.cache = run(view.r, this); }
-			return view.cache;
+			if (dirty) { view.cache = run(view.r, this); } return view.cache;
 		}
 		return view;
 	};
@@ -539,10 +533,9 @@ function Environment(pred) {
 
 function atd(x, y, env) {
 	if (x.t == 2) { return x; }
-	if (x.t == 3) { return atl(x, y, env); }
 	if (x.t == 5) { return call(x, k(3,[y]), env); }
 	if (x.t == 8 || x.t == 9) { return applym(x, y, env); }
-	d(x); return ar(dget)(x, y);
+	return ar(dget)(d(x), y);
 }
 
 function atl(x, y, env) {
@@ -563,7 +556,6 @@ function call(x, y, env) {
 	if (x.sticky) { return (valence(x.sticky, env)==1?applym:applyd)(x, y.v[0], y.v[1]); }
 	if (x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : dget(x, y); }
 	if (x.t == 2) { return x; }
-	if (y.t == 0) { return atd(x, y, env); }
 	if (y.t == 3 && len(y) == 0) { return (x.t==5&&x.args.length==0) ? run(x.v, env) : x; }
 	if (x.t == 3 && y.t == 3) { return atdepth(x, y, 0, env); }
 	if (x.t == 8) { return applyverb(x, y.t == 3 ? y.v : [y], env); }
