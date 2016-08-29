@@ -58,6 +58,12 @@ If `play` is a function, it will be called with a single argument indicating the
 	draw: ,(;;)
 	play: {.2*sin .2*x+!1000}
 
+Ajax
+----
+Your programs can perform asynchronous HTTP requests to remote servers which return appropriate CORS headers. The `ajax` function takes three arguments: a URL, an HTTP verb and some K monad which will be called with the result of the request when it becomes available. Server response bodies will be parsed as JSON and then converted into convenient K data structures.
+
+	ajax["http://www.com/api.json";"GET";{ dosomething x }]
+
 Input Events
 ------------
 For dynamic behavior, iKe will call a number of K functions (provided they have been defined) whenever certain events occur:

@@ -154,6 +154,30 @@ button:focus {
 
 // install extended math/utility functions in oK:
 
+var kajax = function(a) {
+	var url      = tojs(a[0]);
+	var verb     = tojs(a[1]);
+	var callback = a[2];
+	try {
+		var xhr = new XMLHttpRequest();
+		xhr.open(verb, url);
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState != 4) { return; }
+			if (xhr.status != 200) {
+				showError("HTTP "+xhr.status+" from "+verb+":"+url);
+				return;
+			}
+			var result = tok(JSON.parse(xhr.responseText));
+			call(callback, k(3, [result]), env);
+		}
+		xhr.send();
+	}
+	catch(e) {
+		console.log(e);
+		showError("Malformed ajax request: "+verb+":"+url);
+	}
+}
+
 natives["abs"]  = 0;
 natives["tan"]  = 0;
 natives["acos"] = 0;
@@ -176,6 +200,7 @@ var knoise = function(a)    { return k(0, perlinnoise(n(a[0]).v, n(a[1]).v, n(a[
 verbs["atan2"] = [null, null, ad(katan2), ad(katan2), ad(katan2), ad(katan2), null,   null];
 verbs["pow"  ] = [null, null, ad(kpow)  , ad(kpow)  , ad(kpow)  , ad(kpow)  , null,   null];
 verbs["pn"   ] = [null, null, null,       null,       null,       null,       knoise, null];
+verbs["ajax" ] = [null, null, null,       null,       null,       null,       kajax,  null];
 
 function extendedEnv() {
 	var env = baseEnv();
@@ -189,9 +214,10 @@ function extendedEnv() {
 	nmonad("tanh", function(x) {
 		x=n(x).v; return k(0, (Math.exp(x)-Math.exp(-x))/(Math.exp(x)+Math.exp(-x)));
 	});
-	trampoline(env, "atan2", ["x", "y"],      katan2);
-	trampoline(env, "pow"  , ["x", "y"],      kpow);
-	trampoline(env, "pn"   , ["x", "y", "z"], knoise);
+	trampoline(env, "atan2"  , ["x", "y"],      katan2);
+	trampoline(env, "pow"    , ["x", "y"],      kpow);
+	trampoline(env, "pn"     , ["x", "y", "z"], knoise);
+	trampoline(env, "ajax"   , ["x", "y", "z"], kajax);
 	env.put(ks("tr"), true, k(0, 30));
 	return env;
 }
@@ -386,13 +412,13 @@ function callk(n) {
 function callk1(n, x) {
 	setvars();
 	try { var v = env.lookup(ks(n), true);
-		try { return call(v, k(3, [num(x)])); } catch(e) { console.log(e.message); }
+		try { return call(v, k(3, [num(x)]), env); } catch(e) { console.log(e.message); }
 	} catch(e) {}
 }
 function callk2(n, x, y) {
 	setvars();
 	try { var v = env.lookup(ks(n), true);
-		try { return call(v, k(3, [num(x), num(y)])); } catch(e) { console.log(e.message); }
+		try { return call(v, k(3, [num(x), num(y)]), env); } catch(e) { console.log(e.message); }
 	} catch(e) {}
 }
 function setvars() {
