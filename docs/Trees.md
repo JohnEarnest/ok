@@ -54,7 +54,7 @@ There may be several zeroes and we want to get rid of all of them. This is an ex
 Generalizing, a complete traversal can be performed by using a fixed-point scan starting with `,0`- the root. When we select only zeroes, `^0` will produce the empty list and indexing will produce no further successors.
 
 	  bfs: {(?,/tree@x)^0}\
-	  bfs ,0
+	  bfs@,0
 	(,0
 	 1 2
 	 3 4 5
@@ -114,7 +114,7 @@ For each of these nodes we simply need to determine whether the child we're inte
 
 Going the other way, if we have just one such path we can easily obtain the node at that position via over:
 
-	  0{t[x;y]}/1 0
+	  0{tree[x;y]}/1 0
 	4
 
 Note that these approaches generalize to N-ary trees and permit treating any node of a tree as a starting point, rather than just node 0.
@@ -142,3 +142,117 @@ We can produce any such tree by generating an appropriate enumeration (`1+!2*x`)
 	 0 0
 	 0 0
 	 0 0)
+
+An Alternate Take
+-----------------
+The columnar tree representation we've been working with up to this point behaves nicely in many cases. You may have noticed a few downsides, though. There are odd edge cases; we have to treat the zero index specially. Appending to and removing from such a representation is enormously clumsy. Even more fundamentally, the representation is underconstrained. We can actually represent non-tree structures. For example, consider the following decidedly cyclic "tree":
+
+	(1 1
+	 1 2
+	 2 1)
+
+How do we fix this? Turn it on its head! Instead of using links from a parent to each child, have each node track the index of its parent. A side benefit to this representation is that trees require only a single flat "shape" vector no matter how many children may be attached to any given node; N-ary trees are not a special case.
+
+	    a
+	   / \
+	  b   c
+	 /|  / \
+	d e f   g
+	       /|\
+	      h i j
+         /
+        k
+	
+	d:`a`b`c`d`e`f`g`h`i`j`k
+	t: 0 0 0 1 1 2 2 6 6 6 7
+
+Without delving into too much detail, we can easily enough carry out the same sorts of operations as above:
+
+	  |d@(t@)\d?`h           / path from root
+	`a`c`g`h
+
+	  d@{&0||/t=/:x}\,d?`c   / reachable successors
+	(,`c
+	 `f`g
+	 `h`i`j
+	 ,`k
+	 ())
+
+	  *d@&t=!#t              / identify the root
+	`a
+
+	  d@&^t?!#t              / identify leaf nodes
+	`d`e`f`i`j`k
+
+Note that while this format can *only* represent true trees, the vector representing a given tree is not unique. Consider the following equivalent representations of the same tree:
+
+	  a
+	 / \
+	b   d
+	 \
+	  c
+	
+	ud:`c`a`b`d
+	ut: 2 1 1 1
+
+	nd:`a`b`c`d
+	nt: 0 0 1 0
+
+Let's look at tree appends.
+
+	  a       d
+	 / \     / \
+	b   c   e   f
+           / \   \
+          g   h   i
+
+	t1: 0 0 0
+	t2: 0 0 0 1 1 2
+
+In an append, the auxiliary data columns can simply be concatenated. The lists of tree indices can be concatenated as well, but the child tree's indices must be altered to represent their new relative positions. The root of the child tree must become the index in the parent tree to which it is being attached:
+
+	  2*t2=!#t2
+	2 0 0 0 0 0
+
+All the other nodes of the child tree must be incremented by the size of the parent tree to preserve their existing relative structure:
+
+	  ~t2=!#t2
+	0 1 1 1 1 1
+	  (~t2=!#t2)*t2+#t1
+	0 3 3 4 4 5
+
+So, to attach a subtree `y` to node `z` of base tree `x`:
+
+	app:{x,(z*~m)|(m:~y=!#y)*y+#x}
+
+	(d;d@app[t1;t2;1])
+	(`a`b`c`d`e`f`g`h`i
+	 `a`a`a`b`d`d`e`e`f)
+
+How about removing nodes? Let's begin with assuming that the set of nodes you which to remove, `r`, is it's own transitive closure. That is, any descendants of nodes in `r` are contained in `r`. Where do these nodes appear in the overall tree?
+
+	  r: `b`d`e`f
+	
+	  m:^(d?r)?!#t
+	1 0 1 0 0 0 1 1 1 1 1
+
+Thus, the indices of the nodes which will be preserved:
+
+	  &m
+	0 2 6 7 8 9 10
+
+And the number of spaces by which each node will be displaced by the removal of intervening nodes:
+
+	  +\-~m
+	0 -1 -1 -2 -3 -4 -4 -4 -4 -4 -4
+
+So, we must select the nodes which will be preserved and adjust the indices of the tree to reflect how far the parent of each preserved node was shifted:
+
+	  (d@&m;(d@&m)@(t+(+\-~m)t)@&m:^(d?r)?!#t)
+	(`a`c`g`h`i`j`k
+	 `a`a`c`g`g`g`h)
+
+	  {(x+(+\-~y)x)@&y}[t;1 0 1 0 0 0 1 1 1 1 1]  / if we already have a mask...
+	0 0 1 2 2 2 3
+
+Phew! Observe that if we have a mask of nodes to preserve we can remove an arbitrary number of nodes in linear time. Not too shabby!
