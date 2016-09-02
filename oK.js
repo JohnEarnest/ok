@@ -656,7 +656,7 @@ var NUMBER  = /^(-?0w|0N|-?\d*\.?\d+)/;
 var HEXLIT  = /^0x[a-zA-Z\d]+/;
 var BOOL    = /^[01]+b/;
 var NAME    = /^[a-z][a-z\d]*/i;
-var SYMBOL  = /^`([a-z][a-z0-9]*)?/i;
+var SYMBOL  = /^`([a-z0-9.]*)?/i;
 var STRING  = /^"(\\.|[^"\\\r\n])*"/;
 var VERB    = /^[+\-*%!&|<>=~,^#_$?@.]/;
 var ASSIGN  = /^[+\-*%!&|<>=~,^#_$?@.]:/;
