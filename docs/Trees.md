@@ -145,13 +145,9 @@ We can produce any such tree by generating an appropriate enumeration (`1+!2*x`)
 
 An Alternate Take
 -----------------
-The columnar tree representation we've been working with up to this point behaves nicely in many cases. You may have noticed a few downsides, though. There are odd edge cases; we have to treat the zero index specially. Appending to and removing from such a representation is enormously clumsy. Even more fundamentally, the representation is underconstrained. We can actually represent non-tree structures. For example, consider the following decidedly cyclic "tree":
+The columnar tree representation we've been working with up to this point behaves nicely in many cases. You may have noticed a few downsides, though. There are odd edge cases: we have to treat the zero index specially and appending to and removing from such a representation is enormously clumsy.
 
-	(1 1
-	 1 2
-	 2 1)
-
-How do we fix this? Turn it on its head! Instead of using links from a parent to each child, have each node track the index of its parent. A side benefit to this representation is that trees require only a single flat "shape" vector no matter how many children may be attached to any given node; N-ary trees are not a special case.
+How can we fix this? Turn it on its head! Instead of using links from a parent to each child, have each node track the index of its parent. The root will be indicated with a node which links to itself. A side benefit to this representation is that trees require only a single flat _shape vector_ no matter how many children may be attached to any given node; N-ary trees are not a special case.
 
 	    a
 	   / \
@@ -171,7 +167,7 @@ Without delving into too much detail, we can easily enough carry out the same so
 	  |d@(t@)\d?`h           / path from root
 	`a`c`g`h
 
-	  d@{&0||/t=/:x}\,d?`c   / reachable successors
+	  d@{&0||/t=/:x}\,d?`c   / reachable successors (BFS)
 	(,`c
 	 `f`g
 	 `h`i`j
@@ -184,7 +180,7 @@ Without delving into too much detail, we can easily enough carry out the same so
 	  d@&^t?!#t              / identify leaf nodes
 	`d`e`f`i`j`k
 
-Note that while this format can *only* represent true trees, the vector representing a given tree is not unique. Consider the following equivalent representations of the same tree:
+Note that the vector representing a given tree is not unique. Consider the following equivalent representations of the same tree:
 
 	  a
 	 / \
@@ -197,6 +193,13 @@ Note that while this format can *only* represent true trees, the vector represen
 
 	nd:`a`b`c`d
 	nt: 0 0 1 0
+
+We'll say a _normalized tree_ is one in which parent nodes strictly precede their children. Trees glued together using our append procedure will preserve this property, and our remove procedure depends on it. Checking whether a tree is normalized is fairly straightforward- no parent index should be greater than the index of the current node.
+
+	  norm: {~|/(!#x)<x}
+
+	  norm'(nt;ut)
+	1 0
 
 Let's look at tree appends.
 
@@ -229,19 +232,24 @@ So, to attach a subtree `y` to node `z` of base tree `x`:
 	(`a`b`c`d`e`f`g`h`i
 	 `a`a`a`b`d`d`e`e`f)
 
-How about removing nodes? Let's begin with assuming that the set of nodes you which to remove, `r`, is it's own transitive closure. That is, any descendants of nodes in `r` are contained in `r`. Where do these nodes appear in the overall tree?
+How about removing nodes? Let's begin with assuming that the set of nodes you which to remove, `r`, is it's own transitive closure. That is, any descendants of nodes in `r` are contained in `r`. This ensures that we are removing complete subtrees at once, and avoiding the risk of leaving "dangling" nodes behind. Furthermore, we'll assume our tree is normalized.
+
+Where do the nodes in `r` appear in the overall tree?
 
 	  r: `b`d`e`f
 	
 	  m:^(d?r)?!#t
 	1 0 1 0 0 0 1 1 1 1 1
 
-Thus, the indices of the nodes which will be preserved:
+Thus, the indices of the nodes (and data items) which will be preserved:
 
 	  &m
 	0 2 6 7 8 9 10
 
 And the number of spaces by which each node will be displaced by the removal of intervening nodes:
+
+	  -~m
+	0 -1 0 -1 -1 -1 0 0 0 0 0
 
 	  +\-~m
 	0 -1 -1 -2 -3 -4 -4 -4 -4 -4 -4
