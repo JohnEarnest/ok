@@ -12,7 +12,7 @@ Nouns
 
 - Characters are enclosed in double quotes (") and can make use of the escape sequences `\n`, `\t`, `\"` or `\\` to produce a newline, tab, double quote or backslash character, respectively. If more than one unescaped character is enclosed in quotes, the noun is a list of characters (see below), also known as a *string*.
 
-- Symbols are prefixed with a backtick (\`) and can consist of zero or more alphabetic characters. Symbols are mainly useful as handles to variable names or keys in dictionaries.
+- Symbols are start with a backtick (\`) and are followed by an optional name. Names must start with `.` or a letter, and may contain letters, digits or `.`. Symbols are mainly useful as handles to variable names or keys in dictionaries.
 
 - Lists are a sequence of nouns. If several numbers have spaces separating them, they form a list:
 
