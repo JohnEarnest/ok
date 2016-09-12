@@ -63,8 +63,8 @@ Of course, sometimes we can do the whole operation in parallel and combine the c
 	  `c${65+x+32*2!x}@!26
 	"AbCdEfGhIjKlMnOpQrStUvWxYz"
 
-Case Selection
---------------
+Conditionals and Alternatives
+-----------------------------
 K offers an equivalent to "if" statements in the form of the 3 or more argument version of `$`, sometimes called `cond` for its semantic similarity to the Lisp statement:
 
 	{$[2!x; x%2; 1+3*x]}
@@ -99,6 +99,17 @@ Sometimes a situation which appears to require a conditional can actually be res
 	,1
 	  ,/,1 2 3
 	1 2 3
+
+Or suppose you wish to apply a function to a value if a boolean is true:
+
+	  {$[x;<y;y]}[1] 2 3 1
+	2 0 1
+	  {$[x;<y;y]}[0] 2 3 1
+	2 3 1
+	  <:/[1;2 3 1]
+	2 0 1
+	  <:/[0;2 3 1]
+	2 3 1
 
 Cartesian Product
 -----------------
@@ -216,7 +227,7 @@ For example,
 	  ^':(1 2;1 3 2;1 3 5 6 2)
 	(1 2;,3;5 6)
 
-Of course, these are not the only useful compositions with `eachprior`. Consider the following idiom `0>':` which identifies the "rising edge" of runs of 1 in a boolean vector:
+Of course, these are not the only useful compositions with `eachprior`. Consider the following idiom which identifies the "rising edge" of runs of 1 in a boolean vector:
 
 	  v: 0 1 1 1 1 0 0 1 1 1 0 1
 	0 1 1 1 1 0 0 1 1 1 0 1
