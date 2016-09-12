@@ -194,7 +194,7 @@ Note that the vector representing a given tree is not unique. Consider the follo
 	nd:`a`b`c`d
 	nt: 0 0 1 0
 
-We'll say a _normalized tree_ is one in which parent nodes strictly precede their children. Trees glued together using our append procedure will preserve this property, and our remove procedure depends on it. Checking whether a tree is normalized is fairly straightforward- no parent index should be greater than the index of the current node.
+We'll say a _normalized tree_ is one in which parent nodes strictly precede their children. Trees glued together using our append procedure will preserve this property, and our remove procedure depends on it. Checking whether a tree is normalized is fairly straightforward- no parent index should be greater than the index of the current node:
 
 	  norm: {~|/(!#x)<x}
 

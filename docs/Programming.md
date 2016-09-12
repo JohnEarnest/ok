@@ -89,6 +89,17 @@ Or you could index into a list of functions and apply them to the original list 
 	  {({x};100+)[2!x]@'x}7 6 15 29 28 42
 	107 6 115 129 28 42
 
+Sometimes a situation which appears to require a conditional can actually be resolved by exploiting useful edge-cases of verbs and adverbs. For example, say you have a value which is either an atom or a list, and for some other purpose you must ensure it is made a list. Consider these approaches and decide for yourself which is clearer:
+
+	  {$[-1<@x;x;,x]} 1
+	,1
+	  {$[-1<@x;x;,x]} 1 2 3
+	1 2 3
+	  ,/,1
+	,1
+	  ,/,1 2 3
+	1 2 3
+
 Cartesian Product
 -----------------
 You want to consider all combinations of two lists of elements via a dyad `D`. This is called a _Cartesian Product_ and can be formed by combining `each left` and `each right`, and possibly joining the results:
@@ -204,6 +215,13 @@ For example,
 
 	  ^':(1 2;1 3 2;1 3 5 6 2)
 	(1 2;,3;5 6)
+
+Of course, these are not the only useful compositions with `eachprior`. Consider the following idiom `0>':` which identifies the "rising edge" of runs of 1 in a boolean vector:
+
+	  v: 0 1 1 1 1 0 0 1 1 1 0 1
+	0 1 1 1 1 0 0 1 1 1 0 1
+	  0>':v
+	0 1 0 0 0 0 0 1 0 0 0 1
 
 If you need more context, you can split the list appropriately yourself. To provide sliding windows into a list `x` which each have a length `y`:
 
