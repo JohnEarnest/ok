@@ -53,6 +53,7 @@ function dget(x, y)    { var i=find(x.k, y); return (i.v==len(x.k)) ? NA : atl(x
 function dset(x, y, z) { var i=find(x.k, y).v; if(i==len(x.k)) { x.k.v.push(y); } x.v.v[i]=z; }
 function lset(x, y, v) { if (len(x) <= p(y)) { throw new Error("index error."); } x.v[y.v]=v; }
 function c(x) { return (x.t==3) ? k(x.t, x.v.slice(0)) : (x.t==4) ? md(c(x.k), c(x.v)) : x; }
+function lower(x)      { return k(1, String.fromCharCode(x.v).toLowerCase().charCodeAt(0)); }
 function stok(x) { return kl(krange(x.length, function(z) { return k(1,x.charCodeAt(z)); }).v); }
 function ktos(x, esc) {
 	if (x.t != 3) { x = enlist(x); }
@@ -71,13 +72,13 @@ function checktype(n, t) {
 	if (n.t == t) { return n; }
 	throw new Error(typenames[t]+" expected, found "+typenames[n.t]+".");
 }
-function n(x) { if (x.t==0||x.t==1) { return x; } return checktype(x, 0); }
+function n(x) { return (x.t==0||x.t==1) ? x : checktype(x, 0); }
 function l(x) { return checktype(x, 3); }
 function d(x) { return checktype(x, 4); }
 function a(x) { if (x.t > 2) { throw new Error("domain error."); } return x; }
 function na(x) { return x.t === 0 && isNaN(x.v); }
 function p(x) {
-	n(x); if (x.v < 0 || x.v%1 != 0) { throw new Error("positive int expected."); } return x.v;
+	if (n(x).v < 0 || x.v%1 != 0) { throw new Error("positive int expected."); } return x.v;
 }
 
 ////////////////////////////////////
@@ -108,7 +109,7 @@ function not      (x) { return equal(n(x), k0); }
 function enlist   (x) { return k(3, [x]); }
 function isnull   (x) { return max(match(x, NIL),match(x,k(11))); }
 function count    (x) { return k(0, x.t == 4 ? len(x.v) : x.t == 3 ? len(x) : 1); }
-function floor    (x) { return k(0, Math.floor(n(x).v)); }
+function floor    (x) { return x.t == 1 ? lower(x) : k(0, Math.floor(n(x).v)); }
 function type     (x) { return k(0, kt[x.t]); }
 function kfmt     (x) { var r=stok(format(x, 0, 1)); if (r.t!=3) { r=k(3,[r]); } return r; }
 function real     (x) { return krange(n(x).v, function() { return k(0, Math.random()); }); }
@@ -193,15 +194,9 @@ function match(x, y) {
 	return kb(x.v.every(function(x,i) { return match(x, y.v[i]).v; }));
 }
 
-function find(x, y) {
-	for(var z=0;z<len(x);z++) { if(match(x.v[z],y).v) { return k(0,z); } } return k(0,len(x));
-}
-function pfind(x, y) {
-	for(var z=0;z<len(x);z++) { if(equal(x.v[z],y).v) { return k(0,z); } } return NA;
-}
-function pisnull(x) {
-	return kb(match(x, NIL).v || match(x, k(11)).v || na(x));
-}
+function find(x, y) { y=x.v.findIndex(function(z){return match(z,y).v}); return k(0,y>=0?y:len(x)) }
+function pfind(x, y) { y=x.v.findIndex(function(z){return equal(z,y).v}); return y>=0?k(0,y):NA }
+function pisnull(x) { return kb(match(x, NIL).v || match(x, k(11)).v || na(x)); }
 
 function cut(x, y) {
 	return kzip(x, cat(drop(k1,x),k(0,len(y))), function(a, b) { // {x{x@y+!z-y}[y]'1_x,#y} ?
@@ -534,15 +529,13 @@ function Environment(pred) {
 function atd(x, y, env) {
 	if (x.t == 2) { return x; }
 	if (x.t == 5) { return call(x, k(3,[y]), env); }
-	if (x.t == 8 || x.t == 9) { return applym(x, y, env); }
-	return ar(dget)(d(x), y);
+	return (x.t == 8 || x.t == 9) ? applym(x, y, env) : ar(dget)(d(x), y);
 }
 
 function atl(x, y, env) {
 	if (x.t == 4) { return dget(x, y); }
 	if (y.t == 4) { return md(y.k, (ar(atl))(x, y.v, env)); }
-	if (y.t > 1 || y.v < 0 || y.v >= len(x) || y.v%1 != 0) { return NA; }
-	return x.v[y.v];
+	return (y.t > 1 || y.v < 0 || y.v >= len(x) || y.v%1 != 0) ? NA : x.v[y.v];
 }
 
 function atdepth(x, y, i, env) {

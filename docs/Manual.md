@@ -438,6 +438,10 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<tt>_n</tt> is <b>floor</b>. Right atomic.
 <pre><code>  _2.3 7.6 9 -2.3
 2 7 9 -3</code></pre>
+
+		<tt>_c</tt> converts characters to lowercase. Right atomic.
+<pre><code>  _"ABCdef!"
+"abcdef!"</code></pre>
 	</td>
 	<td>
 		<tt>n_l</tt> is <b>drop</b>. Remove x elements from the start of y.<br>
