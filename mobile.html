@@ -223,7 +223,7 @@ function typeNormal(key, text, event) {
 	text = shiftedLabel(key, text, shiftHeld);
 	updateEdit(
 		editText.substring(0, editIndex) + text + editText.substring(editIndex),
-		editIndex + 1
+		editIndex + text.length
 	);
 }
 
@@ -409,7 +409,7 @@ function buildCalcKeyboard() {
 	shiftHeld = false;
 	buildKeyboard([
 		"&larr;|&rarr;|/|\\|'|/:|\\:|':|MODE",
-		"+|-|*|%|!|^|#|_",
+		"+|-|*|%|^|#|_|!",
 		"<|>|=|~|&|BAR|,|:",
 		"`|x|7|8|9|(|)",
 		"?|y|4|5|6|{|}",
