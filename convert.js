@@ -58,5 +58,12 @@ function tojs(v) {
 	throw new Error("cannot convert '"+JSON.stringify(v)+"' to a JavaScript datatype.");
 }
 
+function trampoline(env, name, args, body) {
+	// construct a function-wrapper trampoline for a pseudonative.
+	// this permits dyadic/triadic extension functions to be properly curryable.
+	var arguse = []; for(var z=0; z<args.length; z++) { arguse.push({"t":7, "v":args[z]}); }
+	env.put(ks(name), true, {t: 5, args:args, v: [ {"t":8,"v":name,"curry":arguse} ]});
+}
+
 this.tok = tok;
 this.tojs = tojs;

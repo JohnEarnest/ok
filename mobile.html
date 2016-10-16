@@ -1,10 +1,11 @@
 <html>
 <head>
+	<title>oK Mobile</title>
 	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
-	<title>oK Mobile</title>
-	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/base-min.css">
 	<link rel="apple-touch-icon" href="icon.png">
+	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/base-min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script>
 <style>
 body {
 	display: flex;
@@ -50,7 +51,7 @@ body {
 }
 .error {
 	background-color: pink;
-	align-self: flex-start;	
+	align-self: flex-start;
 }
 
 /* the editor line: */
@@ -146,6 +147,7 @@ body {
 	<div id="keyboard"/>
 </body>
 <script src="oK.js"></script>
+<script src="convert.js"></script>
 <script>
 
 var env = baseEnv();
@@ -170,16 +172,62 @@ function asHTML(text) {
 	            replace(/[\n]/g, "<br/>");
 }
 
+function printNode(type, n) {
+	var div = document.createElement("div");
+	div.className = type;
+	div.appendChild(n);
+	document.getElementById("console-content").appendChild(div);
+	var panel = document.getElementById("console-pane");
+	panel.scrollTop = panel.scrollHeight;
+}
+
 function printText(type, text) {
 	var div = document.createElement("div");
 	div.className = type;
 	div.innerHTML = asHTML(text);
-	div.onclick = function(event) {
-		updateEdit(text, text.length);
-	};
 	document.getElementById("console-content").appendChild(div);
 	var panel = document.getElementById("console-pane");
 	panel.scrollTop = panel.scrollHeight;
+	div.onclick = function(event) {
+		updateEdit(text, text.length);
+	};
+}
+
+function processLine() {
+	printText("input", editText);
+
+	var beforeTime = null;
+	while(editText.match(/\\[a-z]/)) {
+		var c = editText[1];
+		editText = editText.substring(2);
+		if (c == 't') {
+			beforeTime = new Date().getTime();
+		}
+		else if (c == 'c') {
+			document.getElementById("console-content").innerHTML = "";
+			updateEdit("", 0);
+			return;
+		}
+		else {
+			printText("error", "unknown command flag '"+c+"'.");
+			updateEdit("", 0);
+			return;
+		}
+	}
+
+	try {
+		var parsed = parse(editText);
+		var result = format(run(parsed, env));
+		printText("output", result);
+		if (beforeTime) {
+			var afterTime = new Date().getTime();
+			printText("output", "completed in "+(afterTime-beforeTime)+"ms.");
+		}
+	}
+	catch(error) {
+		printText("error", error.message);
+	}
+	updateEdit("", 0);
 }
 
 function updateEdit(t, c) {
@@ -190,6 +238,74 @@ function updateEdit(t, c) {
 	editText  = t;
 	editIndex = c;
 }
+
+/**
+* Charting
+**/
+
+Chart.defaults.global.legend.display = false;
+
+function linePlot(drawLines, points) {
+	var p = document.createElement("div");
+	p.style.paddingTop = "10px";
+	var c = document.createElement("canvas");
+	p.appendChild(c);
+	printNode("output", p);
+	var myChart = Chart.Line(c, {
+		data: {
+			datasets: [{
+				lineTension: 0,
+				data: points,
+			}]
+		},
+		options: {
+			showLines: drawLines,
+			scales: {
+				xAxes: [{
+					type: 'linear',
+					position: 'bottom'
+				}]
+			}
+		}
+	});
+}
+
+function kplot(func, x, y) {
+	// if x is a number, make it !x
+	if (x.t == 0) { x = iota(x); }
+	if (x.t != 3) { throw new Error("plot domain must be a number or list."); }
+
+	// if y is a function, make it y'x
+	if (y.t != 3) {
+		if (valence(y, env) != 1) {
+			throw new Error("plot function must be monadic.");
+		}
+		y = each(y, x, env);
+	}
+	if (y.t != 3) { throw new Error("plot range must be a list."); }
+
+	var xv = tojs(x);
+	var yv = tojs(y);
+
+	// trim ragged data to minimum, for convenience:
+	var l = Math.min(xv.length, yv.length);
+	var d = [];
+	for (var z=0; z < l; z++) {
+		d.push({ x: xv[z], y: yv[z] });
+	}
+	func(d);
+}
+
+function plotHelper(func, name) {
+	// install the necessary wrappers for a plotting function into env:
+	var f = kplot.bind(this, func);
+	natives[name] = 0;
+	verbs[name] = [null, null, f, f, f, f, null, null];
+	trampoline(env, name, ["x", "y"], f);
+}
+
+plotHelper(linePlot.bind(this, true),  "pl");
+plotHelper(linePlot.bind(this, false), "ps");
 
 /**
 * The keyboard itself:
@@ -273,16 +389,7 @@ function specialUp(key) {
 				event.preventDefault();
 				event.stopPropagation();
 
-				printText("input", editText);
-				try {
-					var parsed = parse(editText);
-					var result = format(run(parsed, env));
-					printText("output", result);
-				}
-				catch(error) {
-					printText("error", error.message);
-				}
-				updateEdit("", 0);
+				processLine();
 			};
 		case "DEL":
 		case "&#215;":
@@ -396,7 +503,7 @@ function buildCalcKeyboard() {
 	shiftHeld = false;
 	buildKeyboard([
 		"&larr;|/|\\|'|/:|\\:|':|&rarr;",
-		"sin|cos|log|exp|in|prm|o",
+		"o|sin|cos|log|exp|in|prm|pl[|ps[",
 		"+|-|*|%|^|#|_|!",
 		"<|>|=|~|&|BAR|,|:",
 		"`|x|7|8|9|(|)",
