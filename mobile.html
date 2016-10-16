@@ -4,6 +4,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
 	<title>oK Mobile</title>
 	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/base-min.css">
+	<link rel="apple-touch-icon" href="icon.png">
 <style>
 body {
 	display: flex;
@@ -160,7 +161,6 @@ function inl(x, list) {
 var editText = "";
 var editIndex = 0;
 var keys = {};
-var editHistory = [""];
 
 function asHTML(text) {
 	return text.replace(/[&]/g, "&amp;").
@@ -267,25 +267,12 @@ function specialUp(key) {
 					keys[k].innerHTML = shiftedLabel(keys[k], k, false);
 				});
 			};
-		case "BACK":
-			return function(event) {
-				event.preventDefault();
-				event.stopPropagation();
-
-				if (shiftHeld) {
-					// HOME
-					updateEdit(editText, 0);
-					return;
-				}
-				updateEdit(editHistory[editHistory.length-1], 0);
-			};
 		case "EVAL":
 		case "&#8629;":
 			return function(event) {
 				event.preventDefault();
 				event.stopPropagation();
 
-				editHistory.push(editText);
 				printText("input", editText);
 				try {
 					var parsed = parse(editText);
@@ -399,7 +386,7 @@ function buildFullKeyboard() {
 		"\\|q|w|e|r|t|y|u|i|o|p|[|]",
 		";|a|s|d|f|g|h|j|k|l|'",
 		"`|-|=|z|x|c|v|b|n|m|,|.|/",
-		"SHIFT|MODE| |EVAL|SHIFT",
+		"SHIFT| |EVAL|SHIFT",
 	]);
 	updateEdit(editText, editIndex);
 }
@@ -408,7 +395,8 @@ function buildCalcKeyboard() {
 	keyboardMode = "calc";
 	shiftHeld = false;
 	buildKeyboard([
-		"&larr;|&rarr;|/|\\|'|/:|\\:|':|MODE",
+		"&larr;|/|\\|'|/:|\\:|':|&rarr;",
+		"sin|cos|log|exp|in|prm|o",
 		"+|-|*|%|^|#|_|!",
 		"<|>|=|~|&|BAR|,|:",
 		"`|x|7|8|9|(|)",
@@ -419,11 +407,24 @@ function buildCalcKeyboard() {
 	updateEdit(editText, editIndex);
 }
 
+window.onresize = function() {
+	if (window.innerWidth > window.innerHeight) {
+		if (keyboardMode != "full") {
+			buildFullKeyboard();
+		}
+	}
+	else {
+		if (keyboardMode != "calc") {
+			buildCalcKeyboard();
+		}
+	}
+}
+
 /**
 * Initialization (including temporary testing data):
 **/
 
-buildFullKeyboard();
+window.onresize();
 printText("output", "ready.");
 
 </script>
