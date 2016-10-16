@@ -1,0 +1,388 @@
+<html>
+<head>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>oK Mobile</title>
+	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/base-min.css">
+<style>
+body {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: hidden;
+}
+
+/* the IO transcript: */
+#console {
+	font-family: monospace;
+	font-size: 20px;
+	padding: 5px;
+	overflow: hidden;
+	background-color: white;
+}
+#console-pane {
+	height: 40%;
+	overflow-y: scroll;
+}
+#console-content {
+	display: flex;
+	flex-direction: column;
+	background-color: white;
+}
+
+.input,
+.output,
+.error {
+	padding-left:  10px;
+	padding-right: 10px;
+	border-radius:  5px;
+	margin-top:     4px;
+}
+
+.input {
+	background-color: orange;
+	align-self: flex-end;
+}
+.output {
+	background-color: lightgray;
+	align-self: flex-start;
+}
+.error {
+	background-color: pink;
+	align-self: flex-start;	
+}
+
+/* the editor line: */
+#editline {
+	background-color: black;
+	color: white;
+	font-size: 30px;
+	font-family: monospace;
+	padding-left: 5px;
+	padding-right: 5px;
+	overflow-wrap: break-word;
+
+	/* disable text selection */
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+}
+.cursor {
+	color: orange;
+	font-weight: lighter;
+	font-family: sans-serif;
+}
+
+/* the actual keyboard */
+#keyboard {
+	background-color: gray;
+	display: flex;
+	flex-direction: column;	
+	flex-grow: 2;
+}
+.row {
+	/* layout */
+	display: flex;
+	flex-direction: row;
+	flex-grow: 1;
+
+	/* appearance */
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+.key {
+	/* layout */
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+
+	/* appearance */
+	background-color: lightgray;
+	border-radius: 5px;
+	margin-left: 2px;
+	margin-right: 2px;
+	font-weight: bold;
+	font-family: monospace;
+	font-size: 20px;
+
+	/* disable text selection */
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+}
+.key:active {
+	background-color: darkgray;
+}
+.alpha-key {
+	background-color: white;
+}
+.special-key {
+	background-color: orange;
+}
+.space-key {
+	background-color: white;
+	flex-grow: 4;
+}
+</style>
+</head>
+<body oncontextmenu="return false;">
+	<div id="console">
+		<div id="console-pane">
+			<div id="console-content">
+				
+			</div>
+		</div>
+	</div>
+	<div id="keyboard">
+		<div id="editline"></div>
+	</div>
+</body>
+<script src="oK.js"></script>
+<script>
+
+var env = baseEnv();
+
+function inl(x, list) {
+	return list.indexOf(x) >= 0;
+}
+
+/**
+* The REPL edit line and output:
+**/
+
+var edit = document.getElementById("editline");
+var editText = "";
+var editIndex = 0;
+var keys = {};
+var editHistory = [""];
+
+function asHTML(text) {
+	return text.replace(/[&]/g, "&amp;").
+				replace(/[ ]/g, "&nbsp;").
+	            replace(/[<]/g, "&lt;").
+	            replace(/[>]/g, "&gt;").
+	            replace(/[\n]/g, "<br/>");
+}
+
+function printText(type, text) {
+	var div = document.createElement("div");
+	div.className = type;
+	div.innerHTML = asHTML(text);
+	div.onclick = function(event) {
+		updateEdit(text, text.length);
+	};
+	document.getElementById("console-content").appendChild(div);
+	var panel = document.getElementById("console-pane");
+	panel.scrollTop = panel.scrollHeight;
+}
+
+function updateEdit(t, c) {
+	var before = asHTML(t.substring(0, c));
+	var after  = asHTML(t.substring(c, t.length));
+	var cursor = "<span class='cursor'>|</span>";
+	edit.innerHTML = before + cursor + after;
+	editText  = t;
+	editIndex = c;
+}
+
+/**
+* The keyboard itself:
+**/
+
+var keyrows = [
+	"&larr;|&rarr;|1|2|3|4|5|6|7|8|9|0|DEL",
+	"\\|q|w|e|r|t|y|u|i|o|p|[|]",
+	";|a|s|d|f|g|h|j|k|l|'",
+	"-|=|z|x|c|v|b|n|m|,|.|/",
+	"SHIFT|EVAL|BACK| |SHIFT",
+];
+
+var alpha     = "abcdefghijklmnopqrstuvwxyz".split("");
+var shiftbase = "1234567890-=[],./;'\\".split("");
+var shiftalt  = "!@#$%^&*()_+{}<>?:\"|".split("");
+var special   = ["&larr;","&rarr;","DEL","EVAL","BACK","SHIFT"];
+
+var shiftHeld = false;
+
+function shiftedLabel(key, label, shifted) {
+	if (label == 'BACK' && shifted) { return 'HOME'; }
+	if (label == 'DEL' && shifted) { return 'CLR'; }
+	if (key.isAlpha) {
+		return shifted ? label.toUpperCase() : label;
+	}
+	if (inl(label, shiftbase)) {
+		return shifted ? shiftalt[shiftbase.indexOf(label)] : label;
+	}
+	return label;
+}
+
+function typeNormal(key, text, event) {
+	event.preventDefault();
+	event.stopPropagation();
+
+	text = shiftedLabel(key, text, shiftHeld);
+	updateEdit(
+		editText.substring(0, editIndex) + text + editText.substring(editIndex),
+		editIndex + 1
+	);
+}
+
+function specialDown(key) {
+	switch(key) {
+		case "SHIFT":
+			return function(event) {
+				event.preventDefault();
+				event.stopPropagation();
+
+				shiftHeld = true;
+				Object.keys(keys).forEach(function(k) {
+					keys[k].innerHTML = shiftedLabel(keys[k], k, true);
+				});
+			};
+		default: return function(event) {};
+	}
+}
+
+function specialUp(key) {
+	switch(key) {
+		case "SHIFT":
+			return function(event) {
+				event.preventDefault();
+				event.stopPropagation();
+
+				shiftHeld = false;
+				Object.keys(keys).forEach(function(k) {
+					keys[k].innerHTML = shiftedLabel(keys[k], k, false);
+				});
+			};
+		case "BACK":
+			return function(event) {
+				event.preventDefault();
+				event.stopPropagation();
+
+				if (shiftHeld) {
+					// HOME
+					updateEdit(editText, 0);
+					return;
+				}
+				updateEdit(editHistory[editHistory.length-1], 0);
+			};
+		case "EVAL":
+			return function(event) {
+				event.preventDefault();
+				event.stopPropagation();
+
+				editHistory.push(editText);
+				printText("input", editText);
+				try {
+					var parsed = parse(editText);
+					var result = format(run(parsed, env));
+					printText("output", result);
+				}
+				catch(error) {
+					printText("error", error.message);
+				}
+				updateEdit("", 0);
+			};
+		case "DEL":
+			return function(event) {
+				event.preventDefault();
+				event.stopPropagation();
+
+				if (shiftHeld) {
+					// CLR
+					updateEdit("", 0);
+					return;
+				}
+				updateEdit(
+					editText.substring(0, editIndex - 1) + editText.substring(editIndex),
+					Math.max(0, editIndex - 1)
+				);
+			};
+		case "&larr;":
+			return function(event) {
+				event.preventDefault();
+				event.stopPropagation();
+
+				updateEdit(
+					editText,
+					Math.max(0, editIndex - 1)
+				);
+			};
+		case "&rarr;":
+			return function(event) {
+				event.preventDefault();
+				event.stopPropagation();
+
+				updateEdit(
+					editText,
+					Math.min(editText.length, editIndex + 1)
+				);
+			};
+		default: return function(event) {};
+	}
+}
+
+function buildKey(key) {
+	var r = document.createElement("span");
+	r.className = "key";
+	keys[key] = r;
+
+	if (key == " ") {
+		r.className += " space-key";
+		var handler = typeNormal.bind(this, r, " ");
+		r.addEventListener("mouseup", handler);
+		r.addEventListener("touchend", handler);
+	}
+	else if (inl(key, alpha)) {
+		r.className += " alpha-key";
+		r.innerHTML  = key;
+		r.isAlpha = true;
+		var handler = typeNormal.bind(this, r, key);
+		r.addEventListener("mouseup", handler);
+		r.addEventListener("touchend", handler);
+	}
+	else if (inl(key, special)) {
+		r.className += " special-key";
+		r.innerHTML   = key;
+		var downHandler = specialDown(key);
+		var upHandler   = specialUp(key);
+		r.addEventListener("mousedown", downHandler);
+		r.addEventListener("touchstart", downHandler);
+		r.addEventListener("mouseup",  upHandler);
+		r.addEventListener("touchend", upHandler);
+	}
+	else {
+		r.innerHTML = key;
+		var handler = typeNormal.bind(this, r, key);
+		r.addEventListener("mouseup", handler);
+		r.addEventListener("touchend", handler);
+	}
+	return r;
+}
+
+var board = document.getElementById("keyboard");
+keyrows.forEach(function(rowKeys) {
+	var row = document.createElement("div");
+	row.className = "row";
+	board.appendChild(row);
+	rowKeys.split("|").forEach(function(keyString) {
+		row.appendChild(buildKey(keyString));
+	});
+});
+
+/**
+* Initialization (including temporary testing data):
+**/
+
+printText("output", "ready.");
+updateEdit("3 3#!9", 0);
+
+</script>
+</html>
