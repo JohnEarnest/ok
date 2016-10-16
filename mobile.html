@@ -122,12 +122,15 @@ body {
 .alpha-key {
 	background-color: white;
 }
+.num-key {
+	background-color: white;
+}
 .special-key {
 	background-color: orange;
 }
 .space-key {
 	background-color: white;
-	flex-grow: 4;
+	flex-grow: 2;
 }
 </style>
 </head>
@@ -139,9 +142,7 @@ body {
 			</div>
 		</div>
 	</div>
-	<div id="keyboard">
-		<div id="editline"></div>
-	</div>
+	<div id="keyboard"/>
 </body>
 <script src="oK.js"></script>
 <script>
@@ -156,7 +157,6 @@ function inl(x, list) {
 * The REPL edit line and output:
 **/
 
-var edit = document.getElementById("editline");
 var editText = "";
 var editIndex = 0;
 var keys = {};
@@ -186,7 +186,7 @@ function updateEdit(t, c) {
 	var before = asHTML(t.substring(0, c));
 	var after  = asHTML(t.substring(c, t.length));
 	var cursor = "<span class='cursor'>|</span>";
-	edit.innerHTML = before + cursor + after;
+	document.getElementById("editline").innerHTML = before + cursor + after;
 	editText  = t;
 	editIndex = c;
 }
@@ -195,20 +195,14 @@ function updateEdit(t, c) {
 * The keyboard itself:
 **/
 
-var keyrows = [
-	"&larr;|&rarr;|1|2|3|4|5|6|7|8|9|0|DEL",
-	"\\|q|w|e|r|t|y|u|i|o|p|[|]",
-	";|a|s|d|f|g|h|j|k|l|'",
-	"-|=|z|x|c|v|b|n|m|,|.|/",
-	"SHIFT|EVAL|BACK| |SHIFT",
-];
-
 var alpha     = "abcdefghijklmnopqrstuvwxyz".split("");
-var shiftbase = "1234567890-=[],./;'\\".split("");
-var shiftalt  = "!@#$%^&*()_+{}<>?:\"|".split("");
-var special   = ["&larr;","&rarr;","DEL","EVAL","BACK","SHIFT"];
+var numeric   = "0123456789".split("");
+var shiftbase = "`1234567890-=[],./;'\\".split("");
+var shiftalt  = "~!@#$%^&*()_+{}<>?:\"|".split("");
+var special   = ["&larr;","&rarr;","DEL","EVAL","BACK","SHIFT","MODE","&#8629;","&#215;"];
 
 var shiftHeld = false;
+var keyboardMode = null;
 
 function shiftedLabel(key, label, shifted) {
 	if (label == 'BACK' && shifted) { return 'HOME'; }
@@ -251,6 +245,18 @@ function specialDown(key) {
 
 function specialUp(key) {
 	switch(key) {
+		case "MODE":
+			return function(event) {
+				event.preventDefault();
+				event.stopPropagation();
+
+				if (keyboardMode == "full") {
+					buildCalcKeyboard();
+				}
+				else {
+					buildFullKeyboard();
+				}
+			}
 		case "SHIFT":
 			return function(event) {
 				event.preventDefault();
@@ -274,6 +280,7 @@ function specialUp(key) {
 				updateEdit(editHistory[editHistory.length-1], 0);
 			};
 		case "EVAL":
+		case "&#8629;":
 			return function(event) {
 				event.preventDefault();
 				event.stopPropagation();
@@ -291,6 +298,7 @@ function specialUp(key) {
 				updateEdit("", 0);
 			};
 		case "DEL":
+		case "&#215;":
 			return function(event) {
 				event.preventDefault();
 				event.stopPropagation();
@@ -336,6 +344,7 @@ function buildKey(key) {
 
 	if (key == " ") {
 		r.className += " space-key";
+		r.innerHTML = "&nbsp;&nbsp;";
 		var handler = typeNormal.bind(this, r, " ");
 		r.addEventListener("mouseup", handler);
 		r.addEventListener("touchend", handler);
@@ -360,6 +369,7 @@ function buildKey(key) {
 	}
 	else {
 		r.innerHTML = key;
+		if (inl(key, numeric)) { r.className += " num-key"; }
 		var handler = typeNormal.bind(this, r, key);
 		r.addEventListener("mouseup", handler);
 		r.addEventListener("touchend", handler);
@@ -367,22 +377,54 @@ function buildKey(key) {
 	return r;
 }
 
-var board = document.getElementById("keyboard");
-keyrows.forEach(function(rowKeys) {
-	var row = document.createElement("div");
-	row.className = "row";
-	board.appendChild(row);
-	rowKeys.split("|").forEach(function(keyString) {
-		row.appendChild(buildKey(keyString));
+function buildKeyboard(keyrows) {
+	var board = document.getElementById("keyboard");
+	board.innerHTML = "<div id='editline'></div>";
+	keyrows.forEach(function(rowKeys) {
+		var row = document.createElement("div");
+		row.className = "row";
+		board.appendChild(row);
+		rowKeys.split("|").forEach(function(keyString) {
+			if (keyString == "BAR") { keyString = "|"; }
+			row.appendChild(buildKey(keyString));
+		});
 	});
-});
+}
+
+function buildFullKeyboard() {
+	keyboardMode = "full";
+	shiftHeld = false;
+	buildKeyboard([
+		"&larr;|&rarr;|1|2|3|4|5|6|7|8|9|0|DEL",
+		"\\|q|w|e|r|t|y|u|i|o|p|[|]",
+		";|a|s|d|f|g|h|j|k|l|'",
+		"`|-|=|z|x|c|v|b|n|m|,|.|/",
+		"SHIFT|MODE| |EVAL|SHIFT",
+	]);
+	updateEdit(editText, editIndex);
+}
+
+function buildCalcKeyboard() {
+	keyboardMode = "calc";
+	shiftHeld = false;
+	buildKeyboard([
+		"&larr;|&rarr;|/|\\|'|/:|\\:|':|MODE",
+		"+|-|*|%|!|^|#|_",
+		"<|>|=|~|&|BAR|,|:",
+		"`|x|7|8|9|(|)",
+		"?|y|4|5|6|{|}",
+		"$|z|1|2|3|[|]",
+		"&#215;|.|0| |;|&#8629;",
+	]);
+	updateEdit(editText, editIndex);
+}
 
 /**
 * Initialization (including temporary testing data):
 **/
 
+buildFullKeyboard();
 printText("output", "ready.");
-updateEdit("3 3#!9", 0);
 
 </script>
 </html>
