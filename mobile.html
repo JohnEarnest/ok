@@ -336,6 +336,7 @@ function typeNormal(key, text, event) {
 	event.preventDefault();
 	event.stopPropagation();
 
+	if (text in { "pl":0, "ps": 0 }) { text += "["; }
 	text = shiftedLabel(key, text, shiftHeld);
 	updateEdit(
 		editText.substring(0, editIndex) + text + editText.substring(editIndex),
@@ -502,14 +503,14 @@ function buildCalcKeyboard() {
 	keyboardMode = "calc";
 	shiftHeld = false;
 	buildKeyboard([
-		"&larr;|/|\\|'|/:|\\:|':|&rarr;",
+		"&larr;|/|\\|'|/:|\\:|':|:|&rarr;",
 		"sin|cos|log|exp|in|prm|pl|ps",
 		"+|-|*|%|^|#|_|!",
-		"<|>|=|~|&|BAR|,|:",
+		"<|>|=|~|&|BAR|,|?",
 		"`|x|7|8|9|(|)",
-		"?|y|4|5|6|{|}",
-		"$|z|1|2|3|[|]",
-		"&#215;|.|0| |;|&#8629;",
+		"$|y|4|5|6|{|}",
+		"@|z|1|2|3|[|]",
+		"DEL|.|0| |;|&#8629;",
 	]);
 	updateEdit(editText, editIndex);
 }
