@@ -336,7 +336,8 @@ function typeNormal(key, text, event) {
 	event.preventDefault();
 	event.stopPropagation();
 
-	if (text in { "pl":0, "ps": 0 }) { text += "["; }
+	if (text in { "pl":0, "ps":0 }) { text += "["; }
+	if (text in { "sin":0, "cos":0, "log":0, "exp":0, "in":0, "prm":0 }) { text += " "; }
 	text = shiftedLabel(key, text, shiftHeld);
 	updateEdit(
 		editText.substring(0, editIndex) + text + editText.substring(editIndex),
@@ -474,7 +475,11 @@ function buildKey(key) {
 
 function buildKeyboard(keyrows) {
 	var board = document.getElementById("keyboard");
-	board.innerHTML = "<div id='editline'></div>";
+	var d = document.createElement("div");
+	d.id = "editline";
+	board.innerHTML = "";
+	board.appendChild(d);
+
 	keyrows.forEach(function(rowKeys) {
 		var row = document.createElement("div");
 		row.className = "row";
@@ -533,7 +538,7 @@ window.onresize = function() {
 **/
 
 window.onresize();
-printText("output", "ready.");
+printText("output", "oK Mobile v"+version);
 
 </script>
 </html>
