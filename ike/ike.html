@@ -284,7 +284,7 @@ var lx     = 0;
 var ux     = 0;
 var mx     = 0;
 var my     = 0;
-var keys   = {};
+var ikeys  = {};
 var frame  = 0;
 var click  = false;
 var tickTimeout = null;
@@ -431,7 +431,7 @@ function setvars() {
 	setvar("hot",         hot);
 	setvar("text", pixelfont);
 	setvar("dir", k(3, [num(lx), num(ux)]));
-	var kv = []; var e = Object.keys(keys); for(var z=0;z<e.length;z++) {
+	var kv = []; var e = Object.keys(ikeys); for(var z=0;z<e.length;z++) {
 		kv.push(num(parseInt(e[z])));
 	}
 	setvar("keys", k(3, kv));
@@ -752,13 +752,13 @@ editor.onkeydown = function(event) {
 };
 
 window.onkeyup = function(e) {
-	delete keys[e.keyCode];
+	delete ikeys[e.keyCode];
 	if (e.keyCode == 37 || e.keyCode == 39) { lx = 0; }
 	if (e.keyCode == 38 || e.keyCode == 40) { ux = 0; }
 	if(running) { callk1("ku", e.keyCode); }
 }
 window.onkeydown = function(e) {
-	keys[e.keyCode] = true;
+	ikeys[e.keyCode] = true;
 	if(!running) { return; }
 	if (e.keyCode == 27 && canvas == document.getElementById("fullcanvas")) { // escape
 		closefullscreen(); return;
