@@ -150,11 +150,21 @@ body {
 <script src="convert.js"></script>
 <script>
 
-var env = baseEnv();
-
 function inl(x, list) {
 	return list.indexOf(x) >= 0;
 }
+
+function write(x, y) {
+	var s = tojs(y);
+	if (Array.isArray(s)) { s = s.join('\n') + '\n'; }
+	if (typeof s !== 'string') { throw new Error('type error'); }
+	if (x.t != 2 || x.v != '') { throw new Error('cannot write to files.'); }
+	printText("output", s);
+	return y;
+}
+
+var env = baseEnv();
+for (var i = 2; i < 6; i++) { setIO('0:', i, write); }
 
 /**
 * The REPL edit line and output:
@@ -197,7 +207,7 @@ function processLine() {
 	printText("input", editText);
 
 	var beforeTime = null;
-	while(editText.match(/\\[a-z]/)) {
+	while(editText.match(/^\\[a-z]/)) {
 		var c = editText[1];
 		editText = editText.substring(2);
 		if (c == 't') {
@@ -349,9 +359,10 @@ function specialDown(key) {
 	switch(key) {
 		case "SHIFT":
 			return function(event) {
-				event.preventDefault();
-				event.stopPropagation();
-
+				if (event) {
+					event.preventDefault();
+					event.stopPropagation();
+				}
 				shiftHeld = true;
 				Object.keys(keys).forEach(function(k) {
 					keys[k].innerHTML = shiftedLabel(keys[k], k, true);
@@ -377,9 +388,10 @@ function specialUp(key) {
 			}
 		case "SHIFT":
 			return function(event) {
-				event.preventDefault();
-				event.stopPropagation();
-
+				if (event) {
+					event.preventDefault();
+					event.stopPropagation();
+				}
 				shiftHeld = false;
 				Object.keys(keys).forEach(function(k) {
 					keys[k].innerHTML = shiftedLabel(keys[k], k, false);
@@ -518,6 +530,20 @@ function buildCalcKeyboard() {
 		"DEL|.|0| |;|&#8629;",
 	]);
 	updateEdit(editText, editIndex);
+}
+
+document.body.onkeydown = function(event) {
+	if (event.shiftKey)      { specialDown("SHIFT")(null); }
+	if (event.keyCode == 37) { specialUp("&larr;")(event); }
+	if (event.keyCode == 39) { specialUp("&rarr;")(event); }
+	if (event.keyCode == 8)  { specialUp("DEL")(event); }
+	if (event.keyCode == 13) { specialUp("EVAL")(event); }
+}
+document.body.onkeyup = function(event) {
+	if (event.keyCode == 16) { specialUp("SHIFT")(event); }
+}
+window.onkeypress = function(event) {
+	typeNormal({}, String.fromCharCode(event.charCode), event);
 }
 
 window.onresize = function() {
