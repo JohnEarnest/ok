@@ -16,7 +16,7 @@ function read(x) {
 	var f = str(x);
 	if (f) {
 		f = path.resolve(process.cwd(), f);
-		return conv.tok(fs.statSync(f).isDirectory() ? fs.readdirSync(f) : fs.readFileSync(f, 'utf8').split(/\r?\n/));
+		return conv.tok(fs.statSync(f).isDirectory() ? fs.readdirSync(f) : fs.readFileSync(f, 'utf8').replace(/\r?\n$/, '').split(/\r?\n/));
 	} else if (rl) {
 		throw Error('ERROR: cannot read from stdin while in REPL');
 	} else {
