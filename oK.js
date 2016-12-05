@@ -267,6 +267,7 @@ function each(monad, x, env) {
 
 function eachd(dyad, left, right, env) {
 	if (!env) { return kmap(left, function(x) { return applyd(dyad, x, null, right); }); }
+	if (left.t==4&&right.t==4) { return md(left.k,eachd(dyad,left.v,ar(atl)(right,left.k),env)); }
 	if (left.t!=3) { return eachright(dyad, left, right, env); }
 	if (right.t!=3) { return eachleft(dyad, left, right, env); }
 	return kzip(left, right, function(x, y) { return applyd(dyad, x, y, env); });
