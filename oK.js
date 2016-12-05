@@ -104,7 +104,8 @@ function first    (x) { return (x.t == 4) ? first(x.v) : (x.t != 3) ? x : len(x)
 function sqrt     (x) { return k(0, Math.sqrt(n(x).v)); }
 function keys     (x) { return c(d(x).k); }
 function rev      (x) { return x.t==4?md(rev(x.k),rev(x.v)):x.t==3?k(3,c(l(x)).v.reverse()):x; }
-function desc     (x) { return rev(asc(x)); }
+function asc      (x) { return grade(-1, x); }
+function desc     (x) { return grade(1, x); }
 function not      (x) { return equal(n(x), k0); }
 function enlist   (x) { return k(3, [x]); }
 function isnull   (x) { return max(match(x, NIL),match(x,k(11))); }
@@ -218,12 +219,12 @@ function flip(x) {
 	});
 }
 
-function asc(x) {
-	if (x.t == 4) { return ar(atl)(x.k, asc(x.v)); }
+function grade(dir, x) {
+	if (x.t == 4) { return ar(atl)(x.k, grade(dir, x.v)); }
 	return k(3, l(x).v.map(function(x,i) { return k(0, i); }).sort(function(a, b) {
 		var av = x.v[a.v]; if (s(av)) { av = ks(ktos(av)); }
 		var bv = x.v[b.v]; if (s(bv)) { bv = ks(ktos(bv)); }
-		return (less(av,bv).v) ? -1 : (more(av,bv).v) ? 1 : 0;
+		return (less(av,bv).v) ? dir : (more(av,bv).v) ? -dir : a.v - b.v;
 	}));
 }
 
@@ -668,12 +669,12 @@ var CLOSE_B = /^\]/;
 var CLOSE_P = /^\)/;
 var CLOSE_C = /^}/;
 
-var desc = {};
-desc[NUMBER ]="number";desc[NAME   ]="name"   ;desc[SYMBOL ]="symbol";desc[STRING]="string";
-desc[VERB   ]="verb"  ;desc[IOVERB ]="IO verb";desc[ADVERB ]="adverb";desc[SEMI  ]="';'";
-desc[COLON  ]="':'"   ;desc[VIEW   ]="view"   ;desc[COND   ]="'$['"  ;desc[APPLY ]="'.'";
-desc[OPEN_B ]="'['"   ;desc[OPEN_P ]="'('"    ;desc[OPEN_C ]="'{'"   ;desc[ASSIGN]="assignment";
-desc[CLOSE_B]="']'"   ;desc[CLOSE_P]="')'"    ;desc[CLOSE_C]="'}'";
+var des = {};
+des[NUMBER ]="number";des[NAME   ]="name"   ;des[SYMBOL ]="symbol";des[STRING]="string";
+des[VERB   ]="verb"  ;des[IOVERB ]="IO verb";des[ADVERB ]="adverb";des[SEMI  ]="';'";
+des[COLON  ]="':'"   ;des[VIEW   ]="view"   ;des[COND   ]="'$['"  ;des[APPLY ]="'.'";
+des[OPEN_B ]="'['"   ;des[OPEN_P ]="'('"    ;des[OPEN_C ]="'{'"   ;des[ASSIGN]="assignment";
+des[CLOSE_B]="']'"   ;des[CLOSE_P]="')'"    ;des[CLOSE_C]="'}'";
 
 var text = "";
 var funcdepth = 0;
@@ -691,7 +692,7 @@ function matches(regex) { return at(regex) ? expect(regex) : false; }
 function expect(regex) {
 	var found = regex.exec(text);
 	if (regex == OPEN_C) { funcdepth++; } if (regex == CLOSE_C) { funcdepth--; }
-	if (found == null) { throw new Error("parse error. "+desc[regex]+" expected."); }
+	if (found == null) { throw new Error("parse error. "+des[regex]+" expected."); }
 	text = text.substring(found[0].length).trim(); return found[0];
 }
 
