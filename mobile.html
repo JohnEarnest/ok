@@ -34,7 +34,8 @@ body {
 
 .input,
 .output,
-.error {
+.error,
+.palette {
 	padding-left:  10px;
 	padding-right: 10px;
 	border-radius:  5px;
@@ -52,6 +53,23 @@ body {
 .error {
 	background-color: pink;
 	align-self: flex-start;
+}
+.palette {
+	background-color: lightblue;
+	align-self: flex-start;
+	display:flex;
+	flex-wrap: wrap;
+	padding: 10px;
+}
+
+.palette span {
+	background-color: #0066FF;
+	color: white;
+	border-radius: 5px;
+	padding: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	margin: 5px;
 }
 
 /* the editor line: */
@@ -154,16 +172,29 @@ function inl(x, list) {
 	return list.indexOf(x) >= 0;
 }
 
+function read(x) {
+	var s = tojs(x);
+	var i = localStorage.getItem(s);
+	if (!i) { return k(3,[]); }
+	return parse(i);
+}
+
 function write(x, y) {
-	var s = tojs(y);
-	if (Array.isArray(s)) { s = s.join('\n') + '\n'; }
-	if (typeof s !== 'string') { throw new Error('type error'); }
-	if (x.t != 2 || x.v != '') { throw new Error('cannot write to files.'); }
-	printText("output", s);
+	var t = tojs(x);
+	if (t.length == 0) {
+		var s = tojs(y);
+		if (Array.isArray(s)) { s = s.join('\n') + '\n'; }
+		if (typeof s !== 'string') { throw new Error('type error'); }
+		printText("output", s);
+	}
+	else {
+		localStorage.setItem(t, format(y));
+	}
 	return y;
 }
 
 var env = baseEnv();
+for (var i = 0; i < 2; i++) { setIO('0:', i, read); }
 for (var i = 2; i < 6; i++) { setIO('0:', i, write); }
 
 /**
@@ -203,6 +234,44 @@ function printText(type, text) {
 	};
 }
 
+function printMenu(label, options) {
+	var div = document.createElement("div");
+	div.className = "palette";
+	if (options.length < 1) {
+		div.innerHTML = "No "+label+" defined.";
+	}
+	else {
+		div.innerHTML = "<div style='display:block;width:100%'>" + label + "</div>";
+	}
+	options.forEach(function(x) {
+		var o = document.createElement("span");
+		o.innerHTML = x;
+		o.onclick = function(event) {
+			i = env.lookup(ks(x), true);
+			if (i.t == 5) {
+				var a = i.args.slice(1).map(function() { return ";" }).join("");
+				insertText(x+"["+a+"]");
+				updateEdit(editText, editIndex - (1 + a.length));
+			}
+			else {
+				insertText(x);
+			}
+		};
+		div.appendChild(o);
+	});
+	document.getElementById("console-content").appendChild(div);
+	var panel = document.getElementById("console-pane");
+	panel.scrollTop = panel.scrollHeight;
+}
+
+function searchEnv(filter) {
+	var r = [];
+	for(var z = 0; z < len(env.d.k); z++) {
+		if (filter(env.d.v.v[z])) { r.push(env.d.k.v[z].v); }
+	}
+	return r;
+}
+
 function processLine() {
 	printText("input", editText);
 
@@ -217,6 +286,12 @@ function processLine() {
 			document.getElementById("console-content").innerHTML = "";
 			updateEdit("", 0);
 			return;
+		}
+		else if (c == 'x') {
+			printMenu("functions", searchEnv(function(v) { return v.t >= 5 && v.t != 13; }));
+		}
+		else if (c == 'y') {
+			printMenu("variables", searchEnv(function(v) { return v.t < 5; }));
 		}
 		else {
 			printText("error", "unknown command flag '"+c+"'.");
@@ -342,6 +417,13 @@ function shiftedLabel(key, label, shifted) {
 	return label;
 }
 
+function insertText(text) {
+	updateEdit(
+		editText.substring(0, editIndex) + text + editText.substring(editIndex),
+		editIndex + text.length
+	);
+}
+
 function typeNormal(key, text, event) {
 	event.preventDefault();
 	event.stopPropagation();
@@ -349,10 +431,7 @@ function typeNormal(key, text, event) {
 	if (text in { "pl":0, "ps":0 }) { text += "["; }
 	if (text in { "sin":0, "cos":0, "log":0, "exp":0, "in":0, "prm":0 }) { text += " "; }
 	text = shiftedLabel(key, text, shiftHeld);
-	updateEdit(
-		editText.substring(0, editIndex) + text + editText.substring(editIndex),
-		editIndex + text.length
-	);
+	insertText(text);
 }
 
 function specialDown(key) {
@@ -565,6 +644,18 @@ window.onresize = function() {
 
 window.onresize();
 printText("output", "oK Mobile v"+version);
+
+var bootString = localStorage.getItem('boot');
+if (bootString && bootString != "()") {
+	try {
+		var parsed = parse(bootString);
+		keval(parsed[0], env);
+		printMenu("boot definitions", searchEnv(function(v) { return true; }));
+	}
+	catch(error) {
+		printText("error", error.message);
+	}
+}
 
 </script>
 </html>

@@ -95,6 +95,21 @@ This REPL is very simplistic compared to the CLI provided in a complete K interp
 	app_e > l
 	apple
 
+Mobile
+------
+On mobile devices like cell phones, try [oK Mobile](http://johnearnest.github.io/ok/mobile.html)!
+
+Tilting your device horizontally will provide a QWERTY touch-keyboard, and a vertical orientation will provide a calculator-like keypad which provides access to all K verbs and adverbs with a single keypress. Tapping on items from the output history copies them to your edit buffer.
+
+oK mobile supports the `0:` verb for reading from (monadically) or writing to (dyadically) browser-local storage. If the left argument is an empty symbol, output will be printed to the console, as with most K interpreters. Symbols and strings are interchangeable as `0:` sources/destinations. If you store a K string in an item named "boot", it will be executed when oK mobile starts up- use this to stash any favorite utility functions you may have.
+
+Finally, oK mobile supports a basic set of backslash commands:
+
+- `\c` clear the output log.
+- `\t` time executing the remainder of the line.
+- `\x` list all presently defined functions.
+- `\y` list all presently defined variables.
+
 How Does It Work?
 -----------------
 oK's interpreter centers around trees of objects (called k-values) which represent K datatypes. Every k-value has a field `t` which indicates the object type and a `v` field containing JavaScript value(s) such as arrays or numbers. Some k-values do not correspond to K types but instead represent nodes of an abstract syntax tree (AST) comprising a program, and may contain additional fields.
