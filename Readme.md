@@ -101,6 +101,8 @@ On mobile devices like cell phones, try [oK Mobile](http://johnearnest.github.io
 
 Tilting your device horizontally will provide a QWERTY touch-keyboard, and a vertical orientation will provide a calculator-like keypad which provides access to all K verbs and adverbs with a single keypress. Tapping on items from the output history copies them to your edit buffer.
 
+oK mobile provides graphing functionality in the form of the built-in `pl` (plot line) and `ps` (plot scatter) functions. Both will automatically rescale to suit the data you provide. The first argument to each function specifies the domain (x axis) and can be a list of numbers or a single number n (interpreted as `!n`). The second argument specifies the range (y axis) and can be a list of numbers or a monadic function f (interpreted as `f'x`).
+
 oK mobile supports the `0:` verb for reading from (monadically) or writing to (dyadically) browser-local storage. If the left argument is an empty symbol, output will be printed to the console, as with most K interpreters. Symbols and strings are interchangeable as `0:` sources/destinations. If you store a K string in an item named "boot", it will be executed when oK mobile starts up- use this to stash any favorite utility functions you may have.
 
 Finally, oK mobile supports a basic set of backslash commands:
