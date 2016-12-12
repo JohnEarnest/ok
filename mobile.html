@@ -645,6 +645,22 @@ window.onresize = function() {
 window.onresize();
 printText("output", "oK Mobile v"+version);
 
+var bootEnv = localStorage.getItem('env');
+if (bootEnv && bootEnv != '()') {
+	try {
+		var parsed = parse(bootEnv)[0];
+		if (parsed.t != 4) {
+			printText("error", "base environment must be a dictionary.");
+		}
+		else {
+			env.d = parsed;
+		}
+	}
+	catch(error) {
+		printText("error", "environment: " + error.message);
+	}
+}
+
 var bootString = localStorage.getItem('boot');
 if (bootString && bootString != "()") {
 	try {
@@ -653,7 +669,7 @@ if (bootString && bootString != "()") {
 		printMenu("boot definitions", searchEnv(function(v) { return true; }));
 	}
 	catch(error) {
-		printText("error", error.message);
+		printText("error", "bootloader: " + error.message);
 	}
 }
 
