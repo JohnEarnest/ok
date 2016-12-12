@@ -144,6 +144,9 @@ function loadBuffer() {
 	if (!editbuffer) { editbuffer = "/ contents of this editor is automatically saved in local storage."; }
 	document.getElementById("textedit").value = editbuffer;
 }
+function printForm(x) {
+	return stok(format(x));
+}
 
 var env = baseEnv();
 var entries = [];
@@ -156,6 +159,8 @@ setIO("0:", 2, print);
 setIO("0:", 4, print);
 setIO("0:", 1, readText);
 setIO("1:", 1, readJSON);
+setIO("5:", 0, printForm);
+setIO("5:", 1, printForm);
 
 var repl = document.getElementById("repl");
 var scroll = document.getElementById("scroll");

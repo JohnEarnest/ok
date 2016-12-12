@@ -42,6 +42,7 @@ function write(x, y) {
 }
 for (var i = 0; i < 2; i++) { ok.setIO('0:', i, read ); }
 for (var i = 2; i < 6; i++) { ok.setIO('0:', i, write); }
+for (var i = 0; i < 2; i++) { ok.setIO('5:', i, function(x) { return conv.tok(ok.format(x)); }); }
 
 var env = ok.baseEnv();
 
