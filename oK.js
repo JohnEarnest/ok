@@ -126,6 +126,7 @@ function cat(x, y) {
 }
 
 function keval(x, env) {
+	if (x.t == 5) { return x.env.d; }
 	return x.t == 4 ? c(x.v) : x.t == 2 ? env.lookup(x, true) : run(parse(ktos(x)), env);
 }
 
