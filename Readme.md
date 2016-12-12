@@ -114,6 +114,12 @@ oK mobile provides graphing functionality in the form of the built-in `pl` (plot
 
 oK mobile supports the `0:` verb for reading from (monadically) or writing to (dyadically) browser-local storage. If the left argument is an empty symbol, output will be printed to the console, as with most K interpreters. Symbols and strings are interchangeable as `0:` sources/destinations. Monadic `5:` produces a printable string representation of its right argument.
 
+The dyadic `6:` verb permits creating custom user menus. The left argument must be a string, which will be used as a title for the menu. The right argument may be either a list or a dictionary of monadic/niladic functions. If the right argument is a list, the menu will contain a button for each list item, and clicking the button will append that button's contents to the edit line. If the right argument is a dictionary, buttons will be created for each key and clicking the button will execute the associated monad/nilad. If the nilad returns a string, it will be appended to the edit line. Consider a few examples:
+
+	"simple"  6: ("foo";`bar;`baz);
+	"my menu" 6: `a`b!({`0:"pressed A";0};{`0:"pressed ",x;0});
+	"another" 6: `a`b!({`0:"pressed A";0};{"append this"});
+
 If you store a K string in a local storage variable named `boot`, it will be executed when oK mobile starts up. Similarly, if you store a dictionary in a local storage variable named `env` it will replace the default environment at startup. Either of these mechanisms may be used to stash your favorite utility functions or frequently used data. Recall that `.{}` can be used at the base level to retrieve a reference to the root environment, so `"env" 0: .{}` is one way to back up your entire workspace. Setting either `boot` or `env` to the empty list `()` will stub it out and prevent it from being used at startup.
 
 Finally, oK mobile supports a basic set of backslash commands:

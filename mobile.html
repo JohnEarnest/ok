@@ -193,10 +193,36 @@ function write(x, y) {
 	return y;
 }
 
+function writeMenu(x, y) {
+	var title = tojs(x);
+	if (y.t == 4) {
+		var options = y.k.v.map(function(x) {
+			return (x.t == 3) ? ""+tojs(x) : x.v;
+		});
+		var triggers = y.v.v.map(function(x) {
+			if (!(x.t in {5:0, 8:0, 9:0})) { throw new Error('menu triggers must be verbs.'); }
+			return x;
+		});
+		printMenu(title, options, triggers);
+	}
+	else if (y.t == 3) {
+		var options = y.v.map(function(x) {
+			return (x.t == 3) ? ""+tojs(x) : x.v;
+		});
+		printMenu(title, options);
+	}
+	else {
+		throw new Error('menu items must be a dictionary or list.');
+	}
+	return y;
+}
+
 var env = baseEnv();
 for (var i = 0; i < 2; i++) { setIO('0:', i, read); }
 for (var i = 2; i < 6; i++) { setIO('0:', i, write); }
 for (var i = 0; i < 2; i++) { setIO('5:', i, function(x) { return stok(format(x)); }); }
+setIO('6:', 3, writeMenu);
+setIO('6:', 5, writeMenu);
 
 /**
 * The REPL edit line and output:
@@ -235,7 +261,7 @@ function printText(type, text) {
 	};
 }
 
-function printMenu(label, options) {
+function printMenu(label, options, triggers) {
 	var div = document.createElement("div");
 	div.className = "palette";
 	if (options.length < 1) {
@@ -244,18 +270,28 @@ function printMenu(label, options) {
 	else {
 		div.innerHTML = "<div style='display:block;width:100%'>" + label + "</div>";
 	}
-	options.forEach(function(x) {
+	options.forEach(function(x, index) {
 		var o = document.createElement("span");
 		o.innerHTML = x;
 		o.onclick = function(event) {
-			i = env.lookup(ks(x), true);
+			if (triggers) {
+				var r = call(triggers[index], k(3,[tok(x)]), env);
+				if (r.t == 3) { insertText(""+tojs(r)); }
+				return;
+			}
+			try {
+				var i = env.lookup(ks(x), true);
+			}
+			catch(e) {
+				var i = k(0,0);
+			}
 			if (i.t == 5) {
 				var a = i.args.slice(1).map(function() { return ";" }).join("");
 				insertText(x+"["+a+"]");
 				updateEdit(editText, editIndex - (1 + a.length));
 			}
 			else {
-				insertText(x);
+				insertText(""+x);
 			}
 		};
 		div.appendChild(o);
@@ -667,7 +703,6 @@ if (bootString && bootString != "()") {
 	try {
 		var parsed = parse(bootString);
 		keval(parsed[0], env);
-		printMenu("boot definitions", searchEnv(function(v) { return true; }));
 	}
 	catch(error) {
 		printText("error", "bootloader: " + error.message);
