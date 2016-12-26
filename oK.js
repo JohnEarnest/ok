@@ -250,7 +250,7 @@ function unique(x) {
 function split  (x, y) { return (x.t != 1) ? unpack(x, y) : call(splitimpl, k(3, [x,y])); }
 function unpack (x, y) { return call(unpackimpl, k(3, [x,y])); }
 function pack   (x, y) { return (x.t == 1) ? join(x, y) : call(packimpl, k(3, [x,y])); }
-function kwindow(x, y) { return (x.t > 1) ? ar(atd)(x, y) : call(winimpl, k(3, [x,y])); }
+function kwindow(x, y) { return call(winimpl, k(3, [x,y])); }
 function splice(xyz)   { return call(spliceimpl, k(3, xyz)); }
 function imat(x)       { return call(imatimpl, k(3, [x])); }
 function odometer(x)   { return call(odoimpl, k(3, [x])); }
@@ -427,9 +427,10 @@ var verbs = {
 	"?" : [real,      unique,     rnd,        pfind,      rnd,        ar(pfind),  splice,  null  ],
 	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,     keval,      call,       call,       call,       call,       dmend4,  dmend4],
-	"'" : [null,      null,       null,       atl,        kwindow,    ar(atl),    null,    null  ],
+	"'" : [null,      null,       null,       atl,        null,       ar(atl),    null,    null  ],
 	"/" : [null,      null,       null,       null,       pack,       pack,       null,    null  ],
 	"\\": [null,      null,       null,       unpack,     split,      null,       null,    null  ],
+	"':": [null,      null,       null,       null,       kwindow,    null,       null,    null  ],
 };
 
 function applyverb(node, args, env) {
@@ -957,7 +958,7 @@ var packimpl   = parse("{+/y*|*\\1,|1_(#y)#x}")[0];
 var unpackimpl = parse("{(1_r,,y)-x*r:|y(_%)\\|x}")[0];
 var spliceimpl = parse("{,/(*x;$[99<@z;z x 1;z];*|x:(0,y)_x)}")[0];
 var imatimpl   = parse("{x=/:x:!x}")[0];
-var winimpl    = parse("{$[0>x;3'0,y,0;y(!0|1+(#y)-x)+\\:!x]}")[0];
+var winimpl    = parse("{$[0>x;3':0,y,0;y(!0|1+(#y)-x)+\\:!x]}")[0];
 var odoimpl    = parse("{+x\\'!*/x}")[0];
 var splitimpl  = parse("{1_'(&x=y)_y:x,y}")[0];
 

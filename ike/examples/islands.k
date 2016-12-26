@@ -19,7 +19,7 @@ m: {(.5*x+y)+(-1 1*|x-y)*-.5+*?1}
 / the flat-map of the first vertex and midpoint
 / of every 2-slice of the looped sequence:
 
-s: ,/{(x;m[x;y])}.'2'l@
+s: ,/{(x;m[x;y])}.'2':l@
 
 / subdivide our vertex list several times:
 

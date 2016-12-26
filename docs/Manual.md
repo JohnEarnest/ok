@@ -125,7 +125,7 @@ Verb Reference
 --------------
 As a general note, verbs which operate on numbers will coerce characters to their ascii values when applied.
 
-[+](#flip) [-](#negate) [*](#first) [%](#sqrt) [!](#int) [&](#where) [|](#reverse) [<](#asc) [>](#desc) [=](#group) [~](#not) [,](#enlist) [&#94;](#null) [\#](#count) [_](#floor) [$](#string) [?](#distinct) [@](#type) [.](#val) ['](#bin) [/](#join) [\ ](#split)
+[+](#flip) [-](#negate) [*](#first) [%](#sqrt) [!](#int) [&](#where) [|](#reverse) [<](#asc) [>](#desc) [=](#group) [~](#not) [,](#enlist) [&#94;](#null) [\#](#count) [_](#floor) [$](#string) [?](#distinct) [@](#type) [.](#val) [/](#join) [\ ](#split) [':](#window)
 
 <table border=1>
 <tr>
@@ -582,34 +582,6 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 </tr>
 <tr>
 	<td>
-		<a name="bin"/>
-		n/a
-	</td>
-	<td>
-		<tt>n'l</tt> is <b>window</b>. Create a sliding window of length x from y. If x is less then zero, then it
-        is equivalent to <tt>3'0,y,0</tt>. If x is zero, then this is equivalent to <tt>(1+#y)#()</tt>.
-<pre><code>  3'!5
-(0 1 2
- 1 2 3
- 2 3 4)
- 2'!5
-(0 1
- 1 2
- 2 3
- 3 4)
-</code></pre>
-
-		Otherwise, <tt>x'y</tt> is equivalent to <tt>x@y</tt>.
-<pre><code>  11 22 33'2 1 1
-33 22 22
-  11 22 33'2
-33
-  11 22 33'10
-0N</code></pre>
-	</td>
-</tr>
-<tr>
-	<td>
 		<a name="join"/>
 		n/a
 	</td>
@@ -640,6 +612,25 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 1 0 1
   10 10 10\345
 3 4 5</code></pre>
+	</td>
+</tr>
+<tr>
+	<td>
+		<a name="window"/>
+		n/a
+	</td>
+	<td>
+<tt>n':l</tt> is <b>window</b>. Create a sliding window of length x from y. If x is less then zero, then it is equivalent to <tt>3':0,y,0</tt>. If x is zero, then this is equivalent to <tt>(1+#y)#()</tt>.
+<pre><code>  3':!5
+(0 1 2
+ 1 2 3
+ 2 3 4)
+  2':!5
+(0 1
+ 1 2
+ 2 3
+ 3 4)
+</code></pre>
 	</td>
 </tr>
 </table>
