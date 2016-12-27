@@ -650,7 +650,7 @@ function dmend(d, i, y, f, env) {
 //
 ////////////////////////////////////
 
-var NUMBER  = /^(-?0w|0N|-?\d*\.?\d+)/;
+var NUMBER  = /^(-?0w|0N|-?\d+\.\d*|-?\d*\.?\d+)/;
 var HEXLIT  = /^0x[a-zA-Z\d]+/;
 var BOOL    = /^[01]+b/;
 var NAME    = /^[a-z][a-z\d]*/i;
