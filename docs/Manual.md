@@ -125,7 +125,7 @@ Verb Reference
 --------------
 As a general note, verbs which operate on numbers will coerce characters to their ascii values when applied.
 
-[+](#flip) [-](#negate) [*](#first) [%](#sqrt) [!](#int) [&](#where) [|](#reverse) [<](#asc) [>](#desc) [=](#group) [~](#not) [,](#enlist) [&#94;](#null) [\#](#count) [_](#floor) [$](#string) [?](#distinct) [@](#type) [.](#val) [/](#join) [\ ](#split) [':](#window)
+[+](#flip) [-](#negate) [*](#first) [%](#sqrt) [!](#int) [&](#where) [|](#reverse) [<](#asc) [>](#desc) [=](#group) [~](#not) [,](#enlist) [&#94;](#null) [\#](#count) [_](#floor) [$](#string) [?](#distinct) [@](#type) [.](#val) ['](#bin) [/](#join) [\ ](#split) [':](#window)
 
 <table border=1>
 <tr>
@@ -578,6 +578,19 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 4
   {x,2*y}.(3 5)
 3 10</code></pre>
+	</td>
+</tr>
+<tr>
+	<td>
+		<a name="bin"/>
+		n/a
+	</td>
+	<td>
+		<tt>l'a</tt> is <b>bin</b>. Perform a binary search for y in x. Right atomic.<br>x must already be sorted.
+ <pre><code>  0 2 4 6 8 10'5
+ 2
+   0 2 4 6 8 10'-10 0 4 5 6 20
+ -1 0 2 2 3 5</code></pre>
 	</td>
 </tr>
 <tr>

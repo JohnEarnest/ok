@@ -246,6 +246,12 @@ function unique(x) {
 	} return k(3,r);
 }
 
+function bin(x, y) {
+	var a=0; var b=len(x); if (b<1 || less(y, x.v[0]).v) { return k(0,-1); }
+	while(b - a > 1) { var i=a+Math.floor((b-a)/2); if (more(x.v[i], y).v) { b=i; } else { a=i; } }
+	return k(0, a);
+}
+
 function split  (x, y) { return (x.t != 1) ? unpack(x, y) : call(splitimpl, k(3, [x,y])); }
 function unpack (x, y) { return call(unpackimpl, k(3, [x,y])); }
 function pack   (x, y) { return (x.t == 1) ? join(x, y) : call(packimpl, k(3, [x,y])); }
@@ -426,7 +432,7 @@ var verbs = {
 	"?" : [real,      unique,     rnd,        pfind,      rnd,        ar(pfind),  splice,  null  ],
 	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
 	"." : [keval,     keval,      call,       call,       call,       call,       dmend4,  dmend4],
-	"'" : [null,      null,       null,       atl,        null,       ar(atl),    null,    null  ],
+	"'" : [null,      null,       null,       bin,        null,       ar(bin),    null,    null  ],
 	"/" : [null,      null,       null,       null,       pack,       pack,       null,    null  ],
 	"\\": [null,      null,       null,       unpack,     split,      null,       null,    null  ],
 	"':": [null,      null,       null,       null,       kwindow,    null,       null,    null  ],
