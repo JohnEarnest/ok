@@ -120,6 +120,21 @@ The dyadic `6:` verb permits creating custom user menus. The left argument must 
 	"my menu" 6: `a`b!({`0:"pressed A";0};{`0:"pressed ",x;0});
 	"another" 6: `a`b!({`0:"pressed A";0};{"append this"});
 
+The dyadic `1:` verb permits asynchronously loading the contents of a document as a string via an HTTP GET. The right argument must be a URL as a string. If the left argument is a symbol, the result of the call will be stashed in a variable with the corresponding name when the result comes in. If the left argument is a monad, it will be evaluated as a callback with the result when it comes in.
+
+The dyadic `2:` verb permits asynchronously storing a string via an HTTP POST. The left argument must be a URL as a string. The right argument should be the value to write as a string.
+
+These mechanisms makes it possible to load or store serialized environments or boot scripts from external storage. Browser security constraints require that the remote server provide a `Access-Control-Allow-Origin` header, which is unfortunately not the case with most pastebin services. GitHub [gists](https://gist.github.com) will work (read-only), or you could run [this server](https://gist.github.com/JohnEarnest/34b027c62eaf3c768b8963a4daa70457) on a local machine (read and write, if enabled).
+
+Assuming you started up the above server on a LAN with a machine with the local IP address `192.168.0.10`, you could fetch the contents of a file in that server's directory given by the `BASE_DIR` variable named `foo.txt` into a variable named `v` like so:
+
+	u: "http://192.168.0.10:10101/foo.txt"
+	`v 1: u
+
+And you could then overwrite this file with new data via `2:`
+
+	u 2: "Replacement Data."
+
 If you store a K string in a local storage variable named `boot`, it will be executed when oK mobile starts up. Similarly, if you store a dictionary in a local storage variable named `env` it will replace the default environment at startup. Either of these mechanisms may be used to stash your favorite utility functions or frequently used data. Recall that `.{}` can be used at the base level to retrieve a reference to the root environment, so `"env" 0: .{}` is one way to back up your entire workspace. Setting either `boot` or `env` to the empty list `()` will stub it out and prevent it from being used at startup.
 
 Finally, oK mobile supports a basic set of backslash commands:
