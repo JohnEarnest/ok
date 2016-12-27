@@ -224,6 +224,51 @@ for (var i = 0; i < 2; i++) { setIO('5:', i, function(x) { return stok(format(x)
 setIO('6:', 3, writeMenu);
 setIO('6:', 5, writeMenu);
 
+function httpRequest(url, verb, body, response) {
+	try {
+		var xhr = new XMLHttpRequest();
+		xhr.open(verb, url);
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState != 4) { return; }
+			if (xhr.status != 200) {
+				printText("error", "HTTP "+xhr.status+" from " + verb + " request.");
+				return;
+			}
+			response(xhr.responseText);
+		}
+		xhr.send(body);
+	}
+	catch(e) {
+		console.log(e);
+		printText("error", e.message + " from " + verb + " request.");
+	}
+}
+
+function loadHTTP(name, url) {
+	httpRequest(
+		url, 'GET', undefined,
+		function(text) {
+			env.put(name, true, tok(text));
+			printMenu("retrieved data:", [name]);
+		}
+	);
+}
+
+function storeHTTP(name, url) {
+	try {
+		var body = env.lookup(ks(name), true);
+		httpRequest(
+			url, 'POST', tojs(body),
+			function(text) {
+				printText("output", "saved data.");
+			}
+		);
+	}
+	catch(error) {
+		printText("error", "the name '" + name + "' has not been defined.");
+	}
+}
+
 /**
 * The REPL edit line and output:
 **/
@@ -329,6 +374,17 @@ function processLine() {
 		}
 		else if (c == 'y') {
 			printMenu("variables", searchEnv(function(v) { return v.t < 5; }));
+		}
+		else if (c == 'l') {
+			var p = editText.split(',');
+			loadHTTP(p[0].trim(), p[1].trim());
+			updateEdit("", 0);
+			return;
+		}
+		else if (c == 's') {
+			var p = editText.split(',');
+			storeHTTP(p[0].trim(), p[1].trim());
+			updateEdit("", 0);
 		}
 		else {
 			printText("error", "unknown command flag '"+c+"'.");
