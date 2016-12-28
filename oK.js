@@ -919,10 +919,8 @@ function format(k, indent, symbol) {
 		return "["+kzip(k.k,k.v,function(x,y){return x.v+":"+format(y);}).v.join(";")+"]";
 	}
 	if (k.t == 5) {
-		var r = ""; if (k.curry) {
-			var c = []; for(var z=0;z<k.args.length;z++) { c.push(k.curry[z]?k.curry[z]:{t:11}); }
-			r = "["+format(c)+"]";
-		} return "{"+(k.args.length?"["+k.args.join(";")+"]":"")+format(k.v)+"}" + r;
+		return "{"+(k.args.length?"["+k.args.join(";")+"]":"")+format(k.v)+"}" +
+				(k.curry ? "["+format(k.args.map(function(x,i) { return k.curry[i]; }))+"]" : "");
 	}
 	if (k.t ==  6) { return k.v+"::"+format(k.r); }
 	if (k.t ==  7) { return k.v+(k.r?(k.global?"::":":")+format(k.r):""); }
