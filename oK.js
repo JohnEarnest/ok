@@ -229,10 +229,9 @@ function grade(dir, x) {
 }
 
 function where(x) {
-	if (x.t == 4) { return ar(atl)(x.k, where(x.v)); }
-	if (x.t != 3) { x=enlist(x); } var r=[]; for(var z=0;z<len(x);z++) {
-		for(var t=0;t<p(x.v[z]);t++) { r.push(k(0, z)); }
-	} return k(3,r);
+	if (x.t == 4) { return ar(atl)(x.k, where(x.v)); } // {,/(0|x)#'!#x}...
+	var s = kmap(x.t==3 ?x:enlist(x), function(v,i) { return take(k(0,p(v)), k(0,i)); });
+	return over(asVerb(","), s);
 }
 
 function group(x) {
