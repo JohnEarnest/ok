@@ -291,7 +291,7 @@ setIO('6:', 5, writeMenu);
 
 var editText = "";
 var editIndex = 0;
-var keys = {};
+var kkeys = {};
 
 function asHTML(text) {
 	return text.replace(/[&]/g, "&amp;").
@@ -541,8 +541,8 @@ function specialDown(key) {
 					event.stopPropagation();
 				}
 				shiftHeld = true;
-				Object.keys(keys).forEach(function(k) {
-					keys[k].innerHTML = shiftedLabel(keys[k], k, true);
+				Object.keys(kkeys).forEach(function(k) {
+					kkeys[k].innerHTML = shiftedLabel(kkeys[k], k, true);
 				});
 			};
 		default: return function(event) {};
@@ -570,8 +570,8 @@ function specialUp(key) {
 					event.stopPropagation();
 				}
 				shiftHeld = false;
-				Object.keys(keys).forEach(function(k) {
-					keys[k].innerHTML = shiftedLabel(keys[k], k, false);
+				Object.keys(kkeys).forEach(function(k) {
+					kkeys[k].innerHTML = shiftedLabel(kkeys[k], k, false);
 				});
 			};
 		case "EVAL":
@@ -625,7 +625,7 @@ function specialUp(key) {
 function buildKey(key) {
 	var r = document.createElement("span");
 	r.className = "key";
-	keys[key] = r;
+	kkeys[key] = r;
 
 	if (key == " ") {
 		r.className += " space-key";
