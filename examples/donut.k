@@ -13,6 +13,6 @@ rotate: { cx:2.3+cos y 0; cy: sin y 0 / [(A;B);(theta;phi)]
           (_40-30*xp*zp;_20-20*yp*zp;zp) }
 
 render: {b::40 80#0; {b[y;x]|:z}.'+rotate[x;grid]; b}
-grid:   +,/t,/:\:t:0.8*!80
+grid:   .8*!2#80
 disp:   `0:0x1B5B48,"\n"/" .,-~:;=!*#$@"@_15*
 main:   {1}{disp render x; .07 .03+x}/0 0
