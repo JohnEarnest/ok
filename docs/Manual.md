@@ -220,7 +220,7 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		If <tt>n</tt> is negative, divide y by x and truncate. Right atomic.
 <pre><code>  -3!5 6 27
 1 2 9</code></pre>
-		<tt>l!l</tt> is <b>map</b>. Make dictionary from x keys and y value(s). Right atomic.
+		<tt>l!l</tt> is <b>map</b>. Make dictionary from x keys and y value(s).
 <pre><code>  `a`b!3 4
 [a:3;b:4]
   4 5!6 7

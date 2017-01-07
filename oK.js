@@ -35,7 +35,7 @@ var SP = k(1, " ".charCodeAt(0));
 var NA = k(0, NaN);
 
 function k(t, v)         { return { 't':t, 'v':v }; }
-function md(x, y)        { if (y.t != 3) { y=take(k(0,len(x)),y); } return { t:4, k:x, v:y }; }
+function md(x, y)        { return { t:4, k:sl(x,y), v:y }; }
 function kl(vl)          { return vl.length==1 ? vl[0] : k(3,vl); }
 function kf(x)           { return match(k(3,[]), x).v || match(k0, x).v; }
 function kb(x)           { return x ? k1 : k0; }
@@ -63,14 +63,12 @@ function ktos(x, esc) {
 	return esc ? '"'+r+'"' : r;
 }
 function kmap(x, f) { var r=[]; for(var z=0;z<len(x);z++) { r.push(f(x.v[z],z)); } return k(3,r); }
-function kzip(x, y, f) {
-	if (len(x) != len(y)) { throw new Error("length error."); }
-	return kmap(x, function(z, i) { return f(z, y.v[i]); });
-}
+function kzip(x, y, f) { return kmap(sl(x,y), function(z, i) { return f(z, y.v[i]); }); }
 function checktype(n, t) {
 	if (n.t == t) { return n; }
 	throw new Error(typenames[t]+" expected, found "+typenames[n.t]+".");
 }
+function sl(x,y) { if (len(x) != len(y)) { throw new Error("length error."); } return x; }
 function n(x) { return (x.t==0||x.t==1) ? x : checktype(x, 0); }
 function l(x) { return checktype(x, 3); }
 function d(x) { return checktype(x, 4); }
@@ -415,7 +413,7 @@ var verbs = {
 	"-" : [am(negate),am(negate), ad(minus),  ad(minus),  ad(minus),  ad(minus),  null,    null  ],
 	"*" : [first,     first,      ad(times),  ad(times),  ad(times),  ad(times),  null,    null  ],
 	"%" : [sqrt,      am(sqrt),   ad(divide), ad(divide), ad(divide), ad(divide), null,    null  ],
-	"!" : [iota,      odometer,   mod,        md,         ar(mod),    md,         null,    null  ],
+	"!" : [iota,      odometer,   mod,        null,       ar(mod),    md,         null,    null  ],
 	"&" : [where,     where,      ad(min),    ad(min),    ad(min),    ad(min),    null,    null  ],
 	"|" : [rev,       rev,        ad(max),    ad(max),    ad(max),    ad(max),    null,    null  ],
 	"<" : [asc,       asc,        ad(less),   ad(less),   ad(less),   ad(less),   null,    null  ],
