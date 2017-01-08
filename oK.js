@@ -151,8 +151,8 @@ function drop(x, y) {
 }
 
 function take(x, y, env) {
-	if (x.t == 5 || x.t == 8 || x.t == 9) { return ar(atl)(y, where(each(x, y, env)), env); }
-	if (y.t == 4) { return md(take(x, y.k), take(x, y.v)); }
+	if (x.t == 5 || x.t == 8 || x.t == 9) { return ar(atl)(y, where(each(x, y, env), env)); }
+	if (y.t == 4) { return md(take(x, y.k, env), take(x, y.v, env)); }
 	if (y.t != 3 || len(y) == 0) { y = enlist(y); }
 	var s=n(x).v<0?kmod(x.v, len(y)):0;
 	return krange(Math.abs(x.v), function(x) { return y.v[kmod(x+s, len(y))]; });
@@ -206,12 +206,12 @@ function cut(x, y) {
 function rnd(x, y, env) {
 	if (y.t == 1) { return dfmt(k(2,"c"),rnd(x,ar(plus)(y,iota(k(0,26))))); }
 	if (y.t == 3) { return ar(atl)(y, rnd(x, k(0, len(y)))); } p(y);
-	if (n(x).v<0) { if (-x.v>y.v) throw new Error("length error."); return take(x,asc(real(y))); }
+	if (n(x).v<0) { if(-x.v>y.v) throw new Error("length error.");return take(x,asc(real(y)),env); }
 	return kmap(iota(x), function(x){ return k(0,Math.floor(Math.random()*y.v)); });
 }
 
-function flip(x) {
-	x=eachright(k(8,"#"), over(k(8,"|"), each(k(8,"#"), x)), x);
+function flip(x, env) {
+	x=eachright(k(8,"#"), over(k(8,"|"), each(k(8,"#"), x, env), env), x, env);
 	return krange(len(x) > 0 ? len(x.v[0]) : 0, function(z){
 		return krange(len(x), function(t){ return x.v[t].v[z]; });
 	});
@@ -226,10 +226,10 @@ function grade(dir, x) {
 	}));
 }
 
-function where(x) {
-	if (x.t == 4) { return ar(atl)(x.k, where(x.v)); } // {,/(0|x)#'!#x}...
-	var s = kmap(x.t==3 ?x:enlist(x), function(v,i) { return take(k(0,p(v)), k(0,i)); });
-	return over(asVerb(","), s);
+function where(x, env) {
+	if (x.t == 4) { return ar(atl)(x.k, where(x.v, env)); } // {,/(0|x)#'!#x}...
+	var s = kmap(x.t==3 ?x:enlist(x), function(v,i) { return take(k(0,p(v)), k(0,i), env); });
+	return over(asVerb(","), s, env);
 }
 
 function group(x) {
@@ -286,7 +286,7 @@ function eachleft(dyad, list, right, env) {
 
 function eachprior(dyad, x, env) {
 	var specials = {"+":k0, "*":k1, "-":k0, "&":first(x), ",":k(3,[]), "%":k1};
-	return eachpc(dyad, (dyad.v in specials) ? specials[dyad.v] : NA, x);
+	return eachpc(dyad, (dyad.v in specials) ? specials[dyad.v] : NA, x, env);
 }
 
 function eachpc(dyad, x, y, env) {
@@ -307,16 +307,16 @@ function overd(dyad, x, y, env) {
 }
 
 function eacha(func, args, env) {
-	var x = args[0]; var y = flip(k(3, args.slice(1)));
+	var x = args[0]; var y = flip(k(3, args.slice(1)), env);
 	if (x.t != 3) { return kmap(y, function(y) { return call(func, cat(x, y), env); }); }
 	return kzip(x, y, function(x, y) { return call(func, cat(x, y), env); });
 }
 function overa(func, args, env) {
-	var x = args[0]; var y = flip(k(3, args.slice(1)));
+	var x = args[0]; var y = flip(k(3, args.slice(1)), env);
 	return y.v.reduce(function(x, y) { return call(func, cat(enlist(x), y), env); }, x);
 }
 function scana(func, args, env) {
-	var x = args[0]; var y = flip(k(3, args.slice(1)));
+	var x = args[0]; var y = flip(k(3, args.slice(1)), env);
 	return cat(x, kmap(y, function(y) { return x = call(func, cat(enlist(x), y), env); }));
 }
 
@@ -549,13 +549,13 @@ function atdepth(x, y, i, env) {
 }
 
 function call(x, y, env) {
-	if (x.sticky) { return (valence(x.sticky, env)==1?applym:applyd)(x, y.v[0], y.v[1]); }
+	if (x.sticky) { return (valence(x.sticky, env)==1?applym:applyd)(x, y.v[0], y.v[1], env); }
 	if (x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : dget(x, y); }
 	if (x.t == 2) { return x; }
 	if (y.t == 3 && len(y) == 0) { return (x.t==5&&x.args.length==0) ? run(x.v, env) : x; }
 	if (x.t == 3 && y.t == 3) { return atdepth(x, y, 0, env); }
 	if (x.t == 8) { return applyverb(x, y.t == 3 ? y.v : [y], env); }
-	if (x.t == 9) { return applyadverb(x, x.verb, y.v, env); }
+	if (x.t == 9) { return applyadverb(x, run(x.verb, env), y.v, env); }
 	if (x.t != 5) { throw new Error("function or list expected."); }
 	if (y.t == 4) { var e=new Environment(null); e.d=y; x.env=e; return x; }
 	if (y.t != 3) { y = enlist(y); }
