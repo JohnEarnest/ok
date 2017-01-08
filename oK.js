@@ -302,7 +302,6 @@ function over(dyad, x, env) {
 }
 
 function overd(dyad, x, y, env) {
-	if (len(y) < 1) { return x; }
 	return y.v.reduce(function(x, y) { return applyd(dyad, x, y, env); }, x);
 }
 
@@ -331,8 +330,8 @@ function fixedwhile(monad, x, y, env) {
 }
 
 function scan(dyad, x, env) {
-	if (x.t != 3 || len(x) < 1) { return x; } var r=[x.v[0]];
-	for(var z=1;z<len(x);z++) { r.push(applyd(dyad, r[z-1], x.v[z], env)); } return k(3,r);
+	if (x.t != 3 || len(x) <= 1) { return x; }
+	return cat(x.v[0], scand(dyad, x.v[0], k(3, x.v.slice(1)), env));
 }
 
 function scand(dyad, x, y, env) {
