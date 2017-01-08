@@ -9,7 +9,7 @@
 
 "use strict";
 
-var typenames = [
+var TN = [
 	"number"    , //  0 : value
 	"char"      , //  1 : value
 	"symbol"    , //  2 : value
@@ -34,48 +34,42 @@ var kt = [-9, -10, -11, 0, 99, 102, NaN, NaN, 107, 105, NaN, NaN, NaN];
 var SP = k(1, " ".charCodeAt(0));
 var NA = k(0, NaN);
 
-function k(t, v)         { return { 't':t, 'v':v }; }
-function md(x, y)        { return { t:4, k:sl(x,y), v:y }; }
-function kl(vl)          { return vl.length==1 ? vl[0] : k(3,vl); }
-function kf(x)           { return match(k(3,[]), x).v || match(k0, x).v; }
-function kb(x)           { return x ? k1 : k0; }
-function s(x)            { return x.t == 3 && x.v.every(function(c) { return c.t == 1; }); }
-function ks(x)           { return k(2, x); }
+function k     (t, v)    { return { 't':t, 'v':v }; }
+function md    (x, y)    { return { t:4, k:sl(x,y), v:y }; }
+function ks    (x)       { return k(2, x); }
 function asVerb(x, y, z) { return { t:8, v:x, l:y, r:z }; }
-function kmod(x, y)      { return x-y*Math.floor(x/y); }
-function len(x)          { l(x); return x.v.length; }
+function kl    (x)       { return x.length==1 ? x[0] : k(3,x); }
+function kf    (x)       { return match(k(3,[]), x).v || match(k0, x).v; }
+function kb    (x)       { return x ? k1 : k0; }
+function s     (x)       { return x.t == 3 && x.v.every(function(c) { return c.t == 1; }); }
+function kmod  (x, y)    { return x-y*Math.floor(x/y); }
+function len   (x)       { return l(x).v.length; }
 function krange(x, f)    { var r=[]; for(var z=0;z<x;z++) { r.push(f(z)); } return k(3,r); }
-function h2(x)           { return (x.v+0x100).toString(16).substr(-2); }
+function h2    (x)       { return (x.v+0x100).toString(16).substr(-2); }
+function lget  (x, y)    { if(y<0||y>=len(x)) { throw new Error("length error."); } return x.v[y]; }
+function dget  (x, y)    { var i=find(x.k, y); return (i.v==len(x.k)) ? NA : atl(x.v, i); }
+function lset  (x, y, z) { if (len(x) <= p(y)) { throw new Error("index error."); } x.v[y.v]=z; }
+function dset  (x, y, z) { var i=find(x.k, y).v; if(i==len(x.k)) { x.k.v.push(y); } x.v.v[i]=z; }
+function lower (x)       { return k(1, String.fromCharCode(x.v).toLowerCase().charCodeAt(0)); }
+function kmap  (x, f)    { return k(3, l(x).v.map(f)); }
+function kzip  (x, y, f) { return kmap(sl(x,y), function(z, i) { return f(z, y.v[i]); }); }
+function sl    (x, y)    { if (len(x) != len(y)) { throw new Error("length error."); } return x; }
+function n     (x)       { return (x.t==0||x.t==1) ? x : ct(x, 0); }
+function l     (x)       { return ct(x, 3); }
+function d     (x)       { return ct(x, 4); }
+function a     (x)       { if (x.t > 2) { throw new Error("domain error."); } return x; }
+function na    (x)       { return x.t === 0 && isNaN(x.v); }
 
-function lget(x, y)    { if(y<0||y>=len(x)) { throw new Error("length error."); } return x.v[y]; }
-function dget(x, y)    { var i=find(x.k, y); return (i.v==len(x.k)) ? NA : atl(x.v, i); }
-function dset(x, y, z) { var i=find(x.k, y).v; if(i==len(x.k)) { x.k.v.push(y); } x.v.v[i]=z; }
-function lset(x, y, v) { if (len(x) <= p(y)) { throw new Error("index error."); } x.v[y.v]=v; }
-function c(x) { return (x.t==3) ? k(x.t, x.v.slice(0)) : (x.t==4) ? md(c(x.k), c(x.v)) : x; }
-function lower(x)      { return k(1, String.fromCharCode(x.v).toLowerCase().charCodeAt(0)); }
 function stok(x) { return kl(krange(x.length, function(z) { return k(1,x.charCodeAt(z)); }).v); }
+function c(x)    { return (x.t==3) ? k(x.t, x.v.slice(0)) : (x.t==4) ? md(c(x.k), c(x.v)) : x; }
+function ct(n,t) { if (n.t!=t) throw new Error(TN[t]+" expected, found "+TN[n.t]+"."); return n; }
+function p(x) { if (n(x).v<0||x.v%1!=0) { throw new Error("positive int expected."); } return x.v; }
 function ktos(x, esc) {
 	if (x.t != 3) { x = enlist(x); }
 	var h = x.v.some(function(v){ return (v.v<32||v.v>127)&v.v!=9&v.v!=10; });
 	if (h) { return "0x"+x.v.map(h2).join(""); }
 	var r = x.v.map(function(k) { return String.fromCharCode(k.v); }).join("");
-	if (esc) { for(var z=0;z<EC.length;z++) { r=r.split(EC[z][0]).join(EC[z][1]); }}
-	return esc ? '"'+r+'"' : r;
-}
-function kmap(x, f) { var r=[]; for(var z=0;z<len(x);z++) { r.push(f(x.v[z],z)); } return k(3,r); }
-function kzip(x, y, f) { return kmap(sl(x,y), function(z, i) { return f(z, y.v[i]); }); }
-function checktype(n, t) {
-	if (n.t == t) { return n; }
-	throw new Error(typenames[t]+" expected, found "+typenames[n.t]+".");
-}
-function sl(x,y) { if (len(x) != len(y)) { throw new Error("length error."); } return x; }
-function n(x) { return (x.t==0||x.t==1) ? x : checktype(x, 0); }
-function l(x) { return checktype(x, 3); }
-function d(x) { return checktype(x, 4); }
-function a(x) { if (x.t > 2) { throw new Error("domain error."); } return x; }
-function na(x) { return x.t === 0 && isNaN(x.v); }
-function p(x) {
-	if (n(x).v < 0 || x.v%1 != 0) { throw new Error("positive int expected."); } return x.v;
+	return esc ? '"'+EC.reduce(function(r,p) { return r.split(p[0]).join(p[1]); }, r)+'"' : r;
 }
 
 ////////////////////////////////////
