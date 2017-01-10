@@ -250,6 +250,11 @@ var cga = tok([
 var hot = tok([
 	"#000000","#FFFFFF","#FF0000","#FFFF00","rgba(0,0,0,0)"
 ]);
+var gray = tok(krange(256, function(x) {
+	var h = "0123456789ABCDEF";
+	var d = h[0|x/16]+h[x%16];
+	return "#"+d+d+d;
+}).v);
 
 var images = [];
 var rgbaPalettes = {
@@ -429,6 +434,7 @@ function setvars() {
 	setvar("lcd",         lcd);
 	setvar("cga",         cga);
 	setvar("hot",         hot);
+	setvar("gray",        gray);
 	setvar("text", pixelfont);
 	setvar("dir", k(3, [num(lx), num(ux)]));
 	var kv = []; var e = Object.keys(ikeys); for(var z=0;z<e.length;z++) {

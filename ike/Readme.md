@@ -58,12 +58,6 @@ If `play` is a function, it will be called with a single argument indicating the
 	draw: ,(;;)
 	play: {.2*sin .2*x+!1000}
 
-Ajax
-----
-Your programs can perform asynchronous HTTP requests to remote servers which return appropriate CORS headers. The `ajax` function takes three arguments: a URL, an HTTP verb and some K monad which will be called with the result of the request when it becomes available. Server response bodies will be parsed as JSON and then converted into convenient K data structures.
-
-	ajax["http://www.com/api.json";"GET";{ dosomething x }]
-
 Input Events
 ------------
 For dynamic behavior, iKe will call a number of K functions (provided they have been defined) whenever certain events occur:
@@ -111,7 +105,7 @@ iKe pre-defines and updates several K variables for your convenience:
 - `pi`: the mathematical constant Pi (read only)
 - `tr`: tick rate; how many times per second `tick` and `draw` are fired (read and write)
 
-iKe provides a number of pre-defined palettes. Since transparency is useful, the last color of each palette is fully transparent:
+iKe provides a number of pre-defined palettes. Since transparency is useful, the last color of most palettes is fully transparent:
 
 - `cga`: CGA palette 1 (4 colors + transparency)
 - `hot`: hot dog stand (4 colors + transparency)
@@ -121,6 +115,7 @@ iKe provides a number of pre-defined palettes. Since transparency is useful, the
 - `windows`: Windows 3.1 palette (16 colors + transparency)
 - `arne`: [Arne's](http://androidarts.com/palette/16pal.htm) Generic 16 color game palette. (16 colors + transparency)
 - `pico`: The [PICO-8](http://www.lexaloffle.com/pico-8.php) fantasy game console's 16 color palette. (16 colors + transparency)
+- `gray`: Grayscale, black to white. (256 colors)
 
 ![palettes](https://raw.githubusercontent.com/JohnEarnest/ok/gh-pages/ike/img/swatches.png)
 
@@ -143,3 +138,9 @@ When your program is run, these special comments will be processed and the resou
     draw: ,(0 0;`solarized;`blu)
 
 Note that image loading _only_ works with built-in palettes- image loading happens before any of your K code has a chance to execute!
+
+Ajax
+----
+Your programs can perform asynchronous HTTP requests to remote servers which return appropriate CORS headers. The `ajax` function takes three arguments: a URL, an HTTP verb and some K monad which will be called with the result of the request when it becomes available. Server response bodies will be parsed as JSON and then converted into convenient K data structures.
+
+	ajax["http://www.com/api.json";"GET";{ dosomething x }]
