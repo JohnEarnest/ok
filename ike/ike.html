@@ -773,7 +773,7 @@ window.onkeydown = function(e) {
 	if (e.keyCode == 39) { lx =  1; callk1("lx",1); }
 	if (e.keyCode == 38) { ux = -1; callk1("ux",-1); }
 	if (e.keyCode == 40) { ux =  1; callk1("ux",1); }
-	if (e.keyCode ==  8) { callk("kb"); }
+	if (e.keyCode ==  8) { callk1("kb", e.keyCode); }
 	callk1("kd", e.keyCode);
 }
 window.onkeypress = function(e) {

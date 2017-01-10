@@ -67,7 +67,7 @@ For dynamic behavior, iKe will call a number of K functions (provided they have 
 - `ku`: key up. provides a DOM keyCode as an argument.
 - `kx`: key typed. provides a DOM charCode as an argument.
 - `kr`: return/enter pressed. Provides 10 as an argument (to match `kx`).
-- `kb`: backspace pressed. No arguments.
+- `kb`: backspace pressed. Provides 8 as an argument (to match `kx`).
 - `lx`: left/right. provides -1/1 when left/right cursor keys are pressed.
 - `ux`: up/down. provides -1/1 when up/down cursor keys are pressed.
 - `md`: mouse down. provides mouse x and y in pixels as arguments.
