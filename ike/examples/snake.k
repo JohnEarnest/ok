@@ -1,6 +1,5 @@
 / SnaKe
-
-pr: {{z[x],,~text 0+y}'[!#y;y;x]}
+pr: {(x'!#y){x,,y}'~text 0+y}
 pd: {(x+_ 8 5*y,cos .1*y+f;cga)}
 pt: {(26 60 +_20 8*x,sin x+.3*f;pico 16,8+x)}
 tl: {`setup`title@~+/dir}
@@ -23,9 +22,10 @@ gl: {a:   p~?p                        / not colliding with self?
      g::  (g;2?20)b                   / respawn goal if needed
      l+:: 2*b                         / increment length if needed
      `game`over(~a)&1=#?p}            / end if snake is totally dead
-       
+
+wi: {_({(sin x;cos x)}'f+2*!#x)+x}    / snake wiggle
 gd: {((w*2 2\'0 1 3 2;pico 2 1)       / background
-      (8*-1_p;c;text 48)              / snake
+      (wi 8*-1_p;c;text 48)           / snake
       (8**|p;c:cga (2+p~?p),4;text 5) / head
       (8*g;cga 2 4;text 8))}          / goal
 
