@@ -328,6 +328,7 @@ function loadExample() {
 		var stripped = result["content"].replace(/(?:\r\n|\r|\n)/g, "");
 		var decoded = window.atob(stripped);
 		editor.value = decoded;
+		setDisplaySize(160, 160);
 		play();
 	}
 	xhr.send();
