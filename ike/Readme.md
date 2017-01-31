@@ -121,8 +121,7 @@ iKe provides a number of pre-defined palettes. Since transparency is useful, the
 
 iKe also provides a built-in 8x8 character set called `text`:
 
-	t: ~,/'+text@`i$"Hello, World!"
-	draw: ,(0 0;cga;t)
+	,(;cga;~,/'+text"Hello, World!")
 
 The character set is aligned with 7-bit ASCII and control characters are replaced with some useful graphic characters including symbols and box drawing characters:
 
