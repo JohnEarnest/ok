@@ -88,7 +88,8 @@ function audioPlay() {
 function audioStop() {
 	if (soundSource != null) {
 		scriptNode.disconnect();
-		soundSource.stop(0);
+		soundSource.loop = false;
 		soundSource.disconnect();
+		soundSource = null;
 	}
 }

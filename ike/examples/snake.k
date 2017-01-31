@@ -1,5 +1,5 @@
 / SnaKe
-pr: {(x'!#y){x,,y}'~text 0+y}
+pr: {(x'!#y){x,,y}'~text y}
 pd: {(x+_ 8 5*y,cos .1*y+f;cga)}
 pt: {(26 60 +_20 8*x,sin x+.3*f;pico 16,8+x)}
 tl: {`setup`title@~+/dir}
