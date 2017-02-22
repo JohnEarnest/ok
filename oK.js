@@ -172,7 +172,7 @@ function reshape(x, y) {
 			} return k(3, r);
 		}; return rshr(x, y, 0);
 	}
-	if (y.t != 3) { y = enlist(y); } var count = 0; function rshr(x, y, index) {
+	if (y.t != 3 || len(y) < 1) { y = enlist(y); } var count = 0; function rshr(x, y, index) {
 		return krange(x.v[index].v, function(z) {
 			return index==len(x)-1 ? y.v[kmod(count++, len(y))] : rshr(x, y, index+1);
 		});
