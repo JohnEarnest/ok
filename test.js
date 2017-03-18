@@ -54,10 +54,11 @@ function files() {
 		"examples/idioms.k",
 		"examples/runlength.k",
 		"examples/lexicographic.k",
+		"examples/parsing.k"
 	];
 	for(var z=0;z<sourcefiles.length;z++) {
 		var program = fs.readFileSync(sourcefiles[z], { encoding:'utf8' });
-		process.stdout.write(ok.format(ok.run(ok.parse(program), new ok.Environment(null))));
+		process.stdout.write(ok.format(ok.run(ok.parse(program), ok.baseEnv())));
 		process.stdout.write("\n");
 	}
 }
