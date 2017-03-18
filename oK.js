@@ -523,7 +523,8 @@ function Environment(pred) {
 }
 
 function atd(x, y, env) {
-	if (x.t == 2) { return x; }
+	if (x.t == 2) { x = env.lookup(x); }
+	if (x.t == 3) { return atl(x, y, env); }
 	if (x.t == 5) { return call(x, k(3,[y]), env); }
 	return (x.t == 8 || x.t == 9) ? applym(x, y, env) : ar(dget)(d(x), y);
 }
@@ -543,10 +544,9 @@ function atdepth(x, y, i, env) {
 
 function call(x, y, env) {
 	if (x.sticky) { return (valence(x.sticky, env)==1?applym:applyd)(x, y.v[0], y.v[1], env); }
+	if (x.t == 2) { x = env.lookup(x); }
+	if (x.t == 3) { return y.t == 3 ? atdepth(x, y, 0, env) : atl(x, y, env); }
 	if (x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : dget(x, y); }
-	if (x.t == 2) { return x; }
-	if (y.t == 3 && len(y) == 0) { return (x.t==5&&x.args.length==0) ? run(x.v, env) : x; }
-	if (x.t == 3 && y.t == 3) { return atdepth(x, y, 0, env); }
 	if (x.t == 8) { return applyverb(x, y.t == 3 ? y.v : [y], env); }
 	if (x.t == 9) { return applyadverb(x, run(x.verb, env), y.v, env); }
 	if (x.t != 5) { throw new Error("function or list expected."); }
