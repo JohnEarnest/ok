@@ -145,7 +145,10 @@ function drop(x, y) {
 }
 
 function take(x, y, env) {
-	if (x.t == 5 || x.t == 8 || x.t == 9) { return ar(atl)(y, where(each(x, y, env), env)); }
+	if (x.t == 5 || x.t == 8 || x.t == 9) {
+		var k = where(each(x, y, env), env); var v = ar(atl)(y, k);
+		return y.t == 4 ? md(k, v) : v;
+	}
 	if (y.t == 4) { return md(take(x, y.k, env), take(x, y.v, env)); }
 	if (y.t != 3 || len(y) == 0) { y = enlist(y); }
 	var s=n(x).v<0?kmod(x.v, len(y)):0;

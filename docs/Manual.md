@@ -430,6 +430,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
   {x~|x}#("racecar";"nope";"bob")
 ("racecar"
  "bob")</code></pre>
+ 		Dictionaries are filtered by their keys and result in dictionaries:
+<pre><code>  (2!)#"abcdef"!2 3 4 5 6 7
+"bdf"!3 5 7</code></pre>
 	</td>
 </tr>
 <tr>
