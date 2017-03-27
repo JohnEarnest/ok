@@ -237,7 +237,7 @@ As a general note, verbs which operate on numbers will coerce characters to thei
   &1 0 0 1 0 1
 0 3 5</code></pre>
 
-		<tt>&d</ttd> indexes keys by where of values:
+		<tt>&d</tt> indexes keys by where of values:
 <pre><code>  &`a`b`c!1 0 2
 `a`c`c</code></pre>
 	</td>
@@ -430,6 +430,7 @@ As a general note, verbs which operate on numbers will coerce characters to thei
   {x~|x}#("racecar";"nope";"bob")
 ("racecar"
  "bob")</code></pre>
+
  		Dictionaries are filtered by their keys and result in dictionaries:
 <pre><code>  (2!)#"abcdef"!2 3 4 5 6 7
 "bdf"!3 5 7</code></pre>
