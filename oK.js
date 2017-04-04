@@ -157,23 +157,14 @@ function take(x, y, env) {
 
 function reshape(x, y) {
 	if (y.t == 4) { return md(x, atd(y, x)); }
-	if (na(first(x))) { // with a leading 0N, group from innermost to outermost
-		y = c(y); for(var z=len(x)-1;z>0;z--) {
-			var w=[]; for(var a=0; a<len(y); a += x.v[z].v) {
-				var t=[]; w.push(k(3, t));
-				for(var b=0; b<x.v[z].v && a+b<len(y); b++) { t.push(y.v[a+b]); }
-			} y.v = w;
-		} return y;
+	if (na(first(x))) { // {(x*!_(#y)%x)_y}
+		if (len(y) < 1) { return y; }
+		var n = first(rev(x)).v;
+		return cut(krange(len(y)/n, function(z) { return k(0, z*n); }), y);
 	}
-	else if (na(first(rev(x)))) { // with a trailing 0N, act like normal but don't repeat elements.
-		var p=1; for(var z=0;z<len(x)-1;z++) { p*=x.v[z].v; }
-		x = c(x); x.v[len(x)-1].v = Math.floor(len(y)/p);
-		if (y.t != 3) { y = enlist(y); } var count = 0; var rshr = function(x, y, index) {
-			if (count + x.v[index].v + 1 == len(y)) { x.v[index].v++; }
-			var r=[]; for(var z=0; z<x.v[index].v && count<len(y); z++) {
-				r.push(index==len(x)-1 ? y.v[count++] : rshr(x, y, index+1));
-			} return k(3, r);
-		}; return rshr(x, y, 0);
+	else if (na(first(rev(x)))) { // {(_((#y)%x)*!x)_y}
+		var n = first(x).v;
+		return cut(krange(n, function(z) { return k(0, Math.floor(z*len(y)/n)); }), y);
 	}
 	if (y.t != 3 || len(y) < 1) { y = enlist(y); } var count = 0; function rshr(x, y, index) {
 		return krange(x.v[index].v, function(z) {
