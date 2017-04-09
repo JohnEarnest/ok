@@ -157,20 +157,16 @@ function take(x, y, env) {
 
 function reshape(x, y) {
 	if (y.t == 4) { return md(x, atd(y, x)); }
-	if (na(first(x))) { // {(x*!_(#y)%x)_y}
-		if (len(y) < 1) { return y; }
-		var n = first(rev(x)).v;
-		return cut(krange(len(y)/n, function(z) { return k(0, z*n); }), y);
-	}
-	else if (na(first(rev(x)))) { // {(_((#y)%x)*!x)_y}
-		var n = first(x).v;
-		return cut(krange(n, function(z) { return k(0, Math.floor(z*len(y)/n)); }), y);
-	}
-	if (y.t != 3 || len(y) < 1) { y = enlist(y); } var count = 0; function rshr(x, y, index) {
-		return krange(x.v[index].v, function(z) {
-			return index==len(x)-1 ? y.v[kmod(count++, len(y))] : rshr(x, y, index+1);
+	if (y.t != 3) { y = enlist(y); }
+	var a = first(x); var b = x.v[len(x)-1]; var c = 0;
+	function rshr(x, y, i) {
+		return krange(x.v[i].v, function(z) {
+			return i==len(x)-1 ? y.v[kmod(c++, len(y))] : rshr(x, y, i+1);
 		});
-	} return rshr(l(x), y, 0);
+	}
+	return na(a) ? (!len(y) ? y : cut(krange(len(y)/b.v, function(z) { return k(0, z*b.v); }), y)) :
+	       na(b) ? cut(krange(a.v, function(z) { return k(0, Math.floor(z*len(y)/a.v)); }), y) :
+	       rshr(l(x), len(y) ? y : enlist(y), 0);
 }
 
 function match(x, y) {

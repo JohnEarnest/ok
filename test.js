@@ -54,7 +54,8 @@ function files() {
 		"examples/idioms.k",
 		"examples/runlength.k",
 		"examples/lexicographic.k",
-		"examples/parsing.k"
+		"examples/parsing.k",
+		"examples/merge.k"
 	];
 	for(var z=0;z<sourcefiles.length;z++) {
 		var program = fs.readFileSync(sourcefiles[z], { encoding:'utf8' });
@@ -752,10 +753,12 @@ test("2 0N#!9"                        , "(0 1 2 3\n 4 5 6 7 8)"               );
 test("3 0N#!10"                       , "(0 1 2\n 3 4 5\n 6 7 8 9)"           );
 test("1 0N#!4"                        , ",0 1 2 3"                            );
 test("2 0N#6 7"                       , "(,6\n ,7)"                           );
+test("2 0N#9"                         , "(()\n ,9)"                           );
 test("0N 2#!6"                        , "(0 1\n 2 3\n 4 5)"                   );
 test("0N 2#!5"                        , "(0 1\n 2 3\n ,4)"                    );
 test("0N 1#!4"                        , "(,0\n ,1\n ,2\n ,3)"                 );
 test("0N 2#()"                        , "()"                                  );
+test("0N 2#8"                         , ",,8"                                 );
 
 //test("(+/[;2 3 4])@9"); // 18
 //test("+/[;2 3 4]9"); // 18
