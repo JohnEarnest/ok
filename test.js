@@ -55,7 +55,8 @@ function files() {
 		"examples/runlength.k",
 		"examples/lexicographic.k",
 		"examples/parsing.k",
-		"examples/merge.k"
+		"examples/merge.k",
+		"examples/bencode.k",
 	];
 	for(var z=0;z<sourcefiles.length;z++) {
 		var program = fs.readFileSync(sourcefiles[z], { encoding:'utf8' });
