@@ -795,5 +795,10 @@ if (bootString && bootString != "()") {
 	}
 }
 
+// partially suppress stretch-scroll on iOS/Safari:
+document.getElementById("keyboard").ontouchmove = function(event){
+	event.preventDefault();
+}
+
 </script>
 </html>
