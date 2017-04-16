@@ -692,8 +692,6 @@ function buildKeyboard(keyrows) {
 	board.innerHTML = "";
 	board.appendChild(d);
 	d.addEventListener("touchstart", swipeEdit);
-	d.addEventListener("touchmove",  swipeEdit);
-	d.addEventListener("touchend",   swipeEdit);
 	d.addEventListener("mousedown",  swipeEdit);
 
 	keyrows.forEach(function(rowKeys) {
