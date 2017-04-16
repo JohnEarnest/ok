@@ -414,8 +414,13 @@ function processLine() {
 }
 
 function updateEdit(t, c) {
-	var before = asHTML(t.substring(0, c));
-	var after  = asHTML(t.substring(c, t.length));
+	function byChar(s) {
+		return s.split("").map(function(c) {
+			return "<span>" + asHTML(c) + "</span>";
+		}).join('');
+	}
+	var before = byChar(t.substring(0, c));
+	var after  = byChar(t.substring(c, t.length));
 	var cursor = "<span class='cursor'>|</span>";
 	document.getElementById("editline").innerHTML = before + cursor + after;
 	editText  = t;
@@ -662,12 +667,34 @@ function buildKey(key) {
 	return r;
 }
 
+function swipeEdit(event) {
+	if (event.targetTouches) { event = event.targetTouches[0]; }
+	if (!event) { return; }
+	var edit = document.getElementById("editline");
+	var tx = event.clientX;
+	var ty = event.clientY;
+
+	var i = 0;
+	var c = edit.childNodes;
+	for(var index = 0; index < c.length; index++) {
+		var r = c[index].getBoundingClientRect();
+		var cx = r.left;
+		var cy = r.top;
+		if (cx < tx && cy < ty) { i = index; }
+	}
+	updateEdit(editText, i);
+}
+
 function buildKeyboard(keyrows) {
 	var board = document.getElementById("keyboard");
 	var d = document.createElement("div");
 	d.id = "editline";
 	board.innerHTML = "";
 	board.appendChild(d);
+	d.addEventListener("touchstart", swipeEdit);
+	d.addEventListener("touchmove",  swipeEdit);
+	d.addEventListener("touchend",   swipeEdit);
+	d.addEventListener("mousedown",  swipeEdit);
 
 	keyrows.forEach(function(rowKeys) {
 		var row = document.createElement("div");
