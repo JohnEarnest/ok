@@ -691,8 +691,8 @@ function buildKeyboard(keyrows) {
 	d.id = "editline";
 	board.innerHTML = "";
 	board.appendChild(d);
-	d.addEventListener("touchstart", swipeEdit);
-	d.addEventListener("mousedown",  swipeEdit);
+	d.addEventListener("touchend",  swipeEdit);
+	d.addEventListener("mousedown", swipeEdit);
 
 	keyrows.forEach(function(rowKeys) {
 		var row = document.createElement("div");
