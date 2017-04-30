@@ -315,7 +315,8 @@ function fixedwhile(monad, x, y, env) {
 
 function scan(dyad, x, env) {
 	if (x.t != 3 || len(x) <= 1) { return x; }
-	return cat(x.v[0], scand(dyad, x.v[0], k(3, x.v.slice(1)), env));
+	var i = x.v[0]; var r = k(3, [i]);
+	for(var z=1;z<len(x);z++) { r.v.push(i = applyd(dyad, i, x.v[z], env)); } return r;
 }
 
 function scand(dyad, x, y, env) {
