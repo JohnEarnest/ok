@@ -47,7 +47,7 @@ function len   (x)       { return l(x).v.length; }
 function krange(x, f)    { var r=[]; for(var z=0;z<x;z++) { r.push(f(z)); } return k(3,r); }
 function h2    (x)       { return (x.v+0x100).toString(16).substr(-2); }
 function lget  (x, y)    { if(y<0||y>=len(x)) { throw new Error("length error."); } return x.v[y]; }
-function dget  (x, y)    { var i=find(x.k, y); return (i.v==len(x.k)) ? NA : atl(x.v, i); }
+function dget  (x, y)    { var i=find(x.k, y); return (i.v==len(x.k)) ? NA : atx(x.v, i); }
 function lset  (x, y, z) { if (len(x) <= p(y)) { throw new Error("index error."); } x.v[y.v]=z; }
 function dset  (x, y, z) { var i=find(x.k, y).v; if(i==len(x.k)) { x.k.v.push(y); } x.v.v[i]=z; }
 function lower (x)       { return k(1, String.fromCharCode(x.v).toLowerCase().charCodeAt(0)); }
@@ -138,7 +138,7 @@ function except(x, y) {
 	return x;
 }
 
-function ddrop(x, y) { var k = except(d(y).k, x); return md(k, atd(y, k)); }
+function ddrop(x, y) { var k = except(d(y).k, x); return md(k, atx(y, k)); }
 function drop(x, y) {
 	if (y.t == 4) { return md(drop(x, y.k), drop(x, y.v)); }
 	return (y.t != 3 || len(y) < 1) ? y : k(3, n(x).v<0 ? y.v.slice(0,x.v) : y.v.slice(x.v));
@@ -146,7 +146,7 @@ function drop(x, y) {
 
 function take(x, y, env) {
 	if (x.t == 5 || x.t == 8 || x.t == 9) {
-		var k = where(each(x, y, env), env); var v = ar(atl)(y, k);
+		var k = where(each(x, y, env), env); var v = atx(y, k);
 		return y.t == 4 ? md(k, v) : v;
 	}
 	if (y.t == 4) { return md(take(x, y.k, env), take(x, y.v, env)); }
@@ -156,7 +156,7 @@ function take(x, y, env) {
 }
 
 function reshape(x, y) {
-	if (y.t == 4) { return md(x, atd(y, x)); }
+	if (y.t == 4) { return md(x, atx(y, x)); }
 	if (y.t != 3) { y = enlist(y); }
 	var a = first(x); var b = x.v[len(x)-1]; var c = 0;
 	function rshr(x, y, i) {
@@ -189,7 +189,7 @@ function cut(x, y) {
 
 function rnd(x, y, env) {
 	if (y.t == 1) { return dfmt(k(2,"c"),rnd(x,ar(plus)(y,iota(k(0,26))))); }
-	if (y.t == 3) { return ar(atl)(y, rnd(x, k(0, len(y)))); } p(y);
+	if (y.t == 3) { return atx(y, rnd(x, k(0, len(y)))); } p(y);
 	if (n(x).v<0) { if(-x.v>y.v) throw new Error("length error.");return take(x,asc(real(y)),env); }
 	return kmap(iota(x), function(x){ return k(0,Math.floor(Math.random()*y.v)); });
 }
@@ -202,7 +202,7 @@ function flip(x, env) {
 }
 
 function grade(dir, x) {
-	if (x.t == 4) { return ar(atl)(x.k, grade(dir, x.v)); }
+	if (x.t == 4) { return atx(x.k, grade(dir, x.v)); }
 	return k(3, l(x).v.map(function(x,i) { return k(0, i); }).sort(function(a, b) {
 		var av = x.v[a.v]; if (s(av)) { av = ks(ktos(av)); }
 		var bv = x.v[b.v]; if (s(bv)) { bv = ks(ktos(bv)); }
@@ -211,7 +211,7 @@ function grade(dir, x) {
 }
 
 function where(x, env) {
-	if (x.t == 4) { return ar(atl)(x.k, where(x.v, env)); } // {,/(0|x)#'!#x}...
+	if (x.t == 4) { return atx(x.k, where(x.v, env)); } // {,/(0|x)#'!#x}...
 	var s = kmap(x.t==3 ?x:enlist(x), function(v,i) { return take(k(0,p(v)), k(0,i), env); });
 	return over(asVerb(","), s, env);
 }
@@ -254,7 +254,7 @@ function each(monad, x, env) {
 
 function eachd(dyad, left, right, env) {
 	if (!env) { return kmap(left, function(x) { return applyd(dyad, x, null, right); }); }
-	if (left.t==4&&right.t==4) { return md(left.k,eachd(dyad,left.v,ar(atl)(right,left.k),env)); }
+	if (left.t==4&&right.t==4) { return md(left.k,eachd(dyad,left.v,atx(right,left.k),env)); }
 	if (left.t!=3) { return eachright(dyad, left, right, env); }
 	if (right.t!=3) { return eachleft(dyad, left, right, env); }
 	return kzip(left, right, function(x, y) { return applyd(dyad, x, y, env); });
@@ -373,7 +373,7 @@ function ar(dyad) { // create a right atomic dyad
 
 function applym(verb, x, env) {
 	if (verb.t == 5) { return call(verb, k(3,[x]), env); }
-	if (verb.t == 3) { return atl(verb, x, env); }
+	if (verb.t == 3) { return atx(verb, x, env); }
 	if (verb.t == 9 & verb.r == null) { verb.r=x; var r=run(verb, env); verb.r=null; return r; }
 	if (verb.sticky) {
 		var s=verb.sticky; s.r=x; verb.sticky=null;
@@ -410,7 +410,7 @@ var verbs = {
 	"_" : [am(floor), am(floor),  drop,       ddrop,      drop,       cut,        null,    null  ],
 	"$" : [kfmt,      am(kfmt),   dfmt,       dfmt,       dfmt,       dfmt,       null,    null  ],
 	"?" : [real,      unique,     rnd,        pfind,      rnd,        ar(pfind),  splice,  null  ],
-	"@" : [type,      type,       atd,        atl,        atd,        ar(atl),    amend4,  amend4],
+	"@" : [type,      type,       atx,        atx,        atx,        atx,        amend4,  amend4],
 	"." : [keval,     keval,      call,       call,       call,       call,       dmend4,  dmend4],
 	"'" : [null,      null,       null,       bin,        null,       ar(bin),    null,    null  ],
 	"/" : [null,      null,       null,       null,       pack,       pack,       null,    null  ],
@@ -513,34 +513,28 @@ function Environment(pred) {
 	};
 }
 
-function atd(x, y, env) {
-	if (x.t == 2) { x = env.lookup(x); }
-	if (x.t == 3) { return atl(x, y, env); }
-	if (x.t == 5) { return call(x, k(3,[y]), env); }
-	return (x.t == 8 || x.t == 9) ? applym(x, y, env) : ar(dget)(d(x), y);
-}
-
-function atl(x, y, env) {
-	if (x.t == 4) { return dget(x, y); }
-	if (y.t == 4) { return md(y.k, (ar(atl))(x, y.v, env)); }
-	return (y.t > 1 || y.v < 0 || y.v >= len(x) || y.v%1 != 0) ? NA : x.v[y.v];
+function atx(x, y, env) {
+	return x.t == 2 ? atx(env.lookup(x), y, env) : y.t == 11 ? x :
+	       x.t == 3 && y.t == 4 ? md(y.k, atx(x, y.v, env)) :
+	       x.t == 8 || x.t == 9 ? applym(x, y, env) :
+	       (x.t == 3 || x.t == 4) && y.t == 3 ? kmap(y, function(z) { return atx(x, z); }) :
+	       x.t == 3 ? (y.t > 1 || y.v < 0 || y.v >= len(x) || y.v%1 != 0) ? NA : x.v[y.v] :
+	       x.t == 4 ? dget(x, y) : call(x, enlist(y), env)
 }
 
 function atdepth(x, y, i, env) {
-	if (i >= len(y)) { return x; }
-	if (isnull(y.v[i]).v) { return kmap(x, function(x) { return atdepth(x, y, i+1, env); }); }
-	if (y.v[i].t != 3) { return atdepth(ar(atl)(x, y.v[i], env), y, i+1, env); }
-	return kmap(y.v[i], function(t) { return atdepth(ar(atl)(x, t, env), y, i+1, env); });
+	if (i >= len(y)) { return x; }; var c = y.v[i]; var k = atx(x, c, env);
+	return (c.t != 11 && c.t != 3) ?    atdepth(k, y, i+1, env) :
+		   kmap(k, function(t) { return atdepth(t, y, i+1, env) })
 }
 
 function call(x, y, env) {
 	if (x.sticky) { return (valence(x.sticky, env)==1?applym:applyd)(x, y.v[0], y.v[1], env); }
-	if (x.t == 2) { x = env.lookup(x); }
-	if (x.t == 3) { return y.t == 3 ? atdepth(x, y, 0, env) : atl(x, y, env); }
-	if (x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : dget(x, y); }
+	if (x.t == 2) { return call(env.lookup(x), y, env); }
+	if (x.t == 3 || x.t == 4) { return y.t == 3 ? atdepth(x, y, 0, env) : atx(x, y, env); }
 	if (x.t == 8) { return applyverb(x, y.t == 3 ? y.v : [y], env); }
 	if (x.t == 9) { return applyadverb(x, run(x.verb, env), y.v, env); }
-	if (x.t != 5) { throw new Error("function or list expected."); }
+	if (x.t != 5) { throw new Error("function or list expected, found " + TN[x.t]+'.'); }
 	if (y.t == 4) { var e=new Environment(null); e.d=y; x.env=e; return x; }
 	if (y.t != 3) { y = enlist(y); }
 	var environment = new Environment(x.env); var curry = x.curry?x.curry.concat([]):[];
@@ -603,13 +597,13 @@ function mend(args, env, monadic, dyadic) {
 
 function amendm(d, i, y, monad, env) {
 	if (monad.t == 0) { monad = { t:5,args:["x"],v:[{ t:0, v:monad.v }] }; }
-	if (i.t != 3) { lset(d, i, applym(monad, atl(d, i, env), env)); }
+	if (i.t != 3) { lset(d, i, applym(monad, atx(d, i, env), env)); }
 	else { kmap(i, function(v) { amendm(d, v, y, monad, env); }); }
 }
 
 function amendd(d, i, y, dyad, env) {
 	if (i.t == 3) { kmap(i, function(iv, z) { amendd(d, iv, y.t == 3 ? y.v[z] : y, dyad, env) }); }
-	else { (d.t == 4 ? dset : lset)(d, i, applyd(dyad, atl(d, i, env), y, env)); }
+	else { (d.t == 4 ? dset : lset)(d, i, applyd(dyad, atx(d, i, env), y, env)); }
 }
 
 function dmend(d, i, y, f, env) {
@@ -617,11 +611,11 @@ function dmend(d, i, y, f, env) {
 	if (len(i) == 1) { dmend(d, i.v[0], y, f, env); return; }
 	var rest = drop(k1,i); if (len(i)<1) { return; } if (i.v[0].t == 3) {
 		if (y && y.t == 3) { kzip(i, y, function(a, b) { amendd(d, a, b, f, env); }); return; }
-		kmap(i.v[0],function(x) { dmend(atl(d,x,env), rest, y, f, env); });
+		kmap(i.v[0],function(x) { dmend(atx(d,x,env), rest, y, f, env); });
 	}
-	else if (isnull(i.v[0]).v) { kmap(d,function(x,i) { dmend(atl(d,k(0,i),env),rest,y,f,env); }); }
+	else if (isnull(i.v[0]).v) { kmap(d,function(x,i) { dmend(atx(d,k(0,i),env),rest,y,f,env); }); }
 	else if (d.v[0].t != 3) { (y?amendd:amendm)(d, i, y, f, env); }
-	else { dmend(atl(d, first(i), env), rest, y, f, env); }
+	else { dmend(atx(d, first(i), env), rest, y, f, env); }
 }
 
 ////////////////////////////////////

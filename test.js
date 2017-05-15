@@ -260,9 +260,9 @@ fail("`a+2"                           , "number expected, found symbol."      );
 fail("&-30"                           , "positive int expected."              );
 fail("2 -3 4_1 3 4"                   , "positive int expected."              );
 fail("a:b"                            , "the name 'b' has not been defined."  );
-fail("a:1;a[2]"                       , "function or list expected."          );
+fail("a:1;a[2]"                       , "function or list expected, found number.");
 fail("f:{x+y};f[1;2;3]"               , "valence error."                      );
-fail("@[1;2]"                         , "dictionary expected, found number."  );
+fail("@[1;2]"                         , "function or list expected, found number.");
 fail("{5;"                            , "parse error. '}' expected."          );
 fail("(5"                             , "parse error. ')' expected."          );
 fail("a[3"                            , "parse error. ']' expected."          );
@@ -594,7 +594,7 @@ test("[a:0][`a]"                      , "0"                                   );
 test("{`a 0}"                         , "{`a@0}"                              );
 test('{"a"0}'                         , '{"a"@0}'                             );
 test("[a:0]`a"                        , "0"                                   );
-fail('"a"0'                           , "dictionary expected, found char."    );
+fail('"a"0'                           , "function or list expected, found char.");
 test('{""   0: "bb"}'                 , '{()0:"bb"}'                          );
 test('{"aa" 0: "bb"}'                 , '{"aa"0:"bb"}'                        );
 test("a*/:\\:'a:(!2;!3)"              , "((0 0\n  0 1)\n (0 0 0\n  0 1 2\n  0 2 4))");
@@ -759,8 +759,12 @@ test("0N 2#!5"                        , "(0 1\n 2 3\n ,4)"                    );
 test("0N 1#!4"                        , "(,0\n ,1\n ,2\n ,3)"                 );
 test("0N 2#()"                        , "()"                                  );
 test("0N 2#8"                         , ",,8"                                 );
-
 test("+\\3 3#!9"                      , "(0 1 2\n 3 5 7\n 9 12 15)"           );
+
+test("(+0,)1 2"                       , ",0 1 2"                              );
+test('{!x}["AB"!(1 2 3;1 2)]'         , '"AB"'                                );
+test('{!x}@"AB"!(1 2 3;1 2)'          , '"AB"'                                );
+test('3 5 7@*(;)'                     , '3 5 7'                               );
 
 //test("(+/[;2 3 4])@9"); // 18
 //test("+/[;2 3 4]9"); // 18
@@ -773,7 +777,6 @@ test("+\\3 3#!9"                      , "(0 1 2\n 3 5 7\n 9 12 15)"           );
 //test("1 0N=(1 2 3[-7];1 2 3[5])"      , "0 1"                                 );
 
 //files();
-
 
 // experimental features:
 test("f:{{n+::x}.(,`n)!,x}[5];f'2 1 10", "7 8 18");
