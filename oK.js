@@ -103,7 +103,7 @@ function isnull   (x) { return max(match(x, NIL),match(x,k(11))); }
 function count    (x) { return k(0, x.t == 4 ? len(x.v) : x.t == 3 ? len(x) : 1); }
 function floor    (x) { return x.t == 1 ? lower(x) : k(0, Math.floor(n(x).v)); }
 function type     (x) { return k(0, kt[x.t]); }
-function kfmt     (x) { var r=stok(format(x, 0, 1)); if (r.t!=3) { r=k(3,[r]); } return r; }
+function kfmt     (x) { var r=stok(format(x, 0, 1)); return r.t == 3 ? r : enlist(r); }
 function real     (x) { return krange(n(x).v, function() { return k(0, Math.random()); }); }
 
 function iota(x) {
@@ -133,9 +133,8 @@ function dfmt(x, y) {
 }
 
 function except(x, y) {
-	x = c(x.t != 3 ? iota(x) : x); y = y.t != 3 ? enlist(y) : y;
-	kmap(y, function(v) { for(var i=pfind(x, v); !na(i); i=pfind(x, v)) { x.v.splice(i.v, 1); }});
-	return x;
+	y = y.t == 3 ? y : enlist(y);
+	return k(3, (x.t == 3 ? x : iota(x)).v.filter(function(z) { return na(pfind(y, z)); }));
 }
 
 function ddrop(x, y) { var k = except(d(y).k, x); return md(k, atx(y, k)); }
@@ -182,14 +181,14 @@ function pfind(x, y) { y=x.v.findIndex(function(z){return equal(z,y).v}); return
 function pisnull(x) { return kb(match(x, NIL).v || match(x, k(11)).v || na(x)); }
 
 function cut(x, y) {
-	return kzip(x, cat(drop(k1,x),k(0,len(y))), function(a, b) { // {x{x@y+!z-y}[y]'1_x,#y} ?
+	return kzip(x, cat(drop(k1,x),count(y)), function(a, b) { // {x{x@y+!z-y}[y]'1_x,#y} ?
 		var r=[]; for(var z=p(a);z<p(b);z++) { r.push(lget(y,z)); } return k(3,r);
 	});
 }
 
 function rnd(x, y, env) {
 	if (y.t == 1) { return dfmt(k(2,"c"),rnd(x,ar(plus)(y,iota(k(0,26))))); }
-	if (y.t == 3) { return atx(y, rnd(x, k(0, len(y)))); } p(y);
+	if (y.t == 3) { return atx(y, rnd(x, count(y))); } p(y);
 	if (n(x).v<0) { if(-x.v>y.v) throw new Error("length error.");return take(x,asc(real(y)),env); }
 	return kmap(iota(x), function(x){ return k(0,Math.floor(Math.random()*y.v)); });
 }
@@ -202,11 +201,9 @@ function flip(x, env) {
 }
 
 function grade(dir, x) {
-	if (x.t == 4) { return atx(x.k, grade(dir, x.v)); }
-	return k(3, l(x).v.map(function(x,i) { return k(0, i); }).sort(function(a, b) {
-		var av = x.v[a.v]; if (s(av)) { av = ks(ktos(av)); }
-		var bv = x.v[b.v]; if (s(bv)) { bv = ks(ktos(bv)); }
-		return (less(av,bv).v) ? dir : (more(av,bv).v) ? -dir : a.v - b.v;
+	return x.t == 4 ? atx(x.k, grade(dir, x.v)) : k(3, iota(count(x)).v.sort(function(a, b) {
+		var f = function(i) { var v = x.v[i.v]; return s(v) ? ks(ktos(v)) : v; }
+		var av = f(a), bv = f(b); return less(av,bv).v ? dir : more(av,bv).v ? -dir : a.v - b.v;
 	}));
 }
 
@@ -238,8 +235,8 @@ function unpack (x, y) { return call(unpackimpl, k(3, [x,y])); }
 function pack   (x, y) { return (x.t == 1) ? join(x, y) : call(packimpl, k(3, [x,y])); }
 function kwindow(x, y) { return call(winimpl, k(3, [x,y])); }
 function splice(xyz)   { return call(spliceimpl, k(3, xyz)); }
-function imat(x)       { return call(imatimpl, k(3, [x])); }
-function odometer(x)   { return call(odoimpl, k(3, [x])); }
+function imat(x)       { var i = iota(x); return kmap(i, function(z) { return ar(equal)(z, i); }); }
+function odometer(x)   { return call(odoimpl, enlist(x)); }
 
 ////////////////////////////////////
 //
@@ -315,7 +312,7 @@ function fixedwhile(monad, x, y, env) {
 
 function scan(dyad, x, env) {
 	if (x.t != 3 || len(x) <= 1) { return x; }
-	var i = x.v[0]; var r = k(3, [i]);
+	var i = x.v[0]; var r = enlist(i);
 	for(var z=1;z<len(x);z++) { r.v.push(i = applyd(dyad, i, x.v[z], env)); } return r;
 }
 
@@ -372,7 +369,7 @@ function ar(dyad) { // create a right atomic dyad
 }
 
 function applym(verb, x, env) {
-	if (verb.t == 5) { return call(verb, k(3,[x]), env); }
+	if (verb.t == 5) { return call(verb, enlist(x), env); }
 	if (verb.t == 3) { return atx(verb, x, env); }
 	if (verb.t == 9 & verb.r == null) { verb.r=x; var r=run(verb, env); verb.r=null; return r; }
 	if (verb.sticky) {
@@ -558,7 +555,7 @@ function run(node, env) {
 	if (node.t == 3) { return rev(kmap(rev(node), function(v) { return run(v, env); })); }
 	if (node.t == 4) { return md(node.k, kmap(node.v, function(x) { return run(x, env); })); }
 	if (node.t == 5) {
-		if (node.r) { return call(node, k(3,[run(node.r, env)]), env); }
+		if (node.r) { return atx(node, run(node.r, env), env); }
 		if (!node.env) { return { t:5, v:node.v, args:node.args, curry:node.curry, env:env }; }
 	}
 	if (node.t == 6) { env.put(ks(node.v), false, node); return node; }
@@ -928,7 +925,6 @@ function baseEnv() {
 var packimpl   = parse("{+/y*|*\\1,|1_(#y)#x}")[0];
 var unpackimpl = parse("{(1_r,,y)-x*r:|y(_%)\\|x}")[0];
 var spliceimpl = parse("{,/(*x;$[99<@z;z x 1;z];*|x:(0,y)_x)}")[0];
-var imatimpl   = parse("{x=/:x:!x}")[0];
 var winimpl    = parse("{$[0>x;3':0,y,0;y(!0|1+(#y)-x)+\\:!x]}")[0];
 var odoimpl    = parse("{+x\\'!*/x}")[0];
 var splitimpl  = parse("{1_'(&x=y)_y:x,y}")[0];
