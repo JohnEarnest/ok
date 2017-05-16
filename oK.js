@@ -502,11 +502,11 @@ function Environment(pred) {
 		}
 		var view = dget(this.d, n);
 		if (view.t == 6) {
-			var dirty = view.cache == 0; var keys = Object.keys(view.depends);
-			for(var z=0;z<keys.length;z++) {
-				var n = this.lookup(ks(keys[z])); var o = view.depends[keys[z]];
-				if (!o || !match(n,o).v) { dirty = true; view.depends[keys[z]] = n; }
-			}
+			var dirty = view.cache == 0, env = this;
+			Object.keys(view.depends).forEach(function(z) {
+				var n = (z == view.v) ? view.cache : env.lookup(ks(z)), o = view.depends[z];
+				if (!o || !match(n,o).v) { dirty=1; view.depends[z]=n; }
+			})
 			if (dirty) { view.cache = run(view.r, this); } return view.cache;
 		}
 		return view;
@@ -806,7 +806,7 @@ function parseNoun() {
 			var r = k(6, n.v);
 			r.r = parseEx(parseNoun());
 			r.depends = findNames(r.r, {});
-			r.cache = 0;
+			r.cache = k(11);
 			return r;
 		}
 		if (matches(COLON)) {
