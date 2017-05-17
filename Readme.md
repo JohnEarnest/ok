@@ -16,7 +16,6 @@ The easiest way to run oK is using the [Browser-based REPL](http://johnearnest.g
 - `\r` run the contents of the editor pane. Alternately, press shift+enter with the editor focused.
 - `\c` clear the output log.
 - `\t` time executing the remainder of the line.
-- `\x` execute the remainder of the line and show a step-by-step trace.
 - `\f` list all presently defined functions.
 - `\v` list all presently defined variables.
 - `\u` generates a code url from the remainder of the line, as described below.

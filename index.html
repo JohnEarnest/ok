@@ -151,7 +151,6 @@ function printForm(x) {
 var env = baseEnv();
 var entries = [];
 var entryIndex = 0;
-var showtrace = false;
 var partial = "";
 var eid = 0;
 
@@ -189,34 +188,6 @@ function toggle(id) {
 	e = document.getElementById(id);
 	e.style.display = e.style.display == "none" ? "inline" : "none";
 }
-
-function rectadd(a, b) {
-	b = b.split("\n");
-	// pad heights vertically to match
-	while(a.length < b.length) { a.unshift(""); }
-	while(b.length < a.length) { b.unshift(""); }
-	// pad a width to rectangularize and concat
-	var aw = 0;
-	for(var z=0;z<a.length;z++) { aw = Math.max(aw, a[z].length); }
-	for(var z=0;z<a.length;z++) { while(a[z].length < aw) { a[z] += " "; } a[z] += b[z]; }
-	return a;
-}
-
-setTrace(function(verb, a, v, b, env, value) {
-	if (showtrace) {
-		var r = [""];
-		r = rectadd(r, (a ? format(a) : ""));
-		if (a) { r = rectadd(r, " "); }
-		r = rectadd(r, (v ? format(v) : ""));
-		r = rectadd(r, verb + " ");
-		r = rectadd(r, (b ? format(b) : ""));
-		r = rectadd(r, " \r ");
-		r = rectadd(r, format(value));
-		printRepl(escapeHTML(r.join("\n")));
-		printRepl("");
-	}
-	return value;
-});
 
 function processInput(e) {
 	if (e.keyCode == 38) {
@@ -314,11 +285,6 @@ function processLine() {
 	if (prompt.value.lastIndexOf("\\t") == 0) {
 		prompt.value = prompt.value.slice(2);
 		showtime = true;
-	}
-	showtrace = false;
-	if (prompt.value.lastIndexOf("\\x") == 0) {
-		prompt.value = prompt.value.slice(2);
-		showtrace = true;
 	}
 	var parsed = null;
 	try { parsed = parse(" " + partial + "; " + prompt.value); }
