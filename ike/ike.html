@@ -409,17 +409,18 @@ function callk(n) {
 	try { return run(env.lookup(ks(n), true).v, env); }
 	catch(e) { if (n == "draw") { showError(e.message); } }
 }
-function callk1(n, x) {
+function callko(n, x) {
 	setvars();
 	try { var v = env.lookup(ks(n), true);
-		try { return call(v, k(3, [num(x)]), env); } catch(e) { console.log(e.message); }
+		try { return call(v, k(3, x), env); } catch(e) { console.log(e.message); }
 	} catch(e) {}
+	return k(3, []);
+}
+function callk1(n, x) {
+	return callko(n, [num(x)]);
 }
 function callk2(n, x, y) {
-	setvars();
-	try { var v = env.lookup(ks(n), true);
-		try { return call(v, k(3, [num(x), num(y)]), env); } catch(e) { console.log(e.message); }
-	} catch(e) {}
+	return callko(n, [num(x), num(y)]);
 }
 function setvars() {
 	setvar("w"  , num(DISPLAY_WIDTH));
@@ -605,20 +606,26 @@ function loadshared() {
 }
 loadshared();
 
+function getonce() {
+	try { return env.lookup(ks('once'), true); }
+	catch(e) { return k(3, []); }
+}
+
 function update() {
 	setvars();
-	var r = callk("tick");
+	var r = callko('tick', [getonce()]);
+	env.put(ks('once'), true, r);
 	if (running) { tickTimeout = setTimeout(update, frameDelay()); }
 	else { tickTimeout = null; }
 }
 
 function paint() {
 	frame++;
-	if (env.contains(ks("draw"))) {
-		var f = env.lookup(ks("draw"), true);
+	if (env.contains(ks('draw'))) {
+		var f = env.lookup(ks('draw'), true);
 		if (f.t != 5) { paintValue(f); return; }
 	}
-	paintValue(callk("draw"));
+	paintValue(callko('draw', [getonce()]));
 }
 
 function paintValue(r) {

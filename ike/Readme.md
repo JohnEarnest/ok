@@ -10,7 +10,7 @@ Read about iKe in *Vector*: [A graphical sandbox for K](http://archive.vector.or
 
 Output
 ------
-To draw to the display, you must provide a definition of a niladic function, view or variable named `draw`. This will be invoked 30 times per second (see `tr`) and should return/consist of a list of tuples. Each tuple must contain a vector indicating an (x;y) position on screen, a palette and a bitmap. The palette consists of a list of strings representing any valid DOM color code such as "black" or "#FAC". The bitmap is a matrix of indices into the palette. By default, the display is 160x160 pixels.
+To draw to the display, you must provide a definition of a monadic function, view or variable named `draw`. This will be invoked 30 times per second (see `tr`) and should return/consist of a list of tuples. Each tuple must contain a vector indicating an (x;y) position on screen, a palette and a bitmap. The palette consists of a list of strings representing any valid DOM color code such as "black" or "#FAC". The bitmap is a matrix of indices into the palette. By default, the display is 160x160 pixels.
 
 For example, the following definition of `draw` will draw a small blue on red box at a random position:
 
@@ -46,6 +46,10 @@ If the tuple does not contain a bitmap, it represents drawing a filled polygon. 
 
 	draw: ,((10 10;20 10;15 20);cga@3 2)
 
+Ticks
+-----
+If you define a monadic function `tick`, it will be called periodically based on `tr`. Often this function will mutate surrounding state to be drawn by `draw`. The input to `tick` will, on the first frame of a program, be the contents of a variable named `once`, and the result of executing `tick` will then be stored in `once`. When `draw` is called, the value of `once` is likewise fed in. Thus, it is possible to write programs with evolving state using only _pure_ (side-effect free) definitions of `draw` and `tick`.
+
 Sound
 -----
 To add sound to your programs, define a monadic function or variable named `play`. Sound playback further requires a definition of `draw`. iKe plays waveforms at a sample rate given by the variable `srate` with samples in the range [-1.0, 1.0]. If `play` is a list or scalar it will be repeated as necessary to supply continuous audio:
@@ -62,7 +66,6 @@ Input Events
 ------------
 For dynamic behavior, iKe will call a number of K functions (provided they have been defined) whenever certain events occur:
 
-- `tick`: called 30 times per second with no arguments.
 - `kd`: key down. provides a DOM keyCode as an argument.
 - `ku`: key up. provides a DOM keyCode as an argument.
 - `kx`: key typed. provides a DOM charCode as an argument.

@@ -8,6 +8,6 @@ ball: (0 0 2 2 2 0 0
        0 2 2 2 2 2 0
        0 0 2 2 2 0 0)
 
-pos:  _-3+(w;h)%2
-tick: {pos::0 0|(w-7;h-7)&pos+3*dir}
-draw: ,`pos`hot`ball
+once: _-3+(w;h)%2
+tick: {0|((w;h)-7)&x+3*dir}
+draw: {,(x;hot;ball)}
