@@ -48,7 +48,15 @@ If the tuple does not contain a bitmap, it represents drawing a filled polygon. 
 
 Ticks
 -----
-If you define a monadic function `tick`, it will be called periodically based on `tr`. Often this function will mutate surrounding state to be drawn by `draw`. The input to `tick` will, on the first frame of a program, be the contents of a variable named `once`, and the result of executing `tick` will then be stored in `once`. When `draw` is called, the value of `once` is likewise fed in. Thus, it is possible to write programs with evolving state using only _pure_ (side-effect free) definitions of `draw` and `tick`.
+If you define a monadic function `tick`, it will be called periodically based on `tr`. Often this function will mutate surrounding state to be drawn by `draw`. The input to `tick` will, on the first frame of a program, be the contents of a variable named `once`, and the result of executing `tick` will then be stored in `once`. When `draw` is called, the value of `once` is likewise fed in. For convenience, if `once` is not explicitly initialized it will be treated as an empty list. Consider the following example:
+
+	once: 10 15
+	tick: {1 2+x}
+	draw: {,(x;;5 5#3)}
+
+![Tick Lifecycle](https://raw.githubusercontent.com/JohnEarnest/ok/gh-pages/ike/tick.png)
+
+By using this approach it is possible to write programs with evolving state using only _pure_ (side-effect free) definitions of `draw` and `tick`.
 
 Sound
 -----
