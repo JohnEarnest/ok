@@ -2,7 +2,7 @@ iKe
 ===
 iKe is an experimental programming environment built on oK. It allows you to rapidly write event-driven graphical programs in K. Try it [In your browser](http://johnearnest.github.io/ok/ike/ike.html)!
 
-![Livecoding Demo](https://raw.githubusercontent.com/JohnEarnest/ok/gh-pages/ike/livecoding.gif)
+![Livecoding Demo](https://raw.githubusercontent.com/JohnEarnest/ok/gh-pages/ike/img/livecoding.gif)
 
 The interface consists of an editor pane on the left with a status bar and display on the right. Pressing shift+enter in the editor will compile and run the K program. Escape will halt a running program. Pressing shift+enter with a section of text selected will execute just that snippet and display the results, allowing quick experimentation and sanity checking.
 
@@ -54,7 +54,7 @@ If you define a monadic function `tick`, it will be called periodically based on
 	tick: {1 2+x}
 	draw: {,(x;;5 5#3)}
 
-![Tick Lifecycle](https://raw.githubusercontent.com/JohnEarnest/ok/gh-pages/ike/tick.png)
+![Tick Lifecycle](https://raw.githubusercontent.com/JohnEarnest/ok/gh-pages/ike/img/tick.png)
 
 By using this approach it is possible to write programs with evolving state using only _pure_ (side-effect free) definitions of `draw` and `tick`.
 
