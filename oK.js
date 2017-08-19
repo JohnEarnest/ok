@@ -187,6 +187,7 @@ function cut(x, y) {
 }
 
 function rnd(x, y, env) {
+	if (x.t == 4) { return atx(x.k, ar(pfind)(x.v,y), env); }
 	if (y.t == 1) { return dfmt(k(2,"c"),rnd(x,ar(plus)(y,iota(k(0,26))))); }
 	if (y.t == 3) { return atx(y, rnd(x, count(y))); } p(y);
 	if (n(x).v<0) { if(-x.v>y.v) throw new Error("length error.");return take(x,asc(real(y)),env); }

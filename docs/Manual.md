@@ -524,6 +524,11 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 <pre><code>  "XYZ"?"XYXZB"
 0 1 0 2 0N</code></pre>
 
+		<tt>d?a</tt> generalizes <b>find</b> to look up the key in x associated with the value y.</br>
+		Right atomic.
+<pre><code>  (`a`b`c`d!23 14 9 5)?9 14
+`c`b</code></pre>
+
 		<tt>n?n</tt> is <b>random</b>. Produce x random integers from 0 up to but excluding y.
 <pre><code>  5?10
 0 3 3 7 7
