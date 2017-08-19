@@ -195,7 +195,7 @@ function rnd(x, y, env) {
 
 function flip(x, env) {
 	x=eachright(k(8,"#"), over(k(8,"|"), each(k(8,"#"), x, env), env), x, env);
-	return krange(len(x) > 0 ? len(x.v[0]) : 0, function(z){
+	return krange(len(first(x)), function(z){
 		return krange(len(x), function(t){ return x.v[t].v[z]; });
 	});
 }
@@ -225,7 +225,7 @@ function unique(x) {
 }
 
 function bin(x, y) {
-	var a=0; var b=len(x); if (b<1 || less(y, x.v[0]).v) { return k(0,-1); }
+	var a=0; var b=len(x); if (b<1 || less(y, first(x)).v) { return k(0,-1); }
 	while(b - a > 1) { var i=a+Math.floor((b-a)/2); if (more(x.v[i], y).v) { b=i; } else { a=i; } }
 	return k(0, a);
 }
@@ -277,9 +277,9 @@ function eachpc(dyad, x, y, env) {
 function over(dyad, x, env) {
 	var specials = {"+":k0, "*":k1, "|":k(0,-1/0), "&":k(0,1/0)};
 	if (x.t == 3 && len(x) < 1 && dyad.v in specials) { return specials[dyad.v]; }
-	if (x.t == 3 && len(x) == 1 && dyad.v == ",") { return x.v[0].t != 3 ? x : x.v[0]; }
+	if (x.t == 3 && len(x) == 1 && dyad.v == ",") { return first(x).t != 3 ? x : first(x); }
 	if (x.t != 3 || len(x) < 1) { return x; }
-	return x.v.reduce(function(x, y) { return applyd(dyad, x, y, env); });
+	return overd(dyad, first(x), drop(k1,x), env);
 }
 
 function overd(dyad, x, y, env) {
@@ -301,19 +301,19 @@ function scana(func, args, env) {
 }
 
 function fixed(monad, x, env) {
-	var r=x; var p=x;
-	do { p=r; r=applym(monad, r, env); } while(!match(p, r).v && !match(r, x).v); return p;
+	var r=x, p=x;
+	do { r=applym(monad, p=r, env); } while(!match(p, r).v && !match(r, x).v); return p;
 }
 
 function fixedwhile(monad, x, y, env) {
 	if (x.t == 0) { for(var z=0;z<x.v;z++) { y = applym(monad, y, env); } }
-	else { do { y = applym(monad, y, env); } while (applym(x, y, env).v != 0); } return y;
+	else { do { y = applym(monad, y, env); } while (applym(x, y, env).v); } return y;
 }
 
 function scan(dyad, x, env) {
 	if (x.t != 3 || len(x) <= 1) { return x; }
-	var i = x.v[0]; var r = enlist(i);
-	for(var z=1;z<len(x);z++) { r.v.push(i = applyd(dyad, i, x.v[z], env)); } return r;
+	var i = first(x); var r = enlist(i);
+	kmap(drop(k1,x), function(z) { r.v.push(i = applyd(dyad, i, z, env)); }); return r;
 }
 
 function scand(dyad, x, y, env) {
@@ -321,14 +321,14 @@ function scand(dyad, x, y, env) {
 }
 
 function scanfixed(monad, x, env) {
-	var r=[x]; while(true) {
+	var r=[x]; while(1) {
 		var p = r[r.length-1]; var n = applym(monad, p, env);
 		if (match(p, n).v || match(n, x).v) { break; } r.push(n);
 	} return k(3,r);
 }
 
 function scanwhile(monad, x, y, env) {
-	var r=[y]; if (x.t == 0) { for(var z=0;z<x.v;z++) { y = applym(monad, y, env); r.push(y); } }
+	var r=[y]; if (x.t == 0) { for(var z=0;z<x.v;z++) { r.push(y = applym(monad, y, env)); } }
 	else { do { y = applym(monad, y, env); r.push(y); } while (applym(x, y, env).v != 0); }
 	return k(3, r);
 }
