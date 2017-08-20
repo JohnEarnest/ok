@@ -455,6 +455,10 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 ("feed";"face")
   1 2 4_"feedface"
 (,"e";"ed";"face")</code></pre>
+		<tt>l_n</tt> removes the item at index y from x.<br>
+<pre><code>  5 6 7 8 9_3
+5 6 7 9
+</code></pre>
 	</td>
 </tr>
 <tr>
