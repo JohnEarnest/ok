@@ -137,7 +137,19 @@ function except(x, y) {
 	return k(3, (x.t == 3 ? x : iota(x)).v.filter(function(z) { return na(pfind(y, z)); }));
 }
 
-function ddrop(x, y) { var k = except(d(y).k, x); return md(k, atx(y, k)); }
+function ddrop(x, y) {
+  if (y.t == 0) {
+    if (y.v < 0 || y.v >= len(x)) {
+      return x;
+    } else {
+      var r = x.v.slice();
+      r.splice(y.v, 1);
+      return k(3, r);
+    }
+  }
+  var ks = except(d(y).k, x); return md(ks, atx(y, ks));
+}
+
 function drop(x, y) {
 	if (y.t == 4) { return md(drop(x, y.k), drop(x, y.v)); }
 	return (y.t != 3 || len(y) < 1) ? y : k(3, n(x).v<0 ? y.v.slice(0,x.v) : y.v.slice(x.v));
