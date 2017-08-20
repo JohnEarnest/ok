@@ -236,7 +236,6 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 0 0 1 1 1 2
   &1 0 0 1 0 1
 0 3 5</code></pre>
-
 		<tt>&d</tt> indexes keys by where of values:
 <pre><code>  &`a`b`c!1 0 2
 `a`c`c</code></pre>
@@ -366,7 +365,6 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<tt>l^a</tt> or <tt>l^l</tt> is <b>except</b>. Remove all instances of each of y from x.
 <pre><code>  1 3 2 5 1 2 3^1 3 5
 2 2</code></pre>
-		
 		<tt>n^a</tt> or <tt>n^l</tt> is equivalent to <tt>(!n)^l</tt>:
 <pre><code> 10^1 3 7
 0 2 4 5 6 8 9</code></pre>
@@ -393,11 +391,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 "ABCABC"
   -2#"ABC"
 "BC"</code></pre>
-
 		<tt>l#d</tt> selects the elements keyed in x:
 <pre><code>  "fb"#"fab"!3 5 9
 "fb"!3 9</code></pre>
-
 		<tt>l#l</tt> or <tt>l#a</tt> is <b>reshape</b>.<br>
 		Works like take, but creates an arbitrary dimensioned result based on x.<br>
 <pre><code>  3 2#1 2 3
@@ -411,7 +407,6 @@ As a general note, verbs which operate on numbers will coerce characters to thei
   1 2)
  (3 1
   2 3))</code></pre>
-
 		If the leading or trailing element of a length 2 rank vector is <tt>0N</tt>, reshape treats that dimension as maximal:<br>
 <pre><code>  0N 3#!6
 (0 1 2
@@ -419,7 +414,6 @@ As a general note, verbs which operate on numbers will coerce characters to thei
   2 0N#!8
 (0 1 2 3
  4 5 6 7)</code></pre>
-
 		<tt>m#l</tt> is <b>filter</b>.<br>
 		Equivalent to <tt>l@&m'l</tt>.
 <pre><code>  (2!)#!8
@@ -430,7 +424,6 @@ As a general note, verbs which operate on numbers will coerce characters to thei
   {x~|x}#("racecar";"nope";"bob")
 ("racecar"
  "bob")</code></pre>
-
  		Dictionaries are filtered by their keys and result in dictionaries:
 <pre><code>  (2!)#"abcdef"!2 3 4 5 6 7
 "bdf"!3 5 7</code></pre>
@@ -442,7 +435,6 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<tt>_n</tt> is <b>floor</b>. Right atomic.
 <pre><code>  _2.3 7.6 9 -2.3
 2 7 9 -3</code></pre>
-
 		<tt>_c</tt> converts characters to lowercase. Right atomic.
 <pre><code>  _"ABCdef!"
 "abcdef!"</code></pre>
@@ -454,11 +446,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 "DE"
   -3_"ABCDE"
 "AB"</code></pre>
-
 		<tt>l_d</tt> filters out keys from a dictionary:
 <pre><code>  `b`e_`a`b`c!3 5 9
 `a`c!3 9</code></pre>
-
 		<tt>l_l</tt> is <b>cut</b>. Splits y at the indices given in x.<br>
 		The indices must be ascending.
 <pre><code>  0 4_"feedface"
@@ -488,7 +478,6 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 ("a "
  "b  "
  "c   ")</code></pre>
-
 		<tt>a$a</tt> is <b>cast</b>. Convert values to a different type based on a symbol.<br>
 		Fully atomic.
 <pre><code>  `i$"Hello."
@@ -513,7 +502,6 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 (`a`b
  3
  7)</code></pre>
-
 		<tt>?n</tt> produces a list of x random floats from 0 up to but excluding 1.
 <pre><code>  ?6
 0.197 0.8382 0.1811 0.9084 0.6113 0.1958</code></pre>
@@ -523,27 +511,22 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		Right atomic.
 <pre><code>  "XYZ"?"XYXZB"
 0 1 0 2 0N</code></pre>
-
 		<tt>d?a</tt> generalizes <b>find</b> to look up the key in x associated with the value y.</br>
 		Right atomic.
 <pre><code>  (`a`b`c`d!23 14 9 5)?9 14
 `c`b</code></pre>
-
 		<tt>n?n</tt> is <b>random</b>. Produce x random integers from 0 up to but excluding y.
 <pre><code>  5?10
 0 3 3 7 7
   5?10
 3 5 2 7 9</code></pre>
-
 		<tt>n?l</tt> picks random elements from y.
 <pre><code>  8?"ABC"
 "ACBBCBCB"</code></pre>
-
 		<tt>n?c</tt> or <tt>n?c</tt> where c is a character will pick random elements from the 26 characters including and up from c.
-        For example, <tt>10?"A"</tt> will pick 10 random elements from <tt>ABCDEFGHIJKLMNOPQRSTUVWXYZ</code>, and <tt>10?"0"</tt> will
+        For example, <tt>10?"A"</tt> will pick 10 random elements from <tt>ABCDEFGHIJKLMNOPQRSTUVWXYZ</tt>, and <tt>10?"0"</tt> will
         pick 10 random elements from <tt>0123456789:;<=>?@ABCDEFGHI</tt>.
-
-		For <tt>n?n</tt> or <tt>n?l</tt>, if x is negative the result will pick abs(x) distinct items.
+	For <tt>n?n</tt> or <tt>n?l</tt>, if x is negative the result will pick abs(x) distinct items.
 	</td>
 </tr>
 <tr>
@@ -566,7 +549,6 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 4
   {x*x}@5
 25</code></pre>
-
 		Invalid indices will produce 0N:
 <pre><code>  [a:4;b:7]@`q
 0N
@@ -664,6 +646,7 @@ As a general note, niladic functions may be used where monadic functions are val
 ['](#each) [':](#eachprior) [/:](#eachright) [\:](#eachleft) [/](#over) [\ ](#scan)
 
 <a name="each"/>
+
 `m'l` is <b>each</b>. Apply the monad to each x, producing a new list. If x is an atom, this is equivalent to `m@a`.
 
 	  {2*x}'5 7 2
@@ -681,6 +664,7 @@ As a general note, niladic functions may be used where monadic functions are val
 	 5 4)
 
 <a name="eachprior"/>
+
 `d':l` is <b>eachprior</b>. Apply the dyad to each element of the list (left argument) and the element preceding that element in the list (right argument), producing a new list. Consistent with list indexing, the first element of the list will thus be paired up with 0N. Some primitive verbs result in a different special-cased initial value: `+`, `*`, `-` and `&` are provided with 0, 1, 0 or the first element of the sequence, respectively, and `,` is provided with only 1 parameter.
 
 	  =':3 3 4 4 5
@@ -700,6 +684,7 @@ As a general note, niladic functions may be used where monadic functions are val
 	 4 3)
 
 <a name="eachright"/>
+
 `x d/:l` is <b>eachright</b>. Apply the dyad to the entire left argument and each right argument, producing a new list.
 
 	  2 3,/:4 5 6
@@ -708,6 +693,7 @@ As a general note, niladic functions may be used where monadic functions are val
 	 2 3 6)
 
 <a name="eachleft"/>
+
 `l d\:x` is <b>eachleft</b>. Apply the dyad to each left argument and the entire right argument, producing a new list.
 
 	  2 3,\:4 5 6
@@ -715,6 +701,7 @@ As a general note, niladic functions may be used where monadic functions are val
 	 3 4 5 6)
 
 <a name="over"/>
+
 `d/l` is <b>over</b>, also known as *foldl*. Apply the dyad to pairs of values in x from left to right and carrying each result forward, reducing the list to a single value. Some primitive verbs result in a different special-cased value when applied to an empty list: `+`, `*`, `|` and `&` result in 0, 1, negative infinity or positive infinity, respectively.
 
 	  +/4 5 2
@@ -743,6 +730,7 @@ As a general note, niladic functions may be used where monadic functions are val
 	128
 
 <a name="scan"/>
+
 `d\l` is <b>scan</b>. Scan and its variants all behave identically to over, except they accumulate a list of intermediate results rather than just returning the final result. Apply the dyad to pairs of values in x from left to right and carrying each result forward.
 
 	  +\4 5 6
