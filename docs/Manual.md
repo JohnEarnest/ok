@@ -719,7 +719,7 @@ As a general note, niladic functions may be used where monadic functions are val
 	  {_x%2}/32
 	0
 
-`n m/y` is <b>for</b>. Apply the monad to y, x times.
+`n m/y` is <b>for</b>. Apply the monad to y, n times.
 
 	  5{,x}/7
 	,,,,,7
