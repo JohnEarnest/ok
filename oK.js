@@ -9,7 +9,7 @@
 
 "use strict";
 
-var TN = [
+const TN = [
 	"number"    , //  0 : value
 	"char"      , //  1 : value
 	"symbol"    , //  2 : value
@@ -26,13 +26,13 @@ var TN = [
 	"quote"     , // 13 : value (for quoting verbs/etc as a value)
 ];
 
-var NIL = ks("");
-var k0 = k(0, 0);
-var k1 = k(0, 1);
-var EC = [["\\","\\\\"],["\"","\\\""],["\n","\\n"],["\t","\\t"]];
-var kt = [-9, -10, -11, 0, 99, 102, NaN, NaN, 107, 105, NaN, NaN, NaN];
-var SP = k(1, " ".charCodeAt(0));
-var NA = k(0, NaN);
+const NIL = ks("");
+const k0 = k(0, 0);
+const k1 = k(0, 1);
+const EC = [["\\","\\\\"],["\"","\\\""],["\n","\\n"],["\t","\\t"]];
+const kt = [-9, -10, -11, 0, 99, 102, NaN, NaN, 107, 105, NaN, NaN, NaN];
+const SP = k(1, " ".charCodeAt(0));
+const NA = k(0, NaN);
 
 function k     (t, v)    { return { 't':t, 'v':v }; }
 function md    (x, y)    { return { t:4, k:sl(x,y), v:y }; }
@@ -41,7 +41,7 @@ function asVerb(x, y, z) { return { t:8, v:x, l:y, r:z }; }
 function kl    (x)       { return x.length==1 ? x[0] : k(3,x); }
 function kf    (x)       { return match(k(3,[]), x).v || match(k0, x).v; }
 function kb    (x)       { return x ? k1 : k0; }
-function s     (x)       { return x.t == 3 && x.v.every(function(c) { return c.t == 1; }); }
+function s     (x)       { return x.t == 3 && x.v.every((c)=>(c.t == 1)); }
 function kmod  (x, y)    { return x-y*Math.floor(x/y); }
 function len   (x)       { return l(x).v.length; }
 function krange(x, f)    { var r=[]; for(var z=0;z<x;z++) { r.push(f(z)); } return k(3,r); }
@@ -52,7 +52,7 @@ function lset  (x, y, z) { if (len(x) <= p(y)) { throw new Error("index error.")
 function dset  (x, y, z) { var i=find(x.k, y).v; if(i==len(x.k)) { x.k.v.push(y); } x.v.v[i]=z; }
 function lower (x)       { return k(1, String.fromCharCode(x.v).toLowerCase().charCodeAt(0)); }
 function kmap  (x, f)    { return k(3, l(x).v.map(f)); }
-function kzip  (x, y, f) { return kmap(sl(x,y), function(z, i) { return f(z, y.v[i]); }); }
+function kzip  (x, y, f) { return kmap(sl(x,y), (z, i) => f(z, y.v[i]) ); }
 function sl    (x, y)    { if (len(x) != len(y)) { throw new Error("length error."); } return x; }
 function n     (x)       { return (x.t==0||x.t==1) ? x : ct(x, 0); }
 function l     (x)       { return ct(x, 3); }
@@ -60,16 +60,16 @@ function d     (x)       { return ct(x, 4); }
 function a     (x)       { if (x.t > 2) { throw new Error("domain error."); } return x; }
 function na    (x)       { return x.t === 0 && isNaN(x.v); }
 
-function stok(x) { return kl(krange(x.length, function(z) { return k(1,x.charCodeAt(z)); }).v); }
+function stok(x) { return kl(krange(x.length, (z)=>k(1,x.charCodeAt(z))).v); }
 function c(x)    { return (x.t==3) ? k(x.t, x.v.slice(0)) : (x.t==4) ? md(c(x.k), c(x.v)) : x; }
 function ct(n,t) { if (n.t!=t) throw new Error(TN[t]+" expected, found "+TN[n.t]+"."); return n; }
 function p(x) { if (n(x).v<0||x.v%1!=0) { throw new Error("positive int expected."); } return x.v; }
 function ktos(x, esc) {
 	if (x.t != 3) { x = enlist(x); }
-	var h = x.v.some(function(v){ return (v.v<32||v.v>127)&v.v!=9&v.v!=10; });
+	const h = x.v.some((v)=>( (v.v<32||v.v>127)&v.v!=9&v.v!=10 ));
 	if (h) { return "0x"+x.v.map(h2).join(""); }
-	var r = x.v.map(function(k) { return String.fromCharCode(k.v); }).join("");
-	return esc ? '"'+EC.reduce(function(r,p) { return r.split(p[0]).join(p[1]); }, r)+'"' : r;
+	const r = x.v.map((k)=>String.fromCharCode(k.v)).join("");
+	return esc ? '"'+EC.reduce((r,p)=>r.split(p[0]).join(p[1]), r)+'"' : r;
 }
 
 ////////////////////////////////////
@@ -88,7 +88,7 @@ function min   (x, y) { return                 k(0, Math.min(n(x).v, n(y).v)); }
 function less  (x, y) { return kb(a(x).v < a(y).v); }
 function more  (x, y) { return kb(a(x).v > a(y).v); }
 function equal (x, y) { return kb((x.v == y.v) || (na(x) && na(y))); }
-function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
+function join  (x, y) { return l(y).v.reduce((z, y)=>cat(z, cat(x, y))); }
 function ident    (x) { return x; }
 function negate   (x) { return k(0, -n(x).v); }
 function first    (x) { return (x.t == 4) ? first(x.v) : (x.t != 3) ? x : len(x) ? x.v[0]:k(3,[]); }
@@ -103,16 +103,16 @@ function isnull   (x) { return max(match(x, NIL),match(x,k(11))); }
 function count    (x) { return k(0, x.t == 4 ? len(x.v) : x.t == 3 ? len(x) : 1); }
 function floor    (x) { return x.t == 1 ? lower(x) : k(0, Math.floor(n(x).v)); }
 function type     (x) { return k(0, kt[x.t]); }
-function kfmt     (x) { var r=stok(format(x, 0, 1)); return r.t == 3 ? r : enlist(r); }
-function real     (x) { return krange(n(x).v, function() { return k(0, Math.random()); }); }
+function kfmt     (x) { const r=stok(format(x, 0, 1)); return r.t == 3 ? r : enlist(r); }
+function real     (x) { return krange(n(x).v, ()=> k(0, Math.random()) ); }
 
 function iota(x) {
 	if (x.t == 4) { return keys(x); }
-	var i = krange(Math.abs(n(x).v), k.bind(null, 0)); return x.v>=0 ? i : ar(plus)(x, i);
+	const i = krange(Math.abs(n(x).v), k.bind(null, 0)); return x.v>=0 ? i : ar(plus)(x, i);
 }
 
 function cat(x, y) {
-	if (x.t==4&&y.t==4) { x=c(x); kmap(y.k, function(v) { dset(x,v,dget(y,v)); }); return x; };
+	if (x.t==4&&y.t==4) { x=c(x); kmap(y.k, (v)=>{ dset(x,v,dget(y,v)); }); return x; };
 	return k(3, (x.t==3?x.v:[x]).concat(y.t==3?y.v:[y]));
 }
 
@@ -123,10 +123,10 @@ function keval(x, env) {
 
 function dfmt(x, y) {
 	if ( x.t == 3           && y.t == 3) { return kzip(x, y, dfmt); }
-	if ( x.t == 3           && y.t != 3) { return kmap(x, function(z) { return dfmt(z, y); }); }
-	if ((x.t == 2 || !s(y)) && y.t == 3) { return kmap(y, function(z) { return dfmt(x, z); }); }
+	if ( x.t == 3           && y.t != 3) { return kmap(x, (z)=>dfmt(z, y)); }
+	if ((x.t == 2 || !s(y)) && y.t == 3) { return kmap(y, (z)=>dfmt(x, z)); }
 	if (x.t == 2) { return {b: k(0,y.v&1), i: k(0,y.v|0), f: k(0,y.v), c: k(1,y.v)}[x.v]; }
-	if (y.t == 1) { return y; } var r=c(y); var d=Math.abs(x.v);
+	if (y.t == 1) { return y; } var r=c(y); const d=Math.abs(x.v);
 	while(len(r) < d) { x.v>0 ? r.v.push(SP) : r.v.unshift(SP); }
 	while(len(r) > d) { x.v>0 ? r.v.pop()    : r.v.shift();     }
 	return r;
@@ -134,10 +134,10 @@ function dfmt(x, y) {
 
 function except(x, y) {
 	y = y.t == 3 ? y : enlist(y);
-	return k(3, (x.t == 3 ? x : iota(x)).v.filter(function(z) { return na(pfind(y, z)); }));
+	return k(3, (x.t == 3 ? x : iota(x)).v.filter((z)=>na(pfind(y, z))));
 }
 
-function ddrop(x, y) { var k = except(d(y).k, x); return md(k, atx(y, k)); }
+function ddrop(x, y) { const k = except(d(y).k, x); return md(k, atx(y, k)); }
 function drop(x, y) {
 	if (y.t == 4) { return md(drop(x, y.k), drop(x, y.v)); }
 	return (y.t != 3 || len(y) < 1) ? y : k(3, n(x).v<0 ? y.v.slice(0,x.v) : y.v.slice(x.v));
@@ -151,7 +151,7 @@ function take(x, y, env) {
 	if (y.t == 4) { return md(take(x, y.k, env), take(x, y.v, env)); }
 	if (y.t != 3 || len(y) == 0) { y = enlist(y); }
 	var s=n(x).v<0?kmod(x.v, len(y)):0;
-	return krange(Math.abs(x.v), function(x) { return y.v[kmod(x+s, len(y))]; });
+	return krange(Math.abs(x.v), (x)=> y.v[kmod(x+s, len(y))]);
 }
 
 function reshape(x, y) {
@@ -159,12 +159,10 @@ function reshape(x, y) {
 	if (y.t != 3) { y = enlist(y); }
 	var a = first(x); var b = x.v[len(x)-1]; var c = 0;
 	function rshr(x, y, i) {
-		return krange(x.v[i].v, function(z) {
-			return i==len(x)-1 ? y.v[kmod(c++, len(y))] : rshr(x, y, i+1);
-		});
+		return krange(x.v[i].v, (z)=>(i==len(x)-1 ? y.v[kmod(c++, len(y))] : rshr(x, y, i+1)) );
 	}
-	return na(a) ? (!len(y) ? y : cut(krange(len(y)/b.v, function(z) { return k(0, z*b.v); }), y)) :
-	       na(b) ? cut(krange(a.v, function(z) { return k(0, Math.floor(z*len(y)/a.v)); }), y) :
+	return na(a) ? (!len(y) ? y : cut(krange(len(y)/b.v, (z)=>k(0, z*b.v)), y)) :
+	       na(b) ? cut(krange(a.v, (z)=>k(0, Math.floor(z*len(y)/a.v))), y) :
 	       rshr(l(x), len(y) ? y : enlist(y), 0);
 }
 
@@ -173,11 +171,11 @@ function match(x, y) {
 	if (x.t == 4) { return min(match(x.k, y.k), match(x.v, y.v)); }
 	if (x.t != 3) { return equal(x, y); }
 	if (len(x) != len(y)) { return k0; }
-	return kb(x.v.every(function(x,i) { return match(x, y.v[i]).v; }));
+	return kb(x.v.every((x,i)=>match(x, y.v[i]).v));
 }
 
-function find(x, y) { y=x.v.findIndex(function(z){return match(z,y).v}); return k(0,y>=0?y:len(x)) }
-function pfind(x, y) { y=x.v.findIndex(function(z){return equal(z,y).v}); return y>=0?k(0,y):NA }
+function find (x, y) { y=x.v.findIndex((z)=> match(z,y).v); return k(0,y>=0?y:len(x)) }
+function pfind(x, y) { y=x.v.findIndex((z)=> equal(z,y).v); return y>=0?k(0,y):NA }
 function pisnull(x) { return kb(match(x, NIL).v || match(x, k(11)).v || na(x)); }
 
 function cut(x, y) {
@@ -191,7 +189,7 @@ function rnd(x, y, env) {
 	if (y.t == 1) { return dfmt(k(2,"c"),rnd(x,ar(plus)(y,iota(k(0,26))))); }
 	if (y.t == 3) { return atx(y, rnd(x, count(y))); } p(y);
 	if (n(x).v<0) { if(-x.v>y.v) throw new Error("length error.");return take(x,asc(real(y)),env); }
-	return kmap(iota(x), function(x){ return k(0,Math.floor(Math.random()*y.v)); });
+	return kmap(iota(x), (x)=> k(0,Math.floor(Math.random()*y.v)));
 }
 
 function flip(x, env) {
