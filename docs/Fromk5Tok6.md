@@ -131,7 +131,7 @@ Padding Can Truncate (<font color="green">Done</font>)
 In k5, padding was treated as a minimum size for the output string:
 
 	 2$"abcde"
-	"ab"
+	"abcde"
 	 6$"abcde"
 	"abcde "
 
