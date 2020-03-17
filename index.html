@@ -166,6 +166,32 @@ var scroll = document.getElementById("scroll");
 var panel = document.getElementById("scroll-h");
 var prompt = document.getElementById("prompt");
 
+help = `oK has atom, list (2;\`c), dict \`a\`b!(2;\`c) and func {[x;y]x+y}
+20 primitives/verbs, 6 operators/adverbs and 3 system functions
+
+Verb      (unary)   Adverb               Noun      (null)
+: gets              '  each              name  \`a\`b \`
++ plus     flip     /  over|join         char  "ab" " "
+- minus    negate   \\  scan|split        num   2 .3 0n(nan) 0w(inf)
+* times    first    ': eachprior
+% divide   sqrt     /: eachright
+! mod|map  enum|key \\: eachleft
+& min|and  where
+| max|or   reverse  System               list (2;3.4;\`ab)
+< less     asc      0: url r/w(line)     dict \`a\`b!(2;\`c)
+> more     desc     1: json r/w(byte)    view f::32+1.8*c TODO
+= equal    group    5: printable form    func {[c]32+1.8*c}
+~ match    not
+, concat   enlist
+^ except   null                          \\t x   time
+# take|rsh count                         \\e     editor
+_ drop|cut floor                         \\r run editor
+$ cast|sum string   $[c;t;f]     COND    \\v variables
+? find|rnd distinct ?[x;I;[f;]y] insert  \\f functions
+@ at       type     @[x;i;[f;]y] amend   \\c clear log
+. dot      eval|val .[x;i;[f;]y] dmend   \\u make url
+`
+
 prompt.focus();
 prompt.onkeydown = processInput;
 scroll.innerHTML =
@@ -268,6 +294,10 @@ function processLine() {
 	}
 	if (prompt.value == "\\v") {
 		printEnv(function(v) { return v.t < 5; }, "variables");
+		return;
+	}
+	if (prompt.value == "\\h") {
+		printRepl(escapeHTML(help));
 		return;
 	}
 	if (prompt.value == "kOS") { printRepl("one system/all devices"); return; }
