@@ -484,7 +484,10 @@ function bestcolor(data, index, pal) {
 }
 
 function readimg(i, record, finished) {
-	var g = document.createElement("canvas").getContext("2d");
+	var c = document.createElement("canvas")
+	c.width = i.width
+	c.height = i.height
+	var g = c.getContext("2d");
 	g.drawImage(i, 0, 0);
 	var d = g.getImageData(0, 0, i.width, i.height);
 	var r = [];
