@@ -577,37 +577,52 @@ function closefullscreen() {
 	document.getElementById("fulldiv").style.display = "none";
 	stop();
 }
+function ajax(verb, url, then, payload) {
+	const x = new XMLHttpRequest()
+	x.onreadystatechange = _ => { if (x.readyState == 4) then(JSON.parse(x.responseText)) }
+	x.open(verb, url)
+	x.send(JSON.stringify(payload))
+}
+
+let lastLoadedKey = null
+const sharingBaseUrl = 'https://vectorland.nfshost.com/storage/ike/'
 function share() {
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', 'https://api.github.com/gists');
-	xhr.onreadystatechange = function() {
-		if (xhr.readyState !== 4) { return; }
-		var result = JSON.parse(xhr.responseText);
-		if (xhr.status == 200 || xhr.status == 201) {
-			window.location.href = window.location.href.replace(/(ike.html|\?gist=.*)*$/, 'ike.html?gist=' + result.id);
-		}
-	}
-	xhr.send(JSON.stringify({
-		"description" : "iKE sketch",
-		"public" : true,
-		"files": { "prog.k" : { "content": editor.value } }
-	}));
+	const payload = { program: editor.value }
+	if (lastLoadedKey) payload.key = lastLoadedKey
+	ajax('POST',
+		sharingBaseUrl,
+		x => {
+			if (x.error) { showError('Sharing failed: ' + x.error); return }
+			window.location.href = window.location.href.replace(/(ike.html|\?key=.*)*$/, 'ike.html?key=' + x.key)
+		},
+		payload
+	)
 }
 function loadshared() {
-	var xhr = new XMLHttpRequest();
-	var gistId = location.search.match(/gist=(\w+)/);
-	if (!gistId) { return; }
-	xhr.open('GET', 'https://api.github.com/gists/' + gistId[1]);
-	xhr.onreadystatechange = function() {
-		if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status !== 201)) {
-			var result = JSON.parse(xhr.responseText);
-			editor.value = result.files["prog.k"].content;
-			fullscreen();
-		}
+	const gistId = location.search.match(/gist=(\w+)/)
+	if (gistId) {
+		ajax('GET',
+			'https://api.github.com/gists/' + gistId[1],
+			x => {
+				try { editor.value = x.files['prog.k'].content; fullscreen() }
+				catch(e) { showError('Loading gist failed: ' + e.message) }
+			}
+		)
 	}
-	xhr.send();
+	const key = location.search.match(/key=([a-zA-Z0-9-_]+)/)
+	if (key) {
+		lastLoadedKey = key[1]
+		ajax('GET',
+			sharingBaseUrl + lastLoadedKey,
+			x => {
+				if (x.error) { showError('Loading program failed: ' + x.error); return }
+				editor.value = x.program
+				fullscreen()
+			}
+		)
+	}
 }
-loadshared();
+loadshared()
 
 function getonce() {
 	try { return env.lookup(ks('once'), true); }
