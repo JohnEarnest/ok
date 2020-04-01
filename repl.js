@@ -17,7 +17,7 @@ Verb       (unary)    Adverb               Noun        (null)
 ! mod|map   enum|key  \\: eachleft
 & min|and   where
 | max|or    reverse   System               list (2;3.4;\`ab)
-< less      asc       0: url r/w(line)     dict \`a\`b!(2;\`c)
+< less      asc       0: file r/w          dict \`a\`b!(2;\`c)
 > more      desc      1: json r/w          view f::32+1.8*c
 = equal     group     5: printable form    func {[c]32+1.8*c}
 ~ match     not
