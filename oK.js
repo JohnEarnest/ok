@@ -90,6 +90,7 @@ function more  (x, y) { return kb(a(x).v > a(y).v); }
 function equal (x, y) { return kb((x.v == y.v) || (na(x) && na(y))); }
 function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
 function ident    (x) { return x; }
+function rident(x, y) { return y; }
 function negate   (x) { return k(0, -n(x).v); }
 function first    (x) { return (x.t == 4) ? first(x.v) : (x.t != 3) ? x : len(x) ? x.v[0]:k(3,[]); }
 function sqrt     (x) { return k(0, Math.sqrt(n(x).v)); }
@@ -387,6 +388,7 @@ function applyd(verb, x, y, env) {
 
 var verbs = {
 	//     a          l           a-a         l-a         a-l         l-l         triad    tetrad
+	":" : [ident,     ident,      rident,     rident,     rident,     rident,     null,    null  ],
 	"+" : [ident,     flip,       ad(plus),   ad(plus),   ad(plus),   ad(plus),   null,    null  ],
 	"-" : [am(negate),am(negate), ad(minus),  ad(minus),  ad(minus),  ad(minus),  null,    null  ],
 	"*" : [first,     first,      ad(times),  ad(times),  ad(times),  ad(times),  null,    null  ],
@@ -621,7 +623,7 @@ var BOOL    = /^[01]+b/;
 var NAME    = /^[a-z][a-z\d]*/i;
 var SYMBOL  = /^`([a-z.][a-z0-9.]*)?/i;
 var STRING  = /^"(\\.|[^"\\\r\n])*"/;
-var VERB    = /^[+\-*%!&|<>=~,^#_$?@.]/;
+var VERB    = /^[+\-*%!&|<>=~,^#_$?@.:]/;
 var ASSIGN  = /^[+\-*%!&|<>=~,^#_$?@.]:/;
 var IOVERB  = /^\d:/;
 var ADVERB  = /^['\\\/]:?/;
@@ -735,7 +737,6 @@ function parseList(terminal, cull) {
 }
 
 function parseNoun() {
-	if (matches(COLON)) { return { t:5, args:["x","y"], v:[{ t:7, v:"y" }] }; } // {y}
 	if (at(IOVERB)) { return k(8, expect(IOVERB)); }
 	if (at(BOOL)) {
 		var n = expect(BOOL); var r=[];
