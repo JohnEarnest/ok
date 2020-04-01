@@ -8,18 +8,18 @@ var conv = require('./convert');
 help = `oK has atom, list (2;\`c), dict \`a\`b!(2;\`c) and func {[x;y]x+y}
 20 primitives/verbs, 6 operators/adverbs and 3 system functions
 
-Verb       (unary)    Adverb               Noun        (null)
-: gets                '  each              name  \`a\`b   \`
-+ plus      flip      /  over|join         char  "ab"    " "
-- minus     negate    \\  scan|split        num   2 .3   0N(nan) 0w(inf)
-* times     first     ': eachprior         hex   0x2a2b
-% divide    sqrt      /: eachright         bool  01000b
+Verb       (unary)    Adverb              Noun         (null)
+: gets                '  each             name  \`a\`b    \`
++ plus      flip      /  over|join        char  "ab"    " "
+- minus     negate    \\  scan|split       num   2 .3    0N(nan) 0w(inf)
+* times     first     ': eachprior        hex   0x2a2b
+% divide    sqrt      /: eachright        bool  01000b
 ! mod|map   enum|key  \\: eachleft
 & min|and   where
-| max|or    reverse   System               list (2;3.4;\`ab)
-< less      asc       0: file r/w          dict \`a\`b!(2;\`c)
-> more      desc      1: json r/w          view f::32+1.8*c
-= equal     group     5: printable form    func {[c]32+1.8*c}
+| max|or    reverse   System              list (2;3.4;\`ab)
+< less      asc       0: file r/w         dict \`a\`b!(2;\`c)
+> more      desc      1: json r/w         view f::32+1.8*c
+= equal     group     5: printable form   func {[c]32+1.8*c}
 ~ match     not
 , concat    enlist
 ^ except    null                          \\t x   time
