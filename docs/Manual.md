@@ -455,6 +455,18 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 ("feed";"face")
   1 2 4_"feedface"
 (,"e";"ed";"face")</code></pre>
+		<tt>m_l</tt> is <b>filter-out</b>.<br>
+		Equivalent to <tt>l@&~m'l</tt>.
+<pre><code>  (2!)_!8
+0 2 4 6
+  (&/)_(1 0 1 1;1 1;0 1 0;1 2 1)
+(1 0 1 1
+ 0 1 0)
+  {x~|x}_("racecar";"nope";"bob")
+,"nope"</code></pre>
+ 		Dictionaries are filtered by their values and result in dictionaries:
+<pre><code>  (2!)_"abcdef"!2 3 4 5 6 7
+"ace"!2 4 6</code></pre>
 	</td>
 </tr>
 <tr>
