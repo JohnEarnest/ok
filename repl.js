@@ -5,6 +5,31 @@ var os = require('os');
 var path = require('path');
 var readline = require('readline');
 var conv = require('./convert');
+help = `oK has atom, list (2;\`c), dict \`a\`b!(2;\`c) and func {[x;y]x+y}
+20 primitives/verbs, 6 operators/adverbs and 3 system functions
+
+Verb       (unary)   Adverb               Noun        (null)
+: gets               '  each              name  \`a\`b   \`
++ plus      flip     /  over|join         char  "ab"    " "
+- minus     negate   \\  scan|split        num   2 .3   0N(nan) 0w(inf)
+* times     first    ': eachprior         hex   0x2a2b
+% divide    sqrt     /: eachright         bool  01000b
+! mod|map   enum|key \\: eachleft
+& min|and   where
+| max|or    reverse  System               list (2;3.4;\`ab)
+< less      asc      0: url r/w(line)     dict \`a\`b!(2;\`c)
+> more      desc     1: json r/w          view f::32+1.8*c
+= equal     group    5: printable form    func {[c]32+1.8*c}
+~ match     not
+, concat    enlist
+^ except    null                          \\t x   time
+# take|rsh  count                         \\\\     exit
+_ drop|cut  floor
+$ cast|sum  string   $[c;t;f]     COND
+? find|rnd  distinct ?[x;I;[f;]y] insert
+@ at        type     @[x;i;[f;]y] amend
+. dot       eval|val .[x;i;[f;]y] dmend
+`
 
 // register I/O hooks
 function str(x) { // convert a k string or symbol to a js string
@@ -64,7 +89,7 @@ if (process.argv.length > 2) {
 }
 
 // actual REPL
-process.stdout.write('oK v' + ok.version + '\n');
+process.stdout.write('oK v' + ok.version + ' (inspired by K5: http://kparc.com/k.txt; \\h for help)\n');
 var rl = readline.createInterface({
 	input:  process.stdin,
 	output: process.stdout,
@@ -85,17 +110,24 @@ var rl = readline.createInterface({
 rl.on('line', function (line) {
 	if (line === '\\\\') { process.exit(0); }
 	var showtime = false;
+	var showhelp = false;
 	if (line.lastIndexOf("\\t") == 0) {
 		line = line.slice(2);
 		showtime = true;
+	} else if (line.lastIndexOf("\\h") == 0) {
+		showhelp = true;
 	}
 	try {
 		if (line.trim()) {
-			var starttime = new Date().getTime();
-			var output = ok.format(ok.run(ok.parse(line), env)) + '\n';
-			if (showtime) {
-				var endtime = new Date().getTime();
-				output += "completed in "+(endtime-starttime)+"ms.\n";
+			if (!showhelp) {
+				var starttime = new Date().getTime();
+				var output = ok.format(ok.run(ok.parse(line), env)) + '\n';
+				if (showtime) {
+					var endtime = new Date().getTime();
+					output += "completed in "+(endtime-starttime)+"ms.\n";
+				}
+			} else {
+				output = help;
 			}
 			process.stdout.write(output);
 		}

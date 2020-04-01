@@ -169,34 +169,34 @@ var prompt = document.getElementById("prompt");
 help = `oK has atom, list (2;\`c), dict \`a\`b!(2;\`c) and func {[x;y]x+y}
 20 primitives/verbs, 6 operators/adverbs and 3 system functions
 
-Verb      (unary)   Adverb               Noun      (null)
-: gets              '  each              name  \`a\`b \`
-+ plus     flip     /  over|join         char  "ab" " "
-- minus    negate   \\  scan|split        num   2 .3 0N(nan) 0w(inf)
-* times    first    ': eachprior         hex   0x2a2b
-% divide   sqrt     /: eachright         bool  01000b
-! mod|map  enum|key \\: eachleft
-& min|and  where
-| max|or   reverse  System               list (2;3.4;\`ab)
-< less     asc      0: url r/w(line)     dict \`a\`b!(2;\`c)
-> more     desc     1: json r/w         view f::32+1.8*c
-= equal    group    5: printable form    func {[c]32+1.8*c}
-~ match    not
-, concat   enlist
-^ except   null                          \\t x   time
-# take|rsh count                         \\e     editor
-_ drop|cut floor                         \\r run editor
-$ cast|sum string   $[c;t;f]     COND    \\v variables
-? find|rnd distinct ?[x;I;[f;]y] insert  \\f functions
-@ at       type     @[x;i;[f;]y] amend   \\c clear log
-. dot      eval|val .[x;i;[f;]y] dmend   \\u make url
+Verb       (unary)   Adverb               Noun        (null)
+: gets               '  each              name  \`a\`b   \`
++ plus      flip     /  over|join         char  "ab"    " "
+- minus     negate   \\  scan|split        num   2 .3   0N(nan) 0w(inf)
+* times     first    ': eachprior         hex   0x2a2b
+% divide    sqrt     /: eachright         bool  01000b
+! mod|map   enum|key \\: eachleft
+& min|and   where
+| max|or    reverse  System               list (2;3.4;\`ab)
+< less      asc      0: url r/w(line)     dict \`a\`b!(2;\`c)
+> more      desc     1: json r/w          view f::32+1.8*c
+= equal     group    5: printable form    func {[c]32+1.8*c}
+~ match     not
+, concat    enlist
+^ except    null                          \\t x   time
+# take|rsh  count                         \\e     editor
+_ drop|cut  floor                         \\r run editor
+$ cast|sum  string   $[c;t;f]     COND    \\v variables
+? find|rnd  distinct ?[x;I;[f;]y] insert  \\f functions
+@ at        type     @[x;i;[f;]y] amend   \\c clear log
+. dot       eval|val .[x;i;[f;]y] dmend   \\u make url
 `
 
 prompt.focus();
 prompt.onkeydown = processInput;
 scroll.innerHTML =
 	"Welcome to <a href='https://github.com/JohnEarnest/ok' target='_blank'>oK</a> v"+version+
-	"<br>(inspired by <a href='http://kparc.com/k.txt' target='_blank'>K5</a>)"+
+	"<br>(inspired by <a href='http://kparc.com/k.txt' target='_blank'>K5</a>; &#92;h for help)"+
 	"<br>&nbsp;&nbsp;";
 
 function escapeHTML(text) {
