@@ -183,13 +183,13 @@ Verb       (unary)    Adverb             Noun         (null)
 = equal     group     5: printable form  func {[c]32+1.8*c}
 ~ match     not
 , concat    enlist
-^ except    null                         \\t x   time
-# take|rsh  count                        \\\\     exit
-_ drop|cut  floor
-$ cast|sum  string    $[c;t;f]     COND
-? find|rnd  distinct  ?[x;I;[f;]y] insert
-@ at        type      @[x;i;[f;]y] amend
-. dot       eval|val  .[x;i;[f;]y] dmend
+^ except    null                           \\t x   time
+# take|rsh  count                          \\e     editor
+_ drop|cut  floor                          \\r run editor
+$ cast|sum  string    $[c;t;f]     COND    \\v variables
+? find|rnd  distinct  ?[x;I;[f;]y] insert  \\f functions
+@ at        type      @[x;i;[f;]y] amend   \\c clear log
+. dot       eval|val  .[x;i;[f;]y] dmend   \\u make url
 `
 
 prompt.focus();
