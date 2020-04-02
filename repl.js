@@ -71,6 +71,7 @@ function readJSON(x) {
 		f = path.resolve(process.cwd(), f);
 		var t;
 		try {
+			// ? would it make sense to also give back a directory list in json when the string is a directory ?
 			t = JSON.parse(fs.readFileSync(f, 'utf8'));
 		} catch (err) {
 			process.stdout.write('JSON parsing error: ' + err.message + '\n');
@@ -80,7 +81,7 @@ function readJSON(x) {
 }
 for (var i = 0; i < 2; i++) { ok.setIO('0:', i, read ); }
 for (var i = 2; i < 6; i++) { ok.setIO('0:', i, write); }
-for (var i = 0; i < 2; i++) { ok.setIO('1:', i, readJSON); } // ? would it make sense to also give back a directory list in json when the string is a directory ?
+for (var i = 0; i < 2; i++) { ok.setIO('1:', i, readJSON); }
 for (var i = 0; i < 2; i++) { ok.setIO('5:', i, function(x) { return conv.tok(ok.format(x)); }); }
 
 var env = ok.baseEnv();
