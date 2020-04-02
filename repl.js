@@ -83,10 +83,10 @@ function readJSON(x) {
 		}
 	}
 }
-for (var i = 0; i < 2; i++) { ok.setIO('0:', i, read ); }
+ok.setIO('0:', 1, read );
 for (var i = 2; i < 6; i++) { ok.setIO('0:', i, write); }
-for (var i = 0; i < 2; i++) { ok.setIO('1:', i, readJSON); }
-for (var i = 0; i < 2; i++) { ok.setIO('5:', i, function(x) { return conv.tok(ok.format(x)); }); }
+ok.setIO('1:', 1, readJSON);
+ok.setIO('5:', 1, function(x) { return conv.tok(ok.format(x)); });
 
 var env = ok.baseEnv();
 
