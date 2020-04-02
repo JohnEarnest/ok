@@ -66,10 +66,10 @@ function write(x, y) {
 	return y;
 }
 function readJSON(x) {
-	var t;
 	var f = str(x);
 	if (f) {
 		f = path.resolve(process.cwd(), f);
+		var t;
 		try {
 			t = JSON.parse(fs.readFileSync(f, 'utf8').replace(/\r?\n$/, '').split(/\r?\n/));
 		} catch (err) {
