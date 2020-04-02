@@ -71,7 +71,7 @@ function readJSON(x) {
 		f = path.resolve(process.cwd(), f);
 		var t;
 		try {
-			t = JSON.parse(fs.readFileSync(f, 'utf8').replace(/\r?\n$/, '').split(/\r?\n/));
+			t = JSON.parse(fs.readFileSync(f, 'utf8'));
 		} catch (err) {
 			process.stdout.write('JSON parsing error: ' + err.message + '\n');
 		}
