@@ -119,11 +119,14 @@ button:focus {
 		<textarea id="editor" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">editor</textarea>
 		<div id="status"></div>
 	</div><div class="canvasbox">
-		<div class="control" style="right: 110px;">
+		<div class="control" style="right: 160px;">
 			<img src="img/play.png" title="Run" id="playbutton" onclick="play();"></img>
 		</div>
-		<div class="control" style="right: 60px;" >
+		<div class="control" style="right: 110px;" >
 			<img src="img/gist.png" title="Save a Gist" onclick="share();"></img>
+		</div>
+		<div class="control" style="right: 60px;">
+			<img src="img/record.png" title="Save Animated GIF" onclick="record();"></div>
 		</div>
 		<div class="control">
 			<img src="img/full.png" title="Fullscreen" onclick="fullscreen();"></img>
@@ -150,6 +153,8 @@ button:focus {
 <script src="text.js"></script>
 <script src="noise.js"></script>
 <script src="audio.js"></script>
+<script src="filesaver.js"></script>
+<script src="recording.js"></script>
 <script>
 
 // install extended math/utility functions in oK:
