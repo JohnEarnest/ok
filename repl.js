@@ -18,8 +18,8 @@ Verb       (unary)    Adverb             Noun         (null)
 & min|and   where
 | max|or    reverse   System             list (2;3.4;\`ab)
 < less      asc       0: file r/w        dict \`a\`b!(2;\`c)
-> more      desc      5: printable form  view f::32+1.8*c
-= equal     group                        func {[c]32+1.8*c}
+> more      desc      1: json r (file)   view f::32+1.8*c
+= equal     group     5: printable form  func {[c]32+1.8*c}
 ~ match     not
 , concat    enlist
 ^ except    null                         \\t x   time
@@ -65,8 +65,27 @@ function write(x, y) {
 	}
 	return y;
 }
+function readJSON(x) {
+	var f = str(x);
+	if (f) {
+		f = path.resolve(process.cwd(), f);
+		// ? would it make sense to also give back a directory list in json when the string is a directory ?
+		if (!fs.statSync(f).isDirectory()) {
+			var t;
+			try {
+				t = JSON.parse(fs.readFileSync(f, 'utf8'));
+			} catch (err) {
+				process.stdout.write('JSON parsing error: ' + err.message);
+			}
+			if (t) {
+				return conv.tok(t);
+			}
+		}
+	}
+}
 for (var i = 0; i < 2; i++) { ok.setIO('0:', i, read ); }
 for (var i = 2; i < 6; i++) { ok.setIO('0:', i, write); }
+for (var i = 0; i < 2; i++) { ok.setIO('1:', i, readJSON); }
 for (var i = 0; i < 2; i++) { ok.setIO('5:', i, function(x) { return conv.tok(ok.format(x)); }); }
 
 var env = ok.baseEnv();
