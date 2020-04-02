@@ -104,7 +104,7 @@ function isnull   (x) { return max(match(x, NIL),match(x,k(11))); }
 function count    (x) { return k(0, x.t == 4 ? len(x.v) : x.t == 3 ? len(x) : 1); }
 function floor    (x) { return x.t == 1 ? lower(x) : k(0, Math.floor(n(x).v)); }
 function type     (x) { return k(0, kt[x.t]); }
-function kfmt     (x) { var r=stok(format(x, 0, 1)); return r.t == 3 ? r : enlist(r); }
+function kfmt     (x) { var r=stok(format(x, 0, 1)); return x.t==3 ? x : r.t==3 ? r : enlist(r); }
 function real     (x) { return krange(n(x).v, function() { return k(0, Math.random()); }); }
 
 function iota(x) {
@@ -346,6 +346,12 @@ function am(f) { // create an atomic monad
 		       x.t == 3 ? kmap(x, function(x) { return recur(x, env); }) : f(x, env);
 	};
 }
+function as(f) { // create a string-atomic monad
+	return function recur(x, env) {
+		return x.t == 3 && !x.v.every(function(x) { return x.t == 1 }) ?
+		       kmap(x, function(x) { return recur(x, env); }) : f(x, env);
+	}
+}
 function ar(f) { // create a right atomic dyad
 	return function recur(x, y, env) {
 		return y.t == 3 ? kmap(y, function(z) { return recur(x, z, env); }) : f(x, y, env);
@@ -404,7 +410,7 @@ var verbs = {
 	"^" : [pisnull,   am(pisnull),except,     except,     except,     except,     null,    null  ],
 	"#" : [count,     count,      take,       reshape,    take,       reshape,    null,    null  ],
 	"_" : [am(floor), am(floor),  drop,       ddrop,      drop,       cut,        null,    null  ],
-	"$" : [kfmt,      am(kfmt),   dfmt,       dfmt,       dfmt,       dfmt,       null,    null  ],
+	"$" : [kfmt,      as(kfmt),   dfmt,       dfmt,       dfmt,       dfmt,       null,    null  ],
 	"?" : [real,      unique,     rnd,        pfind,      rnd,        ar(pfind),  splice,  null  ],
 	"@" : [type,      type,       atx,        atx,        atx,        atx,        amend4,  amend4],
 	"." : [keval,     keval,      call,       call,       call,       call,       dmend4,  dmend4],
