@@ -802,31 +802,6 @@ test("f:{}. 1 2!3 4;.f", "1 2!3 4");
 
 // NOTES/TODO:
 
-// global assignment doesn't appear to permit compound assignment, as in {c+::5}.
-// k5 doesn't appear to permit spaces in symbol-list literals.
-
-// [a:4]>/:1 4 6 prints in k5 as +[a:100b]
-// (+[a:4 3;b:3 4])@1   ~   [a:3;b:4]
-
-// {$[0>@x;&@[x#1;y;0];x@&$[0>@y;~y=x;^y?x]]}     / impl of except?
-// {$[x~*x;&@[x#1;y;0];x@&$[y~*y;~y=x;(#y)=y?x]]}
-
-//casts for date/time:
-// `y - years
-// `d - days
-// `m - minutes
-// `r - hours+minutes,
-// `s - seconds
-// `t - hoursminutessecondsmsec
-//
-// `T - time
-// `D - date
-// `H - hour
-// `M - month
-// `Y - year
-// `R - date,hour,minute
-// `S - date,hour,minute,second
-
 // I need to eagerly evaluate portions of sticky expressions wherever possible:
 //test("f:(1+2)+", "3+");
 //test("a:1;b:a+;a:2;b 3", "4");
@@ -834,12 +809,6 @@ test("f:{}. 1 2!3 4;.f", "1 2!3 4");
 // clear up application/dict ambiguity.
 // f[a:1]  is f.,(a:1)
 // f [a:1] is f.,[a:1]
-
-// ?[t;c;b;a] query is the K4/Q "select"
-// - t is a 'table'
-// - c is 'constraints'
-// - b is a dict of grouping specifications ('by')
-// - a is a dict of select specifications ('aggregate')
 
 // I need to unify the two definitions of nil floating around currently
 
