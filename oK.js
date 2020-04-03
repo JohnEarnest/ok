@@ -85,8 +85,8 @@ function divide(x, y) { return k(0, n(x).v / n(y).v); }
 function mod   (x, y) { return k(0, n(x).v>0 ? kmod(n(y).v, x.v) : Math.floor(n(y).v / -x.v)); }
 function max   (x, y) { return na(x)?y:na(y)?x:k(0, Math.max(n(x).v, n(y).v)); }
 function min   (x, y) { return                 k(0, Math.min(n(x).v, n(y).v)); }
-function less  (x, y) { return kb(a(x).v < a(y).v); }
-function more  (x, y) { return kb(a(x).v > a(y).v); }
+function less  (x, y) { return kb(x.t==3 && y.t==3 ? clist(x,y,1) : a(x).v < a(y).v); }
+function more  (x, y) { return kb(x.t==3 && y.t==3 ? clist(x,y,0) : a(x).v > a(y).v); }
 function equal (x, y) { return kb((x.v == y.v) || (na(x) && na(y))); }
 function join  (x, y) { return l(y).v.reduce(function(z, y) { return cat(z, cat(x, y)); }); }
 function ident    (x) { return x; }
@@ -229,6 +229,12 @@ function bin(x, y) {
 	var a=0; var b=len(x); if (b<1 || less(y, first(x)).v) { return k(0,-1); }
 	while(b - a > 1) { var i=a+Math.floor((b-a)/2); if (more(x.v[i], y).v) { b=i; } else { a=i; } }
 	return k(0, a);
+}
+
+function clist(x, y, a) {
+	return match(x,y).v?0: len(x)<len(y)?a: len(x)>len(y)?!a:
+	       less(first(x),first(y)).v?a: more(first(x),first(y)).v?!a:
+	       clist(drop(k1,x),drop(k1,y),a);
 }
 
 function split  (x, y) { return (x.t != 1) ? unpack(x, y) : call(splitimpl, k(3, [x,y])); }
