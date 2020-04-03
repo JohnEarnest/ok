@@ -424,7 +424,7 @@ var verbs = {
 	"$" : [kfmt,      as(kfmt),   dfmt,       dfmt,       dfmt,       dfmt,       null,    null  ],
 	"?" : [real,      unique,     rnd,        pfind,      rnd,        ar(pfind),  splice,  null  ],
 	"@" : [type,      type,       atx,        atx,        atx,        atx,        amend4,  amend4],
-	"." : [keval,     keval,      call,       call,       call,       call,       dmend4,  dmend4],
+	"." : [keval,     keval,      call,       call,       call,       call,       dmend3,  dmend4],
 	"'" : [null,      null,       null,       bin,        null,       ar(bin),    null,    null  ],
 	"/" : [null,      null,       null,       null,       pack,       pack,       null,    null  ],
 	"\\": [null,      null,       null,       unpack,     split,      null,       null,    null  ],
@@ -598,6 +598,7 @@ function run(node, env) {
 }
 
 function amend4(args, env) { return mend(args, env, amendm, amendd); }
+function dmend3(args, env) { return args[0].t != 3 ? trap(args, env) : dmend4(args, env); }
 function dmend4(args, env) { return mend(args, env, dmend, dmend); }
 
 function mend(args, env, monadic, dyadic) {
@@ -626,6 +627,10 @@ function dmend(d, i, y, f, env) {
 	else if (isnull(i.v[0]).v) { kmap(d,function(x,i) { dmend(atx(d,k(0,i),env),rest,y,f,env); }); }
 	else if (d.v[0].t != 3) { (y?amendd:amendm)(d, i, y, f, env); }
 	else { dmend(atx(d, first(i), env), rest, y, f, env); }
+}
+
+function trap(args, env) {
+	try { return k(3,[k0,call(args[0],l(args[1]))]) } catch(e) { return k(3,[k1,stok(e.message)]) }
 }
 
 ////////////////////////////////////

@@ -801,6 +801,14 @@ If `v` is a monadic verb train or function, it is applied to the elements specif
 	  ?["a look back";2 6;|:]
 	"a kool back"
 
+`.[f;x;:]` is <b>error trap</b>. Call `f` with the argument list `x`. If any internal faults occur, return `(1;e)` where `e` is the error message as a string. If execution is successful, return `(0;x)` where `x` is the result of `f.x`.
+
+	  .[1+;,1;:]
+	0 2
+	  .[1+;,`a;:]
+	(1
+	 "number expected, found symbol.")
+
 Builtins
 --------
 Beyond the standard verbs, K includes a number of named functions for useful but less common operations:
