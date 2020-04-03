@@ -671,7 +671,7 @@ des[CLOSE_B]="']'"   ;des[CLOSE_P]="')'"    ;des[CLOSE_C]="'}'";
 var text = "";
 var funcdepth = 0;
 function begin(str) {
-	str = str.replace(/("(?:[^"\\\n]|\\.)*")|(\s\/.*)|([a-z\d\]\)]-\.?\d)/gi, function(_, x, y, z) {
+	str = str.replace(/("(?:[^"\\\n]|\\.)*")|(\s\/.*)|([a-z\d\]\)]-(?=\.?\d))/gi,function(_,x,y,z) {
 		// preserve a string (x), remove a comment (y), disambiguate a minus sign (z)
 		return x ? x : y ? "" : z.replace('-', '- ')
 	})
