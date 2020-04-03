@@ -1,5 +1,7 @@
 From K5 to K6
 =============
+NOTE: these materials should no longer be considered accurate. k6 was entirely abandoned and never finished, so I no longer consider the behavior of that interpreter strictly normative. oK is its own dialect, striving to follow the _intent_ of k5/k6, but not the gory edge cases. Keeping this up for posterity, but it will _not_ be kept up to date!
+
 oK was started as an effort to create a widely accessible interpreter for k5, the bleeding-edge work-in-progress version of Arthur Whitney's inimitable programming language. Recently, I have discovered that Arthur abandoned k5 and rewrote it from scratch in response to significant structural reorganization. The result is k6. I've obtained a k6 binary from Arthur, and looking forward I plan to retrofit oK to work toward k6 compatibility. This document will gather known differences between k5 and k6 and track oK's progress during the transition. Everything here is the result of my own experimentation, but I'll be as exhaustive as possible. When this transition is complete, I hope this document will still provide an interesting window into the evolution of K.
 
 For those features implemented in k6 itself, injection of invalid arguments makes it possible to examine this implementation, both simplifying the work of supporting these features in oK and ensuring the best possible edge-case compatibility.
