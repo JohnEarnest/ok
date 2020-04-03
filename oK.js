@@ -409,7 +409,7 @@ var verbs = {
 	"+" : [ident,     flip,       ad(plus),   ad(plus),   ad(plus),   ad(plus),   null,    null  ],
 	"-" : [am(negate),am(negate), ad(minus),  ad(minus),  ad(minus),  ad(minus),  null,    null  ],
 	"*" : [first,     first,      ad(times),  ad(times),  ad(times),  ad(times),  null,    null  ],
-	"%" : [sqrt,      am(sqrt),   ad(divide), ad(divide), ad(divide), ad(divide), null,    null  ],
+	"%" : [am(sqrt),  am(sqrt),   ad(divide), ad(divide), ad(divide), ad(divide), null,    null  ],
 	"!" : [iota,      odometer,   mod,        null,       ar(mod),    md,         null,    null  ],
 	"&" : [where,     where,      ad(min),    ad(min),    ad(min),    ad(min),    null,    null  ],
 	"|" : [rev,       rev,        ad(max),    ad(max),    ad(max),    ad(max),    null,    null  ],
