@@ -115,7 +115,7 @@ iKe pre-defines and updates several K variables for your convenience:
 - `my`: the vertical position of the mouse in pixels (read only)
 - `pi`: the mathematical constant Pi (read only)
 - `tr`: tick rate; how many times per second `tick` and `draw` are fired (read and write)
-- `framecount`: when recording an animated GIF, the number of frames to render. (read and write)
+- `fc`: when recording an animated GIF, the number of frames to render. (read and write)
 
 iKe provides a number of pre-defined palettes. Since transparency is useful, the last color of most palettes is fully transparent:
 
@@ -158,4 +158,4 @@ Your programs can perform asynchronous HTTP requests to remote servers which ret
 
 Animated GIFs
 -------------
-The "record" button asks iKe to render an animated GIF of the program's output. The result will have `framecount` frames, which will each have an interframe delay which respects `tr`. Each frame must contain fewer than 128 colors(!)  Note that the resulting GIFs may be very large- consider running them through an optimizer like [Gifsicle](https://www.lcdf.org/gifsicle/).
+The "record" button asks iKe to render an animated GIF of the program's output. The result will have `fc` frames, which will each have an interframe delay which respects `tr`. Each frame must contain fewer than 128 colors(!)  Note that the resulting GIFs may be very large- consider running them through an optimizer like [Gifsicle](https://www.lcdf.org/gifsicle/).

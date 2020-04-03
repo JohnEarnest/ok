@@ -74,9 +74,9 @@ function record() {
 		try {
 			setvars()
 			run(parse(code), env)
-			if (!env.contains(ks('draw')))       { throw new Error('no definition of draw.') }
-			if (!env.contains(ks('framecount'))) { throw new Error('no definition of framecount.') }
-			const framecount = env.lookup(ks('framecount'), true).v
+			if (!env.contains(ks('draw'))) { throw new Error('no definition of draw.') }
+			if (!env.contains(ks('fc')))   { throw new Error('no definition of fc (framecount).') }
+			const framecount = env.lookup(ks('fc'), true).v
 			const gif = gifBuilder(canvas.width, canvas.height)
 			gif.comment('made with octo on '+new Date().toISOString())
 			gif.loop()
