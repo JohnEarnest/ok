@@ -239,6 +239,7 @@ function splice(xyz)   { return call(spliceimpl, k(3, xyz)); }
 function imat(x)       { var i = iota(x); return kmap(i, function(z) { return ar(equal)(z, i); }); }
 function odometer(x)   { return call(odoimpl, enlist(x)); }
 
+
 ////////////////////////////////////
 //
 //   Primitive Adverbs
@@ -269,6 +270,10 @@ function eachleft(dyad, list, right, env) {
 function eachprior(dyad, x, env) {
 	var specials = {"+":k0, "*":k1, "-":k0, "&":first(x), ",":k(3,[]), "%":k1};
 	return eachpc(dyad, (dyad.v in specials) ? specials[dyad.v] : NA, x, env);
+}
+
+function stencil(monad, x, y, env) {
+	return each(monad, call(winimpl, k(3, [x,y]), env))
 }
 
 function eachpc(dyad, x, y, env) {
@@ -461,7 +466,7 @@ function valence(node, env) {
 
 var adverbs = {
 	//       mv/nv       dv          l-mv         l-dv       3+v
-	"':"  : [null,       eachprior,  null,        eachpc,    null ],
+	"':"  : [null,       eachprior,  stencil,     eachpc,    null ],
 	"'"   : [each,       eachd,      eachd,       eachd,     eacha],
 	"/:"  : [null,       null,       eachright,   eachright, null ],
 	"\\:" : [null,       null,       eachleft,    eachleft,  null ],

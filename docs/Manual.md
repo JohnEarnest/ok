@@ -695,6 +695,12 @@ As a general note, niladic functions may be used where monadic functions are val
 	 3 2
 	 4 3)
 
+`n m':l` is <b>stencil</b>, which applies a monad to overlapping windows of some size on the list. This can be seen as a convenience for "each window":
+
+	  3(,/$)':11 22 33 44
+	("112233"
+	 "223344")
+
 <a name="eachright"/>
 
 `x d/:l` is <b>eachright</b>. Apply the dyad to the entire left argument and each right argument, producing a new list.
