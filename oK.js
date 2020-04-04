@@ -62,6 +62,7 @@ function na    (x)       { return x.t === 0 && isNaN(x.v); }
 
 function stok(x) { return kl(krange(x.length, function(z) { return k(1,x.charCodeAt(z)); }).v); }
 function c(x)    { return (x.t==3) ? k(x.t, x.v.slice(0)) : (x.t==4) ? md(c(x.k), c(x.v)) : x; }
+function dc(x)   { return (x.t==3) ? k(x.t, x.v.map(dc))  : (x.t==4) ? md(dc(x.k), dc(x.v)) : x; }
 function ct(n,t) { if (n.t!=t) throw new Error(TN[t]+" expected, found "+TN[n.t]+"."); return n; }
 function p(x) { if (n(x).v<0||x.v%1!=0) { throw new Error("positive int expected."); } return x.v; }
 function ktos(x, esc) {
@@ -603,7 +604,7 @@ function dmend3(args, env) { return args[0].t != 3 ? trap(args, env) : dmend4(ar
 function dmend4(args, env) { return mend(args, env, dmend, dmend); }
 
 function mend(args, env, monadic, dyadic) {
-	var ds = args[0], i = args[1], f = args[2], y = args[3];
+	var ds = dc(args[0]), i = args[1], f = args[2], y = args[3];
 	(y?dyadic:monadic)(ds.t == 2 ? env.lookup(ds,true) : ds, i, y, f, env); return ds;
 }
 
