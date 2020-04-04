@@ -378,7 +378,7 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 <pre><code>  #4 7 10
 3
   #[a:3;b:17]
-17 17 17
+2
   #"c"
 1</code></pre>
 	</td>
