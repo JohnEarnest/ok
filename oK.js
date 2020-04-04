@@ -195,6 +195,7 @@ function rnd(x, y, env) {
 }
 
 function flip(x, env) {
+	if (x.t != 3) return enlist(enlist(x))
 	x=eachright(k(8,"#"), over(k(8,"|"), each(k(8,"#"), x, env), env), x, env);
 	return krange(len(first(x)), function(z){
 		return krange(len(x), function(t){ return x.v[t].v[z]; });
@@ -406,7 +407,7 @@ function applyd(verb, x, y, env) {
 var verbs = {
 	//     a          l           a-a         l-a         a-l         l-l         triad    tetrad
 	":" : [ident,     ident,      rident,     rident,     rident,     rident,     null,    null  ],
-	"+" : [ident,     flip,       ad(plus),   ad(plus),   ad(plus),   ad(plus),   null,    null  ],
+	"+" : [flip,      flip,       ad(plus),   ad(plus),   ad(plus),   ad(plus),   null,    null  ],
 	"-" : [am(negate),am(negate), ad(minus),  ad(minus),  ad(minus),  ad(minus),  null,    null  ],
 	"*" : [first,     first,      ad(times),  ad(times),  ad(times),  ad(times),  null,    null  ],
 	"%" : [am(sqrt),  am(sqrt),   ad(divide), ad(divide), ad(divide), ad(divide), null,    null  ],
