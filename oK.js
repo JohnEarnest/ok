@@ -853,6 +853,7 @@ function parseEx(node) {
 	if (at(ADVERB)) { return parseAdverb(null, node); }
 	if (node.t == 8 && !node.r) {
 		var p = at(OPEN_P); var x = parseNoun();
+		if (at(ADVERB) && valence(node) == 1) return parseAdverb(node, x)
 		node.r = parseEx((p && x.t == 8) ? k(13, x) : x); node.sticky = null;
 	}
 	if (atNoun() && !at(IOVERB)) {

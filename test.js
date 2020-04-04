@@ -66,8 +66,7 @@ function files() {
 }
 
 function show(input) {
-	console.log(ok.parse(input));
-	//console.log(JSON.stringify(ok.parse(input)));
+	console.log(JSON.stringify(ok.parse(input), null, 2));
 }
 
 console.log("tests...");
@@ -792,10 +791,14 @@ test(".[!:;,`a;:]"                    , '(1\n "number expected, found symbol.")'
 test(".[!:;`a;:]"                     , '(1\n "list expected, found symbol.")');
 test(".[*(+;-);1+!2;:]"               , "0 3"                                 );
 test("%`x`y!(4,9)"                    , "[x:2;y:3]"                           );
-
 test('1-2-3'                          , '2'                                   );
 test('-1-2-3'                         , '0'                                   );
 test('1-2-3-4'                        , '-2'                                  );
+
+test('{5>x}{1+x}\\0'                  , '0 1 2 3 4 5'                         );
+test('(5>){1+x}\\0'                   , '0 1 2 3 4 5'                         );
+test('{5>x}(1+)\\0'                   , '0 1 2 3 4 5'                         );
+test('(5>)(1+)\\0'                    , '0 1 2 3 4 5'                         );
 
 //test("(+/[;2 3 4])@9"); // 18
 //test("+/[;2 3 4]9"); // 18
