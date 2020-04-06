@@ -158,4 +158,4 @@ Your programs can perform asynchronous HTTP requests to remote servers which ret
 
 Animated GIFs
 -------------
-The "record" button asks iKe to render an animated GIF of the program's output. The result will have `fc` frames, which will each have an interframe delay which respects `tr`. Each frame must contain fewer than 128 colors(!)  Note that the resulting GIFs may be very large- consider running them through an optimizer like [Gifsicle](https://www.lcdf.org/gifsicle/).
+The "record" button asks iKe to render an animated GIF of the program's output. The result will have `fc` frames, which will each have an interframe delay which respects `tr`. Note that the resulting GIFs may be very large- consider running them through an optimizer like [Gifsicle](https://www.lcdf.org/gifsicle/).

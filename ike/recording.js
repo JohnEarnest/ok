@@ -66,6 +66,42 @@ function gifBuilder(width, height) {
 	}
 }
 
+function colorDistance(x, y) {
+	const r = ((x>>16)&0xFF) - ((y>>16)&0xFF),
+	      g = ((x>> 8)&0xFF) - ((y>> 8)&0xFF),
+	      b = ((x    )&0xFF) - ((y    )&0xFF)
+	return (r*r)+(g*g)+(b*b)
+}
+
+function repalette(pixels) {
+	// find all distinct colors and their frequency
+	const hist={}
+	pixels.forEach(x => {
+		if (x in hist) { hist[x].c++ }
+		else { hist[x]={c:1, v:x} }
+	})
+
+	// cull uncommon colors > 127 by mapping them
+	// to the closest available common color
+	const byfreq=Object.values(hist).sort((x,y) => y.c - x.c)
+	while(byfreq.length>127) {
+		const e=byfreq.pop()
+		let n=byfreq[0], nd=colorDistance(e.v, n.v)
+		for (let x=1; x<Math.min(127,byfreq.length); x++) {
+			const d=colorDistance(e.v, byfreq[x].v)
+			if (d<nd) { n=byfreq[x]; nd=d }
+		}
+		hist[e.v]=n
+	}
+	byfreq.forEach((x,i) => x.i = i)
+
+	// rebuild the image based on the new palette
+	return {
+		pixels: pixels.map(x => hist[x].i),
+		colors: byfreq.map(x => x.v),
+	}
+}
+
 function record() {
 	stop()
 	env = extendedEnv()
@@ -78,7 +114,7 @@ function record() {
 			if (!env.contains(ks('fc')))   { throw new Error('no definition of fc (framecount).') }
 			const framecount = env.lookup(ks('fc'), true).v
 			const gif = gifBuilder(canvas.width, canvas.height)
-			gif.comment('made with octo on '+new Date().toISOString())
+			gif.comment('made with iKe on '+new Date().toISOString())
 			gif.loop()
 			for (frame = 0; frame < framecount; frame++) {
 				// draw/update
@@ -88,16 +124,14 @@ function record() {
 				env.put(ks('once'), true, callko('tick', [getonce()]))
 
 				// produce GIF frame
-				const colors = []
 				const pixels = []
 				const raw = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height)
 				for(let z = 0; z < canvas.width*canvas.height; z++) {
 					const p = (raw.data[z*4]<<16) | (raw.data[z*4+1]<<8) | (raw.data[z*4+2])
-					let i = colors.indexOf(p)
-					if (i == -1) { colors.push(p); i = colors.length-1 }
-					pixels.push(i)
+					pixels.push(p)
 				}
-				gif.frame(colors, pixels, 0|(frameDelay()/10)) // frameDelay is in ms...
+				const processed = repalette(pixels)
+				gif.frame(processed.colors, processed.pixels, 0|(frameDelay()/10)) // frameDelay is in ms...
 			}
 			saveAs(new Blob([new Uint8Array(gif.finish())], {type: 'image/gif'}), 'recording.gif')
 			showStatus('exported '+canvas.width+'x'+canvas.height+' GIF with '+framecount+' frame(s)')
