@@ -114,8 +114,9 @@ K has 6 primitive adverbs, some of which consist of two characters: `'`, `/`,`\`
 For the purposes of the adverb and verb references, the following conventions will be used:
 
 - `a`: any atom
-- `n`: any number
-- `l`: any list
+- `n`: a number
+- `c`: a character
+- `l`: a list
 - `m`: monadic verb or function
 - `d`: dyadic verb or function
 
