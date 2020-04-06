@@ -37,7 +37,7 @@ function gifBuilder(width, height) {
 			b(0)           // terminator
 		},
 		frame: (colors,pixels,delay) => {
-			const z = Math.ceil(Math.log(colors.length)/Math.log(2))
+			const z = Math.ceil(Math.log(colors.length)/Math.log(2)) || 1
 
 			s(0xF921)      // graphic control extension
 			b(4)           // payload size
