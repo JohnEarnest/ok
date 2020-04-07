@@ -111,6 +111,7 @@ textarea:focus,
 button:focus {
     outline: none;
 }
+.swatch { display:inline-block; width:60px; height:9px; border:1px solid black; }
 </style>
 
 <body>
@@ -386,19 +387,26 @@ function showError(text) {
 	status.appendChild(document.createTextNode(text));
 	status.style.backgroundColor = "darkred";
 }
-function showData(text) {
+function alignText(text) {
 	// all the lines must be padded to the same width,
 	// or else center-aligning the text in the pre tag won't look right:
 	var lines = text.split("\n");
 	var max = 0;
 	for(var z=0; z<lines.length;z++) { max = Math.max(max, lines[z].length); }
 	for(var z=0; z<lines.length;z++) { while(lines[z].length<max) { lines[z]+=" "; } }
-	text = lines.join("\n");
-
+	return lines.join("\n");
+}
+function showData(text, html) {
+	if (!html) text = alignText(text)
 	document.getElementById("canvas").style.display = "none";
 	document.getElementById("bigdatawrap").style.display = "table";
-	document.getElementById("bigdata").innerHTML = "";
-	document.getElementById("bigdata").appendChild(document.createTextNode(text));
+	if (html) {
+		document.getElementById("bigdata").innerHTML = text;
+	}
+	else {
+		document.getElementById("bigdata").innerHTML = "";
+		document.getElementById("bigdata").appendChild(document.createTextNode(text));
+	}
 }
 function hideData() {
 	document.getElementById("canvas").style.display = "block";
@@ -765,7 +773,17 @@ editor.onkeydown = function(event) {
 			setvars();
 			var code = editor.value.substring(editor.selectionStart, editor.selectionEnd);
 			try {
-				var r = format(run(parse(code), env));
+				var v = run(parse(code), env)
+				// display palettes with swatches:
+				if (!running && v.t==3 && v.v.every(s)) {
+					var sw = alignText(format(v)).split('\n').map((x,i) => {
+						return x + ` <div class='swatch' style='background:${tojs(v.v[i])}'></div>`
+					}).join('\n')
+					showData(sw, true)
+					showStatus("eval "+code)
+					return false
+				}
+				var r = format(v);
 				if (running) { showStatus(r.replace(/\n/g,";")); }
 				else { showData(r); showStatus("eval "+code); }
 			}
