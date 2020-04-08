@@ -247,14 +247,17 @@ function processInput(e) {
 function printEnv(filter, label) {
 	var found = {};
 	var len = 0;
-	for(var key in env.d) {
-		if (!filter(env.d[key])) { continue; }
-		len = Math.max(key.length, len);
-		found[key] = env.d[key];
+	for (var z = 0; z < env.d.k.v.length; z++) {
+		var key = env.d.k.v[z].v
+		var val = env.d.v.v[z]
+		if (filter(val)) {
+			len = Math.max(key.length, len)
+			found[key] = format(val)
+		}
 	}
 	for(var name in found) {
 		var n = name; for(var x=(len+1 - n.length); x>0; x--) { n += "&nbsp;"; }
-		printRepl(n + ": " + format(found[name]));
+		printRepl(n + ": " + found[name]);
 	}
 	if (len == 0) {
 		printRepl("no "+label+" defined.");
