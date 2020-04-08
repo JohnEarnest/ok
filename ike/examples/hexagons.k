@@ -12,12 +12,12 @@ pulse: {                                           / anim offset -> poly
 warp:  {                                           / fisheye warp (x;y) by z
 	r:%+/(x*x;y*y)                                 / polar radius
 	a:atan2[y;x]                                   / polar angle
-	(cos a;sin a)*\:s*tanh r%s:160*z               / hyperbolic, -> cartesian
+	(cos a;sin a)*\:s*tanh r%s:w*z                 / hyperbolic, -> cartesian
 }
 
 hv:    30*cos pi%6                                 / vertical offset (radius 30)
 hh:    2*hv*cos pi%6                               / horizontal offset
-grid:  ,/g,\:/:g:-2+!5                             / {[-2,2],[-2,2]}
+grid:  +2-!5 5                                     / {[-2,2],[-2,2]}
 hgrid: ,/{(2*hh*x;2*hv*y)-/:(0 0;hh,hv)}.'grid     / hex origins
 offs:  4 0N#2*?4*#hgrid                            / animation offsets
 
