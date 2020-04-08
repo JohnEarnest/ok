@@ -18,8 +18,8 @@ Verb       (unary)    Adverb             Noun         (null)
 & min|and   where
 | max|or    reverse   System             list (2;3.4;\`ab)
 < less      asc       0: file r/w        dict \`a\`b!(2;\`c)
-> more      desc      5: printable form  view f::32+1.8*c
-= equal     group                        func {[c]32+1.8*c}
+> more      desc      1: json r/w        view f::32+1.8*c
+= equal     group     5: printable form  func {[c]32+1.8*c}
 ~ match     not
 , concat    enlist
 ^ except    null                         \\t x   time
@@ -37,11 +37,17 @@ function str(x) { // convert a k string or symbol to a js string
 	if (typeof s !== 'string') { throw Error('ERROR: type'); }
 	return s;
 }
-function read(x) {
+function readp(dt, x) {
 	var f = str(x);
+	var tojs;
 	if (f) {
 		f = path.resolve(process.cwd(), f);
-		return conv.tok(fs.statSync(f).isDirectory() ? fs.readdirSync(f) : fs.readFileSync(f, 'utf8').replace(/\r?\n$/, '').split(/\r?\n/));
+		if (dt==0) {
+			return conv.tok(fs.statSync(f).isDirectory() ? fs.readdirSync(f) : fs.readFileSync(f, 'utf8').replace(/\r?\n$/, '').split(/\r?\n/));
+		} else if (dt==1) {
+			if (!fs.statSync(f).isDirectory()) 	{ tojs = fs.readFileSync(f, 'utf8'); }
+			else								{ throw Error("ERROR: Path '"+f+"' is a directory"); }
+		}
 	} else if (rl) {
 		throw Error('ERROR: cannot read from stdin while in REPL');
 	} else {
@@ -50,24 +56,32 @@ function read(x) {
 			n++;
 			if (n === b.length) { b0 = b; b = Buffer(2 * n); b0.copy(b, 0, 0, n); b0 = null; } // resize buffer when full
 		}
-		return conv.tok(b.toString('utf8', 0, n));
+		if 		(dt==0) { return conv.tok(b.toString('utf8', 0, n)); }
+		else if (dt==1) { tojs = b.toString('utf8', 0, n); }
+	}
+	if (tojs) {
+		try 		{ return conv.tok(JSON.parse(tojs)); }
+		catch (err)	{ throw Error('JSON parsing error: ' + err.message); }
 	}
 }
-function write(x, y) {
+function writep(dt, x, y) {
 	var s = conv.tojs(y);
-	if (Array.isArray(s)) { s = s.join('\n') + '\n'; }
-	if (typeof s !== 'string') { throw Error('ERROR: type'); }
-	var f = str(x);
-	if (f) {
-		fs.writeFileSync(path.resolve(process.cwd(), f), s);
-	} else {
-		fs.writeSync(process.stdout.fd, s);
+	if (dt==0) {
+		if (Array.isArray(s)) { s = s.join('\n') + '\n'; }
+		if (typeof s !== 'string') { throw Error('ERROR: type'); }
+	} else if (dt==1) {
+		s = JSON.stringify(s);
 	}
+	var f = str(x);
+	if (f) 	{ fs.writeFileSync(path.resolve(process.cwd(), f), s); }
+	else 	{ fs.writeSync(process.stdout.fd, s); }
 	return y;
 }
-for (var i = 0; i < 2; i++) { ok.setIO('0:', i, read ); }
-for (var i = 2; i < 6; i++) { ok.setIO('0:', i, write); }
-for (var i = 0; i < 2; i++) { ok.setIO('5:', i, function(x) { return conv.tok(ok.format(x)); }); }
+for (var i = 0; i < 2; i++) { ok.setIO('0:', i, function(x) { return readp(0,x); }); }
+for (var i = 0; i < 2; i++) { ok.setIO('1:', i, function(x) { return readp(1,x); }); }
+for (var i = 2; i < 6; i++) { ok.setIO('0:', i, function(x,y) { return writep(0,x,y); }); }
+for (var i = 2; i < 6; i++) { ok.setIO('1:', i, function(x,y) { return writep(1,x,y); }); }
+ok.setIO('5:', 1, function(x) { return conv.tok(ok.format(x)); });
 
 var env = ok.baseEnv();
 
@@ -131,9 +145,7 @@ rl.on('line', function (line) {
 			}
 			process.stdout.write(output);
 		}
-	} catch (err) {
-		process.stdout.write(err.message + '\n');
-	}
+	} catch (err) { process.stdout.write(err.message + '\n'); }
 	rl.prompt();
 });
 rl.on('close', function () { process.stdout.write('\n'); process.exit(0); });

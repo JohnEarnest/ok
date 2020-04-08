@@ -11,9 +11,8 @@
 "use strict";
 
 function tok(v) {
-	if (typeof v == 'number') {
-		return { t:0, v:v };
-	}
+	if (v == null) { return { t:11, v:null }; }
+	if (typeof v == 'number') { return { t:0, v:v }; }
 	if (typeof v == 'string') {
 		var r = [];
 		for(var z=0;z<v.length;z++) { r[z] = { t:1, v:v.charCodeAt(z) }; }
@@ -37,12 +36,9 @@ function tok(v) {
 }
 
 function tojs(v) {
-	if (v.t == 0 || v.t == 2) {
-		return v.v;
-	}
-	if (v.t == 1) {
-		return String.fromCharCode(v.v);
-	}
+	if (v.t == 0 || v.t == 11)	{ return (v.v || v.v == 0) ? v.v : null; }
+	if (v.t == 2) 				{ return v.v; }
+	if (v.t == 1) 				{ return String.fromCharCode(v.v); }
 	if (v.t == 3) {
 		var r = [];
 		var same = true;
@@ -52,7 +48,7 @@ function tojs(v) {
 	}
 	if (v.t == 4) {
 		var r = {};
-		for(var z=0;z<v.k.v.length;z++) { r[v.k.v[z]] = tojs(v.v.v[z]); }
+		for(var z=0;z<v.k.v.length;z++) { r[tojs(v.k.v[z])] = tojs(v.v.v[z]); }
 		return r;
 	}
 	throw new Error("cannot convert '"+JSON.stringify(v)+"' to a JavaScript datatype.");
