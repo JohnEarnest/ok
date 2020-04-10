@@ -203,6 +203,10 @@ When using the "do...while" forms to implement nontrivial algorithms, it is comm
 You might find that `eval` (`.`) is useful for unpacking this tuple into separate arguments, making the loop body and predicate both shorter and easier to understand, especially if tuple elements are used in many places:
 
 	{{x<y}.x}{{(x*x;y*2)}.x}\(2;100)
+	
+If there are only two arguments, you can avoid nesting functions by using `over` (`f/`) instead:
+
+	(</){(x*x;y*2)}/\(2;100)
 
 Sequential Processing
 ---------------------
