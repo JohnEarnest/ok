@@ -79,9 +79,9 @@ function writep(dt, x, y) {
 }
 for (var i = 0; i < 2; i++) { ok.setIO('0:', i, function(x) { return readp(0,x); }); }
 for (var i = 0; i < 2; i++) { ok.setIO('1:', i, function(x) { return readp(1,x); }); }
+for (var i = 0; i < 2; i++) { ok.setIO('5:', 1, function(x) { return conv.tok(ok.format(x)); }); }
 for (var i = 2; i < 6; i++) { ok.setIO('0:', i, function(x,y) { return writep(0,x,y); }); }
 for (var i = 2; i < 6; i++) { ok.setIO('1:', i, function(x,y) { return writep(1,x,y); }); }
-ok.setIO('5:', 1, function(x) { return conv.tok(ok.format(x)); });
 
 var env = ok.baseEnv();
 
