@@ -29,6 +29,11 @@ $ cast|sum  string    $[c;t;f]     COND
 ? find|rnd  distinct  ?[x;I;[f;]y] insert
 @ at        type      @[x;i;[f;]y] amend
 . dot       eval|val  .[x;i;[f;]y] dmend
+
+A manual of the oK language is available with more details:
+    https://github.com/JohnEarnest/ok/blob/gh-pages/docs/Manual.md
+A more general introduction to array programming is also provided:
+    https://github.com/JohnEarnest/ok/blob/gh-pages/docs/Programming.md
 `
 
 // register I/O hooks
