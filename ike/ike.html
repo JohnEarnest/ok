@@ -699,7 +699,17 @@ function paintEach(g, v) {
 	// position(s):
 	var pos = getvar(v[0]); if (pos.t != 3 && !isnull(pos).v) { return; }
 	var px = []; var py = [];
-	if      (isnull(pos).v)   {}
+	if (isnull(pos).v) {
+		if (v.length==2) {
+			// no coords for vector mode -> clear the background
+			var pal=getvar(v[1])
+			if (pal.t==11 || pal.t!=3) pal=cga
+			var colors=tojs(pal)
+			g.fillStyle=colors[1]
+			g.fillRect(0, 0, DISPLAY_WIDTH*SCALE, DISPLAY_HEIGHT*SCALE)
+			return
+		}
+	}
 	else if (len(pos) < 1)    { return; }
 	else if (pos.v[0].t == 0) { position(pos, px, py); }
 	else if (pos.v[0].t == 3) { for(var z=0; z < len(pos); z++) { position(pos.v[z], px, py); } }
@@ -784,6 +794,7 @@ editor.onkeydown = function(event) {
 					return false
 				}
 				var r = format(v);
+				if (v.t==4) r=r.replace(/;/g, '\n ') // multiline pretty dictionaries
 				if (running) { showStatus(r.replace(/\n/g,";")); }
 				else { showData(r); showStatus("eval "+code); }
 			}
