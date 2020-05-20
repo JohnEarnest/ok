@@ -99,9 +99,9 @@ iKe extends the basic k5 intrinsics `sin` `cos` `log` and `exp` with a broader r
 - `acos`: monadic. inverse cosine.
 - `asin`: monadic. inverse sine.
 - `atan`: monadic. inverse tangent.
-- `hcos`: monadic. hyperbolic cosine.
-- `hsin`: monadic. hyperbolic sine.
-- `htan`: monadic. hyperbolic tangent.
+- `cosh`: monadic. hyperbolic cosine.
+- `sinh`: monadic. hyperbolic sine.
+- `tanh`: monadic. hyperbolic tangent.
 - `pow`: dyadic. raise x to the y power.
 - `atan2`: dyadic. version of arctangent which disambiguates quadrants.
 - `pn`: triadic. 3d Perlin Noise generator.
