@@ -107,6 +107,8 @@ Mobile
 ------
 On mobile devices like cell phones, try [oK Mobile](http://johnearnest.github.io/ok/mobile.html)!
 
+![Mobile View Screenshot](https://raw.githubusercontent.com/JohnEarnest/ok/gh-pages/mobile.png)
+
 Tilting your device horizontally will provide a QWERTY touch-keyboard, and a vertical orientation will provide a calculator-like keypad which provides access to all K verbs and adverbs with a single keypress. Tapping on items from the output history copies them to your edit buffer.
 
 oK mobile provides graphing functionality in the form of the built-in `pl` (plot line) and `ps` (plot scatter) functions. Both will automatically rescale to suit the data you provide. The first argument to each function specifies the domain (x axis) and can be a list of numbers or a single number n (interpreted as `!n`). The second argument specifies the range (y axis) and can be a list of numbers or a monadic function f (interpreted as `f'x`).
