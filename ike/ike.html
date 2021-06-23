@@ -540,6 +540,7 @@ function play() {
 	b.title = "Stop";
 	b.onclick = stop;
 	env = extendedEnv();
+	editor.blur();
 	loadresources(function() {
 		var code = editor.value;
 		try {
