@@ -575,6 +575,12 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<tt>.l</tt> is <b>value</b>. Evaluate K expressions from strings.
 <pre><code>  ."1+2"
 3</code></pre>
+		<tt>.d</tt> gives the values of a dictionary.
+<pre><code>  .[a:11;b:22]
+11 22</code></pre>
+		<tt>.f</tt> gives the bound environment of a function as a dictionary. See "bind". (This exists only in oK.)
+<pre><code>  .{x+y}
+[in:{[x;y]~^y?x}]</code></pre>
 	</td>
 	<td>
 		<tt>l.a</tt> or <tt>l.l</tt> is <b>dot-apply</b>. Index at depth or apply a list of arguments to a function.
@@ -582,6 +588,15 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 4
   {x,2*y}.(3 5)
 3 10</code></pre>
+		<tt>f.d</tt> is <b>bind</b>. Treat the dictionary as the new global scope for the function. (This exists only in oK.)
+<pre><code>  f:{a+::x}.[a:100]
+{[x]a::.`a+x}
+  f 5
+105
+  f 20
+125
+  .f
+[a:125]</code></pre>
 	</td>
 </tr>
 <tr>
