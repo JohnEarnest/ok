@@ -620,7 +620,7 @@ function amendd(d, i, y, dyad, env) {
 }
 
 function dmend(d, i, y, f, env) {
-	if (i.t != 3) { (y?amendd:amendm)(d, i, y, f, env); return; }
+	if (i.t != 3 || d.t != 3) { (y?amendd:amendm)(d, i, y, f, env); return; }
 	if (len(i) == 1) { dmend(d, i.v[0], y, f, env); return; }
 	var rest = drop(k1,i,env); if (len(i)<1) { return; } if (i.v[0].t == 3) {
 		if (y && y.t == 3) { kzip(i, y, function(a, b) { amendd(d, a, b, f, env); }); return; }
