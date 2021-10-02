@@ -620,15 +620,20 @@ function amendd(d, i, y, dyad, env) {
 }
 
 function dmend(d, i, y, f, env) {
-	if (i.t != 3 || d.t != 3) { (y?amendd:amendm)(d, i, y, f, env); return; }
+	if (i.t != 3) { (y?amendd:amendm)(d, i, y, f, env); return; }
 	if (len(i) == 1) { dmend(d, i.v[0], y, f, env); return; }
-	var rest = drop(k1,i,env); if (len(i)<1) { return; } if (i.v[0].t == 3) {
+	var rest = drop(k1,i,env); if (len(i)<1) { return; }
+	if (i.v[0].t == 3) {
 		if (y && y.t == 3) { kzip(i, y, function(a, b) { amendd(d, a, b, f, env); }); return; }
 		kmap(i.v[0],function(x) { dmend(atx(d,x,env), rest, y, f, env); });
 	}
 	else if (isnull(i.v[0]).v) { kmap(d,function(x,i) { dmend(atx(d,k(0,i),env),rest,y,f,env); }); }
-	else if (d.v[0].t != 3) { (y?amendd:amendm)(d, i, y, f, env); }
-	else { dmend(atx(d, first(i), env), rest, y, f, env); }
+	else if (d.t == 3 && d.v[0].t != 3) { (y?amendd:amendm)(d, i, y, f, env); }
+	else {
+		var di=atx(d, first(i), env);
+		if(di.t!=3) { (y?amendd:amendm)(d, i, y, f, env); return }
+		dmend(di, rest, y, f, env);
+	}
 }
 
 function trap(args, env) {
@@ -712,8 +717,8 @@ function indexedassign(node, indexer) {
 	var gl = matches(COLON);
 	var ex = parseEx(parseNoun());
 	//t[x]::z  ->  ..[`t;x;{y};z]   t[x]:z  ->  t:.[t;x;{y};z]
-	if (!gl) { node.r = { t:8, v:".", curry:[ k(7,node.v), kl(indexer), op, ex] }; return node; }
-	return { t:8, v:".", r:{ t:8, v:".", curry:[ks(node.v), kl(indexer), op, ex] }};
+	if (!gl) { node.r = { t:8, v:".", curry:[ k(7,node.v), k(3,indexer), op, ex] }; return node; }
+	return { t:8, v:".", r:{ t:8, v:".", curry:[ks(node.v), k(3,indexer), op, ex] }};
 }
 
 function compoundassign(node, indexer) {
@@ -725,7 +730,7 @@ function compoundassign(node, indexer) {
 		return { t:node.t, v:node.v, global:gl, r:asVerb(op, v, ex) };
 	}
 	// t[x]+::z -> ..[`t;x;+:;z]   t[x]+:z -> t:.[t;x;{y};z]
-	if (!gl) { node.r={ t:8, v:".", curry:[ k(7,node.v),kl(indexer),asVerb(op),ex] }; return node; }
+	if (!gl) { node.r={ t:8, v:".", curry:[ k(7,node.v),k(3,indexer),asVerb(op),ex] }; return node; }
 	return asVerb(".", null, { t:8, v:".", curry:[ks(node.v), indexer, asVerb(op), ex] });
 }
 
