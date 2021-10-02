@@ -460,7 +460,7 @@ function setvars() {
 
 function parsedirectives(text) {
 	text = text.split("\n");
-	var format = /^\/i ([a-zA-Z]+);([a-zA-Z]+);([^\n]+)$/;
+	var format = /^\/i ([a-zA-Z0-9]+);([a-zA-Z]+);([^\n]+)$/;
 	var ret = [];
 	for(var z=0; z<text.length; z++) {
 		var str = text[z].trim();
