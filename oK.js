@@ -58,7 +58,7 @@ function n     (x)       { return (x.t==0||x.t==1) ? x : ct(x, 0); }
 function l     (x)       { return ct(x, 3); }
 function d     (x)       { return ct(x, 4); }
 function a     (x)       { if (x.t > 2) { throw new Error("domain error."); } return x; }
-function na    (x)       { return x.t === 0 && isNaN(x.v); }
+function na    (x)       { return x.t == 0 && isNaN(x.v); }
 
 function stok(x) { return kl(krange(x.length, function(z) { return k(1,x.charCodeAt(z)); }).v); }
 function c(x)    { return (x.t==3) ? k(x.t, x.v.slice(0)) : (x.t==4) ? md(c(x.k), c(x.v)) : x; }
@@ -896,7 +896,7 @@ function format(k, indent, symbol) {
 	if (k.sticky) { var s=k.sticky; k.sticky=null; var r=format(k); k.sticky=s; return "("+r+")"; }
 	if (k.t == 0) {
 		return k.v==1/0?"0w":k.v==-1/0?"-0w":na(k)?"0N":
-		""+(k.v % 1 === 0 ? k.v : Math.round(k.v * 10000) / 10000);
+		""+(k.v % 1 == 0 ? k.v : Math.round(k.v * 10000) / 10000);
 	}
 	if (k.t == 1) { return ktos(k,true); }
 	if (k.t == 2) { return (symbol==1?"":"`")+k.v; }
