@@ -366,9 +366,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<tt>l^a</tt> or <tt>l^l</tt> is <b>except</b>. Remove all instances of each of y from x.
 <pre><code>  1 3 2 5 1 2 3^1 3 5
 2 2</code></pre>
-		<tt>n^a</tt> or <tt>n^l</tt> is equivalent to <tt>(!n)^l</tt>:
-<pre><code> 10^1 3 7
-0 2 4 5 6 8 9</code></pre>
+		<tt>a^a</tt> or <tt>a^l</tt> is <b>fill</b>. Replace all nulls in y with x.
+<pre><code>  "c"^(5;`;0N)
+(5;"c";"c")</code></pre>
 	</td>
 </tr>
 

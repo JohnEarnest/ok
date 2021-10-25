@@ -22,7 +22,7 @@ Verb       (unary)    Adverb             Noun         (null)
 = equal     group     5: printable form  func {[c]32+1.8*c}
 ~ match     not
 , concat    enlist
-^ except    null                         \\t x   time
+^ fill|out  null                         \\t x   time
 # take|rsh  count                        \\\\     exit
 _ drop|cut  floor
 $ cast|sum  string    $[c;t;f]     COND
