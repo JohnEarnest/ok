@@ -134,9 +134,11 @@ function dfmt(x, y) {
 	return r;
 }
 
+function fill(x, y) { return pisnull(y).v ? x : y; }
+
 function except(x, y) {
 	y = y.t == 3 ? y : enlist(y);
-	return k(3, (x.t == 3 ? x : iota(x)).v.filter(function(z) { return na(pfind(y, z)); }));
+	return k(3, x.v.filter(function(z) { return na(pfind(y, z)); }));
 }
 
 function filt(x,y,k) { return y.t == 4 ? md(k,atx(y,k)) : atx(y,k) }
@@ -420,7 +422,7 @@ var verbs = {
 	"=" : [imat,      group,      ad(equal),  ad(equal),  ad(equal),  ad(equal),  null,    null  ],
 	"~" : [am(not),   am(not),    match,      match,      match,      match,      null,    null  ],
 	"," : [enlist,    enlist,     cat,        cat,        cat,        cat,        null,    null  ],
-	"^" : [pisnull,   am(pisnull),except,     except,     except,     except,     null,    null  ],
+	"^" : [pisnull,   am(pisnull),ad(fill),   except,     ad(fill),   except,     null,    null  ],
 	"#" : [count,     count,      take,       reshape,    take,       reshape,    null,    null  ],
 	"_" : [am(floor), am(floor),  drop,       ddrop,      drop,       cut,        null,    null  ],
 	"$" : [kfmt,      as(kfmt),   dfmt,       dfmt,       dfmt,       dfmt,       null,    null  ],

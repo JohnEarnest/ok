@@ -278,7 +278,7 @@ The built in function `prm` generates the permutations of a list:
 	 prm "aab"
 	("aab";"aba";"aab";"aba";"baa";"baa")
 
-If the argument is numeric, interpret it as `!x`. This type of generalization is consistent with several other operators such as "except":
+If the argument is numeric, interpret it as `!x`.
 
 	 prm 3
 	(0 1 2;0 2 1;1 0 2;1 2 0;2 0 1;2 1 0)
