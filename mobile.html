@@ -19,12 +19,9 @@ body {
 	font-family: monospace;
 	font-size: 20px;
 	padding: 5px;
-	overflow: hidden;
-	background-color: white;
-}
-#console-pane {
 	height: 40%;
 	overflow-y: scroll;
+	background-color: white;
 }
 #console-content {
 	display: flex;
@@ -156,10 +153,8 @@ body {
 </head>
 <body oncontextmenu="return false;">
 	<div id="console">
-		<div id="console-pane">
-			<div id="console-content">
-				
-			</div>
+		<div id="console-content">
+			
 		</div>
 	</div>
 	<div id="keyboard"/>
@@ -306,7 +301,7 @@ function printNode(type, n) {
 	div.className = type;
 	div.appendChild(n);
 	document.getElementById("console-content").appendChild(div);
-	var panel = document.getElementById("console-pane");
+	var panel = document.getElementById("console");
 	panel.scrollTop = panel.scrollHeight;
 }
 
@@ -315,7 +310,7 @@ function printText(type, text) {
 	div.className = type;
 	div.innerHTML = asHTML(text);
 	document.getElementById("console-content").appendChild(div);
-	var panel = document.getElementById("console-pane");
+	var panel = document.getElementById("console");
 	panel.scrollTop = panel.scrollHeight;
 	div.onclick = function(event) {
 		updateEdit(text, text.length);
@@ -358,7 +353,7 @@ function printMenu(label, options, triggers) {
 		div.appendChild(o);
 	});
 	document.getElementById("console-content").appendChild(div);
-	var panel = document.getElementById("console-pane");
+	var panel = document.getElementById("console");
 	panel.scrollTop = panel.scrollHeight;
 }
 
