@@ -124,6 +124,7 @@ function keval(x, env) {
 }
 
 function dfmt(x, y) {
+	if (x.t == 2 && x.v == '' && y.t == 3) { return s(y) ? k(2,ktos(y)) : kmap(y, function(z) { return dfmt(x, z); }); }
 	if ( x.t == 3           && y.t == 3) { return kzip(x, y, dfmt); }
 	if ( x.t == 3           && y.t != 3) { return kmap(x, function(z) { return dfmt(z, y); }); }
 	if ((x.t == 2 || !s(y)) && y.t == 3) { return kmap(y, function(z) { return dfmt(x, z); }); }

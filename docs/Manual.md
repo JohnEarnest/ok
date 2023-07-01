@@ -503,7 +503,9 @@ As a general note, verbs which operate on numbers will coerce characters to thei
 		<ul>
 			<li><tt>`c</tt>: convert to character</li>
 			<li><tt>`i</tt>: convert to integer</li>
+			<li><tt>`f</tt>: convert to float (basically useless!)</li>
 			<li><tt>`b</tt>: convert to boolean (bitwise AND with 1)</li>
+			<li><tt>`</tt>: convert string(s) to symbol</li>
 		</ul>
 	</td>
 </tr>
