@@ -215,7 +215,7 @@ function grade(dir, x) {
 
 function where(x, env) {
 	if (x.t == 4) { return atx(x.k, where(x.v, env)); } // {,/(0|x)#'!#x}...
-	var s = kmap(x.t==3 ?x:enlist(x), function(v,i) { return take(k(0,p(v)), k(0,i), env); });
+	var s = kmap(x.t==3 ?x:enlist(x), function(v,i) { return v.t == 3 ? eachright(asVerb(","), k(0,i), where(v, env), env) : take(k(0,p(v)), k(0,i), env); });
 	return over(asVerb(","), s, env);
 }
 
